@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home2.dart';
+import 'package:safify/User%20Module/services/UserServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Action Team Module/pages/action_team_home_page.dart';
@@ -33,19 +34,20 @@ import 'package:device_preview/device_preview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  UserServices userServices = UserServices();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   // Ensure WidgetsBinding is initialized
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? userId = prefs.getString("user_id");
-  String? userRole = prefs.getString("role");
-
+  // String? userRole = prefs.getString("role");
+  String? userRole = await userServices.getRole();
   Widget initialScreen;
 
   if (userId != null && userRole != null) {
     if (userRole == "admin") {
       initialScreen = const AdminHomePage();
-    } else if (userRole == "student") {
+    } else if (userRole == "user") {
       initialScreen = const HomePage2();
     } else if (userRole == "action_team") {
       initialScreen = const ActionTeamHomePage();
@@ -55,13 +57,13 @@ void main() async {
     }
   } else {
     initialScreen =
-         const LoginPage(); // Handle the case where user session does not exist
+        const LoginPage(); // Handle the case where user session does not exist
   }
 
   // runApp(MyApp(initialScreen: initialScreen));
   runApp(DevicePreview(
     enabled: true,
-    builder: (BuildContext context) =>  MyApp(
+    builder: (BuildContext context) => MyApp(
       initialScreen: initialScreen,
     ),
   ));
@@ -151,7 +153,7 @@ class MyApp extends StatelessWidget {
                 const ErrorPage(), // Replace with your error handling page
           );
         },
-        home: const HomePage2(),
+        home: initialScreen,
         debugShowCheckedModeBanner: false,
         routes: {
           '/home_page': (context) => const HomePage(),

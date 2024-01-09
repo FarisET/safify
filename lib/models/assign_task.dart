@@ -6,7 +6,7 @@ class AssignTask {
   final String? date_of_assignment;
   final String? sub_location_name;
   final String? incident_subtype_description;
-  final Map<String, dynamic>? image;
+  final String? image;
   final String? incident_criticality_level;
   final String? status;
   

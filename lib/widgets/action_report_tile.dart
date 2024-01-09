@@ -3,6 +3,7 @@
  
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Action Team Module/providers/all_action_reports_approveal_provider.dart';
@@ -20,61 +21,6 @@ class ActionReportTile extends StatefulWidget {
 class _ActionReportTileState extends State<ActionReportTile> {
 
   
-  // Widget displayImage(List<dynamic> imageData) {
-  //   if (imageData != null) {
-  //     List<int> intList = imageData.cast<int>().toList();
-  //     print('list int:${intList}');
-  //     Uint8List uint8List = Uint8List.fromList(intList);
-  //     return Image.memory(uint8List);
-  //   } else {
-  //     return Text("No image available");
-  //   }
-  // }
-// Widget displayImage(Map<String, dynamic> image) {
-//   if (image != null && image.containsKey('data')) {
-//     List<dynamic> data = image['data'];
-//     if (data is List) {
-//       // Convert the list of dynamic to a list of int
-//       List<int> intList = data.cast<int>().toList();
-//       Uint8List uint8List = Uint8List.fromList(intList);
-//       return Image.memory(uint8List);
-//     }
-//   }
-
-//   return Text("No image available");
-// }
-
-Widget displayImage(Map<String, dynamic> image) {
-  if (image.containsKey('data')) {
-    List<dynamic> data = image['data'];
-    // Convert the list of dynamic to a list of int
-    List<int> intList = data.cast<int>().toList();
-    Uint8List uint8List = Uint8List.fromList(intList);
-    print('---uint8List: $uint8List');
-    return Image.memory(uint8List);
-  }
-  return Text("No image available");
-}
-
-
-//  void _generatePdfAndView(ActionReport item) async {
-//     final pdf = pw.Document();
-
-//     pdf.addPage(
-//       pw.Page(
-//         build: (pw.Context context) => pw.Column(
-//           crossAxisAlignment: pw.CrossAxisAlignment.start,
-//           children: [
-//             pw.Text('Incident Subtype: ${item.incident_subtype_description}'),
-//             pw.Text('Reported By: ${item.reported_by}'),
-//             pw.Text('Date and Time: ${item.date_time}'),
-//             pw.Text('Report Description: ${item.report_description}'),
-//             pw.Text('Resolution Description: ${item.resolution_description}'),
-//             // Add other fields as needed
-//           ],
-//         ),
-//       ),
-//     );
 
     // Save the PDF to a temporary file
     // final Uint8List pdfBytes = await pdf.save();
@@ -284,14 +230,52 @@ Widget displayImage(Map<String, dynamic> image) {
                                     SizedBox(width: 4),
 
                                 FilledButton(
-                                  onPressed: () {
-                                 //   final Future<File> img = convertMapToImageFile(item.image);
-                 //                   print('${item.image}');
-    //                                Uint8List imageBytes = Uint8List.fromList((item.surrounding_image?['data'] as List).cast<int>());
-                                  //  _generatePdfAndView(item);  
-                                  Text('Report');                        //      print('${item.image}');
+                                                                    onPressed: () {
+                                    if (item.proof_image != null) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Dialog(
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7, // 70% of screen width
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.7, // 70% of screen width (square box)
 
+                                              // Limiting the child to the box's size and maintaining aspect ratio
+                                              child: FittedBox(
+                                                fit: BoxFit
+                                                    .contain, // Maintain aspect ratio, fit within the box
+                                                child: CachedNetworkImage(
+                                                  imageUrl: '${item.proof_image}',
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      //    Fluttertoast.showToast(msg: 'msg');
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Dialog(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text('Unable to load image'),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
                                   },
+
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                                   ),

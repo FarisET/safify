@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 
@@ -91,6 +92,8 @@ class UserServices {
   Future<void> logout() async {
     await storage.delete(key: 'jwt');
     await storage.delete(key: 'role');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("user_id");
   }
 
 
@@ -116,7 +119,7 @@ Future<bool> login(String id, String password) async {
         final decodedToken = parseJwt(token);
 
         // Check if 'role' is not null before using it
-        String? role = decodedToken['role'];
+        String? role = decodedToken['role_name'];
         String? userName = decodedToken['user_name'];
 
         if (role != null) {

@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       } else if (role == 'user') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage2()),
         );
       } else if (role == 'action_team') {
         Navigator.pushReplacement(
@@ -175,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(builder: (context) => AdminHomePage()),
           );
-        } else if (role.trim() == 'user') {
+        } else if (role.trim() == 'user') { //student for azure cloud version
           // Debug log to confirm this block is entered
           Navigator.pushReplacement(
             context,

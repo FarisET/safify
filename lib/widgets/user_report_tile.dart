@@ -132,18 +132,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                 FilledButton(
                                   onPressed: () {
                                     if (item.image != null) {
-                                      // String? data =
-                                      //     'data:image/png;base64,QzpVc2Vyc2hwRGVza3RvcFNjcmVlbnNob3QgMjAyNC0wMS0wMSAyMjU4MDQucG5n';
-                                      // String base64String = item.image!
-                                      //     .split(',')
-                                      //     .last; // Splitting and taking the part after the comma
-                                      // print("${isValidBase64(base64String!)}");
-                                      // File file = new File(base64String);
-
-                                      // var imageBytes =
-                                      //     base64Decode(base64String);
-
-                                      // print('imageBytes:$imageBytes');
 
                                       showDialog(
                                         context: context,
@@ -180,7 +168,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text('Incident'),
                                                 Text('Unable to load image'),
                                               ],
                                             ),

@@ -6,6 +6,7 @@ import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart' as intl;
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -16,8 +17,6 @@ class HomePage2 extends StatefulWidget {
 
 class _HomePage2State extends State<HomePage2> {
   // padding constants
-  final double horizontalPadding = 45;
-  final double verticalPadding = 25;
   final double mainHeaderSize = 18;
 
   String? user_name;
@@ -120,32 +119,39 @@ class _HomePage2State extends State<HomePage2> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Card(
-                    margin: EdgeInsets.all(0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 10),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.person),
-                          const SizedBox(
-                            width: 5,
+                                            Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //TODO: get user name dynamically in welcome
+                              user_name != null
+                                  ? Text(
+                                      '$user_name',
+                                      style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold  
+                                      ),
+                                    )
+                                  : Text(
+                                      'Citizen',
+                                      style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold  
+                                      ),
+                                      
+                                    ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.007,
+                              ),
+                              Text(
+                                  intl.DateFormat('d MMMM y')
+                                      .format(DateTime.now()),
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            ],
                           ),
-                          user_name != null
-                              ? Text(
-                                  ' $user_name',
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge,
-                                )
-                              : Text(
-                                  ' Citizen',
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge,
-                                )
-                        ],
-                      ),
-                    ),
-                  ),
+
+
                 ],
               ),
               

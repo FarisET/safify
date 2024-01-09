@@ -76,11 +76,12 @@ class _AdminReportTileState extends State<AdminReportTile> {
             var item = allReports.reports[i];
 
             return Card(
-                color: item.status!.contains('open')
-                    ? Colors.red[100]
-                    : (item.status!.contains('in progress')
-                        ? Colors.orange[100]
-                        : Colors.green[100]),
+                color: Colors.white,
+                // color: item.status!.contains('open')
+                //     ? Colors.red[100]
+                //     : (item.status!.contains('in progress')
+                //         ? Colors.orange[100]
+                //         : Colors.green[100]),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -111,13 +112,6 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  //   Text('ID: ${item.id}'
-                                  //   ,                                      style: TextStyle(
-                                  //     color: Colors.blue[800],
-                                  //  //   fontSize: 18,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  //   ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
@@ -136,15 +130,29 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                 ],
                               ),
                             ),
-                            Text(
-                              '${item.status}',
-                              style: TextStyle(
-                                color: Colors.blue[500],
-                                fontWeight: FontWeight.bold,
-                              ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.005,
                             ),
-                            SizedBox(height: 12),
-
+                            Row(
+                              children: [
+                                '${item.status}'.contains('open')
+                                    ? Icon(Icons.start,
+                                        color: Colors.redAccent, size: 20)
+                                    : '${item.status}'.contains('in progress')
+                                        ? Icon(Icons.pending,
+                                            color: Colors.orangeAccent,
+                                            size: 20)
+                                        : Icon(Icons.check,
+                                            color: Colors.greenAccent,
+                                            size: 20),
+                                Text(' ${item.status}')
+                              ],
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.005,
+                            ),
                             Row(
                               children: [
                                 Icon(Icons.location_city,
@@ -152,12 +160,20 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                 Text(' ${item.subLocationName}')
                               ],
                             ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.005,
+                            ),
                             Row(
                               children: [
                                 Icon(Icons.timer, color: Colors.blue, size: 20),
                                 Text(
                                     ' ${item.dateTime?.split('T')[0]} | ${item.dateTime?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
                               ],
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.005,
                             ),
                             Row(
                               children: [
@@ -172,20 +188,20 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                 )
                               ],
                             ),
-                            //TODO: try image
-                            // Padding(
-                            //   padding: const EdgeInsets.only(bottom:4.0),
-                            //   child: Text('By: Faris Ejaz'),
-                            // ),
-                            //TODO: get user name dynamically
                             SizedBox(
-                              height: 30,
+                              height: MediaQuery.of(context).size.height * 0.02,
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                                  MediaQuery.of(context).size.width < 360
+                                      ? MainAxisAlignment.spaceEvenly
+                                      : MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MediaQuery.of(context).size.width < 360
+                                          ? MainAxisAlignment.spaceEvenly
+                                          : MainAxisAlignment.start,
                                   children: [
                                     FilledButton(
                                       onPressed: () {
@@ -225,8 +241,14 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                 Colors.redAccent),
                                       ),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12.0, vertical: 0),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: MediaQuery.of(context)
+                                                        .size
+                                                        .width <
+                                                    390
+                                                ? 6.0
+                                                : 12.0,
+                                            vertical: 0),
                                         child: Text('Delete',
                                             style:
                                                 TextStyle(color: Colors.white)),
@@ -269,12 +291,23 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                   Colors.yellowAccent),
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0, vertical: 0),
-                                          child: Text('Assign',
-                                              style: TextStyle(
-                                                  color: Colors.black)),
-                                        ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    MediaQuery.of(context)
+                                                                .size
+                                                                .width <
+                                                            390
+                                                        ? 6.0
+                                                        : 12.0,
+                                                vertical: 0),
+                                            child: '${item.status}'
+                                                    .contains('in progress')
+                                                ? Text('Assigned',
+                                                    style: TextStyle(
+                                                        color: Colors.black))
+                                                : Text('Assign',
+                                                    style: TextStyle(
+                                                        color: Colors.black))),
                                       ),
                                     )
                                   ],
@@ -282,35 +315,34 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                 FilledButton(
                                   onPressed: () {
                                     if (item.image != null) {
-                                      // String? data =
-                                      //     'data:image/png;base64,QzpVc2Vyc2hwRGVza3RvcFNjcmVlbnNob3QgMjAyNC0wMS0wMSAyMjU4MDQucG5n';
-                                      // String base64String = item.image!
-                                      //     .split(',')
-                                      //     .last; // Splitting and taking the part after the comma
-                                      // print("${isValidBase64(base64String!)}");
-                                      // File file = new File(base64String);
-
-                                      // var imageBytes =
-                                      //     base64Decode(base64String);
-                                          
-                                      // print('imageBytes:$imageBytes');
-
                                       showDialog(
                                         context: context,
                                         builder: (context) {
                                           return Dialog(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text('Incident'),
-                                                CachedNetworkImage(imageUrl: '${item.image}')
-                                              ],
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7, // 70% of screen width
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.7, // 70% of screen width (square box)
+
+                                              // Limiting the child to the box's size and maintaining aspect ratio
+                                              child: FittedBox(
+                                                fit: BoxFit
+                                                    .contain, // Maintain aspect ratio, fit within the box
+                                                child: CachedNetworkImage(
+                                                  imageUrl: '${item.image}',
+                                                ),
+                                              ),
                                             ),
                                           );
                                         },
                                       );
                                     } else {
-                                      Fluttertoast.showToast(msg: 'msg');
+                                      //    Fluttertoast.showToast(msg: 'msg');
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -318,7 +350,6 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text('Incident'),
                                                 Text('Unable to load image'),
                                               ],
                                             ),
@@ -333,18 +364,19 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                             Colors.blue),
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 0),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            MediaQuery.of(context).size.width <
+                                                    390
+                                                ? 6.0
+                                                : 12.0,
+                                        vertical: 0),
                                     child: Row(
                                       children: const [
-                                        Icon(
-                                          Icons.attach_file,
-                                          size: 16,
-                                        ),
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text('View incident',
+                                        Text('Image',
                                             style:
                                                 TextStyle(color: Colors.white)),
                                       ],
