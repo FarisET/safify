@@ -15,7 +15,7 @@ class UserServices {
 
   Future<void> storeJwtAndRole(String jwt, String role, String userName) async {
     await storage.write(key: 'jwt', value: jwt);
-    await storage.write(key: 'role', value: role);
+    await storage.write(key: 'role_name', value: role);
     await storage.write(key: 'user_name', value: userName);
 
     
@@ -26,7 +26,7 @@ class UserServices {
   }
 
   Future<String?> getRole() async {
-    return await storage.read(key: 'role');
+    return await storage.read(key: 'role_name');
   }
 
   Future<String?> getName() async {
@@ -91,7 +91,7 @@ class UserServices {
 
   Future<void> logout() async {
     await storage.delete(key: 'jwt');
-    await storage.delete(key: 'role');
+    await storage.delete(key: 'role_name');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("user_id");
   }

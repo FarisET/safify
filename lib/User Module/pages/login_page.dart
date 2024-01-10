@@ -182,7 +182,11 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => HomePage2()),
           );
         } else if (role.trim() == 'action_team') {
-          // Navigation logic for action team
+                    Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
+          );
+
         } else {
           Fluttertoast.showToast(msg: 'Unknown role');
           // Handle unknown roles or show an error
