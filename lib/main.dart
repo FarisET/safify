@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
+import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home2.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
@@ -60,13 +61,13 @@ void main() async {
         const LoginPage(); // Handle the case where user session does not exist
   }
 
-  // runApp(MyApp(initialScreen: initialScreen));
-  runApp(DevicePreview(
-    enabled: true,
-    builder: (BuildContext context) => MyApp(
-      initialScreen: initialScreen,
-    ),
-  ));
+  runApp(MyApp(initialScreen: initialScreen));
+  // runApp(DevicePreview(
+  //   enabled: true,
+  //   builder: (BuildContext context) => MyApp(
+  //     initialScreen: initialScreen,
+  //   ),
+  // ));
 }
 
 customAnimations animate = customAnimations();
@@ -111,7 +112,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<CountByLocationProviderClass>(
             create: (context) => CountByLocationProviderClass()),
         ChangeNotifierProvider<ActionTeamEfficiencyProviderClass>(
-            create: (context) => ActionTeamEfficiencyProviderClass())
+            create: (context) => ActionTeamEfficiencyProviderClass()),
+        ChangeNotifierProvider<DeleteUserReportProvider>(
+            create: (context) => DeleteUserReportProvider()),
+
+            
       ],
       child: MaterialApp(
         useInheritedMediaQuery: true,
@@ -127,6 +132,7 @@ class MyApp extends StatelessWidget {
 
           // Define the default `TextTheme`. Use this to specify the default
           // text styling for headlines, titles, bodies of text, and more.
+          
           textTheme: TextTheme(
             titleLarge:
                 GoogleFonts.roboto(fontSize: 24, color: Colors.grey.shade800),

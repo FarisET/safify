@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -117,15 +116,42 @@ class _ActionReportState extends State<ActionReportForm>
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.blue[300],
         appBar: AppBar(
-          title: Text("Investigation Report"),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back,
+                color: Theme.of(context).secondaryHeaderColor),
+            onPressed: () {
+              // Add your navigation logic here, such as pop or navigate back
+              Navigator.of(context).pop();
+            },
+          ),
+          title: Text("Investigation Report",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Theme.of(context).secondaryHeaderColor,
+              )),
           bottom: TabBar(
+            overlayColor: MaterialStateProperty.all<Color>(Colors.blue.shade100),
+            indicatorColor: Theme.of(context).primaryColor,
             controller: _tabController,
             tabs: [
-              Tab(text: "Incident Details"),
-              Tab(text: "Root Cause Analysis"),
-              Tab(text: "Work Approval"),
+              Tab(
+                  child: Text(
+                ("Incident Details"),
+                style: TextStyle(color: Theme.of(context).secondaryHeaderColor,),
+              )),
+              Tab(
+                  child: Text(
+                ("Root Cause Analysis"),
+                style: TextStyle(color: Theme.of(context).secondaryHeaderColor),
+              )),
+              Tab(
+                  child: Text(
+                ("Resolution Details"),
+                style: TextStyle(color: Theme.of(context).secondaryHeaderColor),
+              )),
             ],
           ),
         ),
@@ -286,10 +312,15 @@ class _ActionReportState extends State<ActionReportForm>
                                     const EdgeInsets.symmetric(vertical: 22.0),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.attach_file),
-                                    Text(incidentSiteImg != null
-                                        ? 'Image Added'
-                                        : 'Add Image of surrounding enviroment'),
+                                    Icon(Icons.image),
+                                    Flexible(
+                                      child: Text(
+                                        incidentSiteImg != null
+                                            ? 'Image Added'
+                                            : 'Add Image of enviroment',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -321,6 +352,7 @@ class _ActionReportState extends State<ActionReportForm>
               ),
               // Root Cause Analysis tab
               SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: Padding(
                   padding: const EdgeInsets.all(18.0),
                   child: Container(
@@ -332,7 +364,11 @@ class _ActionReportState extends State<ActionReportForm>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                            padding: const EdgeInsets.all(18.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.sizeOf(context).width * 0.05,
+                                vertical:
+                                    MediaQuery.sizeOf(context).height * 0.02),
                             child: Text(
                               'Answer the series of quesitons to find the root cause of the incident',
                               textAlign: TextAlign.left,
@@ -616,7 +652,7 @@ class _ActionReportState extends State<ActionReportForm>
                                       content: Text('Report Submitted'),
                                     ),
                                   );
-                                  
+
                                   // setState(() {
                                   //   workPrfImg = null;
                                   //   incidentSiteImg = null;

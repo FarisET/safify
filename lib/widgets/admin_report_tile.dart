@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Admin Module/admin_pages/assign_form.dart';
@@ -21,43 +22,6 @@ class AdminReportTile extends StatefulWidget {
 }
 
 class _AdminReportTileState extends State<AdminReportTile> {
-  // Widget displayImage(List<dynamic> imageData) {
-  //   if (imageData != null) {
-  //     List<int> intList = imageData.cast<int>().toList();
-  //     print('list int:${intList}');
-  //     Uint8List uint8List = Uint8List.fromList(intList);
-  //     return Image.memory(uint8List);
-  //   } else {
-  //     return Text("No image available");
-  //   }
-  // }
-// Widget displayImage(String image) {
-//    if (image !=null) {
-//    //  List<dynamic> data = image['data'];
-//    //  String base64Image = data.join(); // Combines the list of strings into one string
-//     Uint8List bytes = base64.decode(image); // Decode base64 string to bytes
-//     return Image.memory(bytes); // Display the image
-//   }
-//   return Text("No image available");
-// }
-
-// Widget displayImage(Uint8List imageData) {
-//   if (imageData != null) {
-//     return Image.memory(imageData);
-//   } else {
-//     return Text("No image available");
-//   }
-// }
-
-  // bool isValidBase64(String base64String) {
-  //   final RegExp base64Regex = RegExp(
-  //     r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
-  //     caseSensitive: false,
-  //     multiLine: false,
-  //   );
-  //   return base64Regex.hasMatch(base64String);
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -81,7 +45,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                 //     ? Colors.red[100]
                 //     : (item.status!.contains('in progress')
                 //         ? Colors.orange[100]
-                //         : Colors.green[100]),
+                //         : Colors.[100]),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -224,9 +188,62 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                 TextButton(
                                                   onPressed: () {
                                                     // Handle the rejection logic here
-                                                    // ...
-                                                    Navigator.of(context)
-                                                        .pop(); // Close the dialog
+                                                    // Get the provider instance
+                                                    if (!'${item.status}'
+                                                        .contains(
+                                                            'in progress')) {
+                                                      DeleteUserReportProvider
+                                                          deleteUserReportProvider =
+                                                          Provider.of<
+                                                                  DeleteUserReportProvider>(
+                                                              context,
+                                                              listen: false);
+
+                                                      // Call the function to delete the user report
+                                                      deleteUserReportProvider
+                                                          .deleteUserReport(
+                                                              '${item.id}')
+                                                          .then(
+                                                              (success) async {
+                                                        if (success) {
+                                                          await Provider.of<
+                                                                      AllUserReportsProvider>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .fetchAllReports(
+                                                                  context);
+
+                                                        }
+                                                      });
+
+                                                      Navigator.of(context)
+                                                          .pop(); // Close the dialog
+                                                          ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              SnackBar(
+                                                        backgroundColor:
+                                                            Colors.greenAccent,
+                                                        content: Text(
+                                                            'Report deleted'),
+                                                        duration: Duration(
+                                                            seconds: 2),
+                                                      ));
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              SnackBar(
+                                                        backgroundColor:
+                                                            Colors.redAccent,
+                                                        content: Text(
+                                                            'Denied: task in progress'),
+                                                        duration: Duration(
+                                                            seconds: 2),
+                                                      ));
+                                                      Navigator.of(context)
+                                                          .pop(); // Close the dialog
+                                                    }
                                                   },
                                                   child: Text("Confirm"),
                                                 ),

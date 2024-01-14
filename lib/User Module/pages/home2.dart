@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
+import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +31,10 @@ class _HomePage2State extends State<HomePage2> {
     getUsername();
   }
 
+  void updateUI() {
+    setState(() {});
+  }
+
   void getUsername() {
     SharedPreferences.getInstance().then((prefs) async {
       user_name = await userServices.getName();
@@ -40,155 +46,149 @@ class _HomePage2State extends State<HomePage2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          title: Text("Home",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: mainHeaderSize,
-                color: Theme.of(context).secondaryHeaderColor,
-              )),
-          actions: [
-            IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () {
-                  // Show a confirmation dialog before logging out
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext dialogContext) {
-                      return AlertDialog(
-                        title: const Text('Confirmation'),
-                        content:
-                            const Text('Are you sure you want to log out?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(dialogContext)
-                                  .pop(); // Close the dialog
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Logout'),
-                            onPressed: () {
-                              Navigator.of(dialogContext)
-                                  .pop(); // Close the dialog
-                              // Perform logout actions here
-                              handleLogout(context);
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                color: Theme.of(context).secondaryHeaderColor),
-          ]),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: FloatingActionButton(
-          //  backgroundColor: Colors.white,
-          onPressed: () {
-            _showBottomSheet();
-          },
-          child: const Icon(
-            Icons.add,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-              vertical: MediaQuery.sizeOf(context).height * 0.02),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              //    welcome home
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                                            Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //TODO: get user name dynamically in welcome
-                              user_name != null
-                                  ? Text(
-                                      '$user_name',
-                                      style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold  
-                                      ),
-                                    )
-                                  : Text(
-                                      'Citizen',
-                                      style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold  
-                                      ),
-                                      
-                                    ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.007,
-                              ),
-                              Text(
-                                  intl.DateFormat('d MMMM y')
-                                      .format(DateTime.now()),
-                                  style:
-                                      Theme.of(context).textTheme.titleSmall),
-                            ],
-                          ),
-
-
-                ],
-              ),
-              
-
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              const Divider(
-                thickness: 1,
-                color: Color.fromARGB(255, 204, 204, 204),
-              ),
-
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              // previous reports
-              Text(
-                "My Reports",
+    return RefreshIndicator(
+      onRefresh: () async {
+        //updateUI();
+        await Provider.of<UserReportsProvider>(context, listen: false)
+        .fetchReports(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            automaticallyImplyLeading: false,
+            title: Text("Home",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Colors.grey.shade800,
+                  fontSize: mainHeaderSize,
+                  color: Theme.of(context).secondaryHeaderColor,
+                )),
+            actions: [
+              IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    // Show a confirmation dialog before logging out
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          title: const Text('Confirmation'),
+                          content:
+                              const Text('Are you sure you want to log out?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(dialogContext)
+                                    .pop(); // Close the dialog
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Logout'),
+                              onPressed: () {
+                                Navigator.of(dialogContext)
+                                    .pop(); // Close the dialog
+                                // Perform logout actions here
+                                handleLogout(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  color: Theme.of(context).secondaryHeaderColor),
+            ]),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: FloatingActionButton(
+            //  backgroundColor: Colors.white,
+            onPressed: () {
+              _showBottomSheet();
+            },
+            child: const Icon(
+              Icons.add,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width * 0.05,
+                vertical: MediaQuery.sizeOf(context).height * 0.02),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
                 ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.009,
-              ),
+                //    welcome home
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //TODO: get user name dynamically in welcome
+                        user_name != null
+                            ? Text(
+                                '$user_name',
+                                style: TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
+                              )
+                            : Text(
+                                'Citizen',
+                                style: TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.007,
+                        ),
+                        Text(intl.DateFormat('d MMMM y').format(DateTime.now()),
+                            style: Theme.of(context).textTheme.titleSmall),
+                      ],
+                    ),
+                  ],
+                ),
 
-              // list of reports
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.60,
-                child: const Expanded(
-                  child: UserReportTile(),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
                 ),
-            
-              )
-            ],
+                const Divider(
+                  thickness: 1,
+                  color: Color.fromARGB(255, 204, 204, 204),
+                ),
+
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                // previous reports
+                Text(
+                  "My Reports",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.009,
+                ),
+
+                // list of reports
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.60,
+                  child: const Expanded(
+                    child: UserReportTile(),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -237,7 +237,6 @@ class _HomePage2State extends State<HomePage2> {
                 name: 'Start Inspection',
                 description: 'Capture an incident, hazard',
                 onTap: () {}),
-
 
             //separator or divider
             Divider(

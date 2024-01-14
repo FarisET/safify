@@ -13,8 +13,8 @@ class ActionReport {
   String? question_five;
   String? resolution_description;
   String? reported_by;
-  Map<String, dynamic>? surrounding_image;
-  Map<String, dynamic>? proof_image;
+  String? surrounding_image;
+  String? proof_image;
   String? date_time;
   String? status;
   String? incident_subtype_description;
@@ -51,8 +51,8 @@ class ActionReport {
       question_five: json['question_five'] as String?,
       resolution_description: json['resolution_description'] as String?,
       reported_by: json['reported_by'] as String?,
-      proof_image: json['proof_image'] as Map<String, dynamic>?,
-      surrounding_image: json['surrounding_image'] as Map<String, dynamic>?,
+      proof_image: json['proof_image'] as String?,
+      surrounding_image: json['surrounding_image'] as String?,
       date_time: json['date_time'] as String?,
       status:json['status'] as String?,
       incident_subtype_description:json['incident_subtype_description']

@@ -1,4 +1,4 @@
-const IP_URL = 'http://192.168.173.223:3000';
+const IP_URL = 'http://192.168.100.12:3000';
 const PORT = 3000;
 
 

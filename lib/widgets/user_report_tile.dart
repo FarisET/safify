@@ -187,13 +187,13 @@ class _UserReportTileState extends State<UserReportTile> {
                                     child: Row(
                                       children: const [
                                         Icon(
-                                          Icons.attach_file,
+                                          Icons.image,
                                           size: 16,
                                         ),
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text('View incident',
+                                        Text('Image',
                                             style:
                                                 TextStyle(color: Colors.white)),
                                       ],
@@ -214,7 +214,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                             style: TextStyle(
                                                 color: Colors.red,
                                                 fontWeight: FontWeight.bold))
-                                //TODO: change status color dynamically
                               ],
                             ),
                           ]),

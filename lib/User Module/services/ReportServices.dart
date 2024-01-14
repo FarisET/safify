@@ -292,10 +292,11 @@ class ReportServices {
       //user_report_id!; // Replace with actual incident criticality ID
 
       // Attach the first image file
-      request.files.add(await http.MultipartFile.fromPath(
-        'surrounding_image', // Field name specified in the API for the first image
-        surrounding_image!.path,
-      ));
+      if (surrounding_image != null)
+        request.files.add(await http.MultipartFile.fromPath(
+          'surrounding_image', // Field name specified in the API for the first image
+          surrounding_image!.path,
+        ));
 
       // Attach the second image file
       request.files.add(await http.MultipartFile.fromPath(
