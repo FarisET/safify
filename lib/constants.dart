@@ -1,4 +1,5 @@
-const IP_URL = 'http://192.168.100.12:3000';
+//const IP_URL = 'http://192.168.18.119:3000';
+const IP_URL = 'https://safify-demo-server.onrender.com';
 const PORT = 3000;
 
 

@@ -18,9 +18,9 @@ import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
 import '../services/ReportServices.dart';
 import 'home_page.dart';
-import 'package:http/http.dart' as http;
 
 class UserForm extends StatefulWidget {
+  // ignore: avoid_types_as_parameter_names
   const UserForm({super.key, Key});
 
   @override
@@ -42,13 +42,12 @@ class _UserFormState extends State<UserForm> {
   bool isFirstLocationDropdownSelected = false;
 
   void _processData() {
-  if (mounted) {
-    setState(() {
-    _formKey.currentState?.reset();
-    });
+    if (mounted) {
+      setState(() {
+        _formKey.currentState?.reset();
+      });
+    }
   }
-}
-
 
   Color? _getSelectedColor(int index) {
     if (isSelected[index]) {
@@ -748,34 +747,38 @@ class _UserFormState extends State<UserForm> {
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: returnedImage == null
-                                                ? Theme.of(context).primaryColor
-                                                : Theme.of(context).hintColor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  10.0), // Set your desired radius here
+                                        child: Builder(builder: (context) {
+                                          return ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              // primary
+                                              // : returnedImage == null
+                                              //     ? Theme.of(context).primaryColor
+                                              //     : Theme.of(context).hintColor,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                    10.0), // Set your desired radius here
+                                              ),
                                             ),
-                                          ),
-                                          onPressed: () {
-                                            _showBottomSheet();
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.image),
-                                                Text(returnedImage != null
-                                                    ? '  Image Added'
-                                                    : ' Add Image'),
-                                              ],
+                                            onPressed: () {
+                                              _showBottomSheet();
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.image),
+                                                  Text(returnedImage != null
+                                                      ? '  Image Added'
+                                                      : ' Add Image'),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
+                                          );
+                                        }),
                                       ),
                                     ],
                                   ),
@@ -966,7 +969,6 @@ class _UserFormState extends State<UserForm> {
                                       )
                                       .closed
                                       .then((reason) {
-                                    
                                     setState(() {
                                       returnedImage = null;
                                       Provider.of<IncidentProviderClass>(

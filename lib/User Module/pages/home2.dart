@@ -50,7 +50,7 @@ class _HomePage2State extends State<HomePage2> {
       onRefresh: () async {
         //updateUI();
         await Provider.of<UserReportsProvider>(context, listen: false)
-        .fetchReports(context);
+            .fetchReports(context);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -183,9 +183,7 @@ class _HomePage2State extends State<HomePage2> {
                 // list of reports
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.60,
-                  child: const Expanded(
-                    child: UserReportTile(),
-                  ),
+                  child: UserReportTile(),
                 )
               ],
             ),

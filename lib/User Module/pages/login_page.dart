@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(builder: (context) => AdminHomePage()),
         );
-      } else if (role == 'user') {
+      } else if (role == 'student') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage2()),
@@ -118,7 +118,16 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text('Login'))
                     ],
                   ),
-                )
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "BETA - Version 1.0",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
               ],
             ),
           )
@@ -165,28 +174,26 @@ class _LoginPageState extends State<LoginPage> {
       //  await prefs.setString("user_name", user_name);
       //  String? userRole = prefs.getString("role");
 
-      final jwt = await userServices.getJwt();
       final role = await userServices.getRole();
-      print(role);
       if (role != null) {
         if (role.trim() == 'admin') {
           // Navigation logic for admin
-            Navigator.pushReplacement(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => AdminHomePage()),
           );
-        } else if (role.trim() == 'user') { //student for azure cloud version
+        } else if (role.trim() == 'student') {
+          //student for azure cloud version
           // Debug log to confirm this block is entered
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage2()),
           );
         } else if (role.trim() == 'action_team') {
-                    Navigator.pushReplacement(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
           );
-
         } else {
           Fluttertoast.showToast(msg: 'Unknown role');
           // Handle unknown roles or show an error

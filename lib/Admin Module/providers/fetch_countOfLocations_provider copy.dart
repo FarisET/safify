@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
@@ -40,10 +39,10 @@ class CountByLocationProviderClass extends ChangeNotifier {
     Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnLocations');
     final response = await http.get(url);
 
-    Fluttertoast.showToast(
-      msg: '${response.statusCode}',
-      toastLength: Toast.LENGTH_SHORT,
-    );
+    // Fluttertoast.showToast(
+    //   msg: '${response.statusCode}',
+    //   toastLength: Toast.LENGTH_SHORT,
+    // );
 
     if (response.statusCode == 200) {
       // Parse the JSON response
@@ -51,8 +50,10 @@ class CountByLocationProviderClass extends ChangeNotifier {
 
       // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
       if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
-        List<Map<String, dynamic>> incidentsData = (jsonResponse[0] as List<dynamic>)
-            .cast<Map<String, dynamic>>(); // Explicitly cast each item in the list
+        List<Map<String, dynamic>> incidentsData =
+            (jsonResponse[0] as List<dynamic>).cast<
+                Map<String,
+                    dynamic>>(); // Explicitly cast each item in the list
 
         // Map the incident data to your CountByIncidentSubTypes model
         List<CountByLocation> countByIncidentLocationList = incidentsData
@@ -69,7 +70,6 @@ class CountByLocationProviderClass extends ChangeNotifier {
         print('Invalid format in JSON response');
         throw Exception('Invalid format in JSON response');
       }
-      
     }
 
     loading = false;

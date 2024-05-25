@@ -3,9 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
-import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
-import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -13,13 +11,9 @@ import '../../User Module/pages/login_page.dart';
 import '../../User Module/services/UserServices.dart';
 import '../../widgets/action_report_tile.dart';
 import '../../widgets/admin_report_tile.dart';
-import '../../widgets/app_drawer.dart';
-import '../providers/analytics_incident_reported_provider.dart';
-import '../providers/analytics_incident_resolved_provider.dart';
-import '../providers/fetch_countOfSubtypes_provider.dart';
 
 class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({super.key, Key});
+  const AdminHomePage({super.key});
 
   @override
   State<AdminHomePage> createState() => _AdminHomePageState();
@@ -36,18 +30,18 @@ class _AdminHomePageState extends State<AdminHomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
-          .getCountResolvedPostData();
-      Provider.of<CountIncidentsReportedProvider>(context, listen: false)
-          .getCountReportedPostData();
-      Provider.of<CountByIncidentSubTypesProviderClass>(context, listen: false)
-          .getcountByIncidentSubTypesPostData();
-      Provider.of<CountByLocationProviderClass>(context, listen: false)
-          .getcountByIncidentLocationPostData();
-      Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-          .getactionTeamEfficiencyData();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
+    //       .getCountResolvedPostData();
+    //   Provider.of<CountIncidentsReportedProvider>(context, listen: false)
+    //       .getCountReportedPostData();
+    //   Provider.of<CountByIncidentSubTypesProviderClass>(context, listen: false)
+    //       .getcountByIncidentSubTypesPostData();
+    //   Provider.of<CountByLocationProviderClass>(context, listen: false)
+    //       .getcountByIncidentLocationPostData();
+    //   Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
+    //       .getactionTeamEfficiencyData();
+    // });
     getUsername();
   }
 
@@ -63,7 +57,7 @@ class _AdminHomePageState extends State<AdminHomePage>
     SharedPreferences.getInstance().then((prefs) async {
       user_name = await userServices.getName();
       setState(() {
-        print('user_name: $user_name');
+        // print('user_name: $user_name');
         user_id = prefs.getString("user_id");
       });
     });
@@ -71,21 +65,21 @@ class _AdminHomePageState extends State<AdminHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final countResolvedProvider =
-        Provider.of<CountIncidentsResolvedProvider>(context)
-            .totalIncidentsResolved;
-    final countReportedProvider =
-        Provider.of<CountIncidentsReportedProvider>(context)
-            .totalIncidentsReported;
-    final countByIncidentSubTypeProvider =
-        Provider.of<CountByIncidentSubTypesProviderClass>(context)
-            .countByIncidentSubTypes;
-    final countByLocationProvider =
-        Provider.of<CountByLocationProviderClass>(context, listen: false)
-            .countByLocation;
-    final actionTeamEfficiencyProvider =
-        Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-            .actionTeamEfficiency;
+    // final countResolvedProvider =
+    //     Provider.of<CountIncidentsResolvedProvider>(context)
+    //         .totalIncidentsResolved;
+    // final countReportedProvider =
+    //     Provider.of<CountIncidentsReportedProvider>(context)
+    //         .totalIncidentsReported;
+    // final countByIncidentSubTypeProvider =
+    //     Provider.of<CountByIncidentSubTypesProviderClass>(context)
+    //         .countByIncidentSubTypes;
+    // final countByLocationProvider =
+    //     Provider.of<CountByLocationProviderClass>(context, listen: false)
+    //         .countByLocation;
+    // final actionTeamEfficiencyProvider =
+    //     Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
+    //         .actionTeamEfficiency;
 
     double screenHeight = MediaQuery.of(context).size.height;
     double containerHeight = screenHeight * 0.7;
@@ -94,65 +88,71 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.white,
-            automaticallyImplyLeading: false,
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/images/safify_icon.png'),
+          backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: Image.asset('assets/images/safify_icon.png'),
+              onPressed: () =>
+                  Scaffold.of(context).openDrawer(), // Open drawer on tap
             ),
-            title: Text("Home",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: mainHeaderSize,
-                  color: Theme.of(context).secondaryHeaderColor,
-                )),
-            actions: [
-              IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    // Show a confirmation dialog before logging out
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext dialogContext) {
-                        return AlertDialog(
-                          title: const Text('Confirmation'),
-                          content:
-                              const Text('Are you sure you want to log out?'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(dialogContext)
-                                    .pop(); // Close the dialog
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Logout'),
-                              onPressed: () {
-                                Navigator.of(dialogContext)
-                                    .pop(); // Close the dialog
-                                // Perform logout actions here
-                                handleLogout(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      },
+          ),
+          title: Text(
+            "Home",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: mainHeaderSize,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                // Show confirmation dialog before logging out
+                showDialog(
+                  context: context,
+                  builder: (BuildContext dialogContext) {
+                    return AlertDialog(
+                      title: const Text('Confirmation'),
+                      content: const Text('Are you sure you want to log out?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Logout'),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            handleLogout(context);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            );
+                          },
+                        ),
+                      ],
                     );
                   },
-                  color: Theme.of(context).secondaryHeaderColor),
-            ]),
-        drawer: AppDrawer(
-            totalIncidentsReported: countReportedProvider ?? 'null value',
-            totalIncidentsResolved: countResolvedProvider ?? 'null value',
-            incidentSubtypeBreakdown: countByIncidentSubTypeProvider,
-            incidentLocationBreakdown: countByLocationProvider,
-            actionTeamEfficiencyBreakdown: actionTeamEfficiencyProvider),
+                );
+              },
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+          ],
+        ),
+        // drawer: AppDrawer(
+        //   totalIncidentsReported: countReportedProvider ?? 'null value',
+        //   totalIncidentsResolved: countResolvedProvider ?? 'null value',
+        //   incidentSubtypeBreakdown: countByIncidentSubTypeProvider,
+        //   incidentLocationBreakdown: countByLocationProvider,
+        //   actionTeamEfficiencyBreakdown: actionTeamEfficiencyProvider,
+        // ),
+
         //     backgroundColor: Colors.blue[600],
         body: SafeArea(
           child: Padding(
@@ -160,10 +160,10 @@ class _AdminHomePageState extends State<AdminHomePage>
                 horizontal: MediaQuery.sizeOf(context).width * 0.05,
                 vertical: MediaQuery.sizeOf(context).height * 0.02),
             child: RefreshIndicator(
-        onRefresh: () async =>
-            await Provider.of<AllUserReportsProvider>(context, listen: false)
-                .fetchAllReports(context),
-
+              onRefresh: () async => await Provider.of<AllUserReportsProvider>(
+                      context,
+                      listen: false)
+                  .fetchAllReports(context),
               child: Column(
                 children: [
                   Padding(
@@ -201,11 +201,11 @@ class _AdminHomePageState extends State<AdminHomePage>
                                         Theme.of(context).textTheme.titleSmall),
                               ],
                             ),
-                    
-                            //Profile
+
+                            //dashboard
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => AdminDashboard()),
@@ -243,7 +243,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                       ],
                     ),
                   ),
-                    
+
                   //Reports tab
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -278,7 +278,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                     ),
                   ),
                   SizedBox(height: 10),
-                    
+
                   Expanded(
                     child: Stack(
                       alignment: AlignmentDirectional.bottomCenter,

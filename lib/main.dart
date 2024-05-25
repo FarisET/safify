@@ -48,7 +48,7 @@ void main() async {
   if (userId != null && userRole != null) {
     if (userRole == "admin") {
       initialScreen = const AdminHomePage();
-    } else if (userRole == "user") {
+    } else if (userRole == "student") {
       initialScreen = const HomePage2();
     } else if (userRole == "action_team") {
       initialScreen = const ActionTeamHomePage();
@@ -115,8 +115,6 @@ class MyApp extends StatelessWidget {
             create: (context) => ActionTeamEfficiencyProviderClass()),
         ChangeNotifierProvider<DeleteUserReportProvider>(
             create: (context) => DeleteUserReportProvider()),
-
-            
       ],
       child: MaterialApp(
         useInheritedMediaQuery: true,
@@ -132,7 +130,7 @@ class MyApp extends StatelessWidget {
 
           // Define the default `TextTheme`. Use this to specify the default
           // text styling for headlines, titles, bodies of text, and more.
-          
+
           textTheme: TextTheme(
             titleLarge:
                 GoogleFonts.roboto(fontSize: 24, color: Colors.grey.shade800),

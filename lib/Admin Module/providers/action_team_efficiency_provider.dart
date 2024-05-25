@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,6 +11,7 @@ import '../../constants.dart';
 class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
   List<ActionTeamEfficiency>? actionTeamEfficiency;
   bool loading = false;
+
 //  String? selectedDepartment;
 
   Future<List<ActionTeamEfficiency>?> getactionTeamEfficiencyData() async {
@@ -25,7 +27,7 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
     } catch (e) {
       loading = false;
       notifyListeners();
-      print('Error loading countByIncidentSubTypes: $e');
+      print('Error loading fetchActionTeamEfficiency: $e');
       // You might want to handle the error accordingly
       throw Exception('Failed to load countByIncidentSubTypes');
     }
@@ -34,15 +36,19 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
   Future<List<ActionTeamEfficiency>> fetchActionTeamEfficiency() async {
     loading = true;
     notifyListeners();
-    print('Fetching countByIncidentSubTypes...');
+    print('Fetching fetchActionTeamEfficiency...');
+    final client = HttpClient();
 
     Uri url = Uri.parse('$IP_URL/analytics/fetchEfficiency');
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
     final response = await http.get(url);
+    // final response = await http.get(url);
 
-    Fluttertoast.showToast(
-      msg: '${response.statusCode}',
-      toastLength: Toast.LENGTH_SHORT,
-    );
+    // Fluttertoast.showToast(
+    //   msg: '${response.statusCode}',
+    //   toastLength: Toast.LENGTH_SHORT,
+    // );
 
     if (response.statusCode == 200) {
       // Parse the JSON response
@@ -50,8 +56,8 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
 
       // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
       if (jsonResponse.isNotEmpty) {
-        List<Map<String, dynamic>> incidentsData = (jsonResponse)
-            .cast<Map<String, dynamic>>(); // Explicitly cast each item in the list
+        List<Map<String, dynamic>> incidentsData = (jsonResponse).cast<
+            Map<String, dynamic>>(); // Explicitly cast each item in the list
 
         // Map the incident data to your CountByIncidentSubTypes model
         List<ActionTeamEfficiency> actionTeamEfficiencyList = incidentsData
@@ -68,7 +74,6 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
         print('Invalid format in JSON response');
         throw Exception('Invalid format in JSON response');
       }
-      
     }
 
     loading = false;

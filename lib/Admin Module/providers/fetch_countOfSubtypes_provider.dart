@@ -12,7 +12,8 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   bool loading = false;
 //  String? selectedDepartment;
 
-  Future<List<CountByIncidentSubTypes>?> getcountByIncidentSubTypesPostData() async {
+  Future<List<CountByIncidentSubTypes>?>
+      getcountByIncidentSubTypesPostData() async {
     loading = true;
     notifyListeners();
 
@@ -39,10 +40,10 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
     Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnSubTypes');
     final response = await http.get(url);
 
-    Fluttertoast.showToast(
-      msg: '${response.statusCode}',
-      toastLength: Toast.LENGTH_SHORT,
-    );
+    // Fluttertoast.showToast(
+    //   msg: '${response.statusCode}',
+    //   toastLength: Toast.LENGTH_SHORT,
+    // );
 
     if (response.statusCode == 200) {
       // Parse the JSON response
@@ -50,13 +51,16 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
 
       // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
       if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
-        List<Map<String, dynamic>> incidentsData = (jsonResponse[0] as List<dynamic>)
-            .cast<Map<String, dynamic>>(); // Explicitly cast each item in the list
+        List<Map<String, dynamic>> incidentsData =
+            (jsonResponse[0] as List<dynamic>).cast<
+                Map<String,
+                    dynamic>>(); // Explicitly cast each item in the list
 
         // Map the incident data to your CountByIncidentSubTypes model
-        List<CountByIncidentSubTypes> countByIncidentSubTypesList = incidentsData
-            .map((item) => CountByIncidentSubTypes.fromJson(item))
-            .toList();
+        List<CountByIncidentSubTypes> countByIncidentSubTypesList =
+            incidentsData
+                .map((item) => CountByIncidentSubTypes.fromJson(item))
+                .toList();
 
         loading = false;
         notifyListeners();
@@ -68,7 +72,6 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
         print('Invalid format in JSON response');
         throw Exception('Invalid format in JSON response');
       }
-      
     }
 
     loading = false;
