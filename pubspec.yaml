@@ -46,6 +46,7 @@ dependencies:
   http: ^1.1.2
   device_preview: ^1.1.0
   syncfusion_flutter_charts: ^25.2.4
+  flutter_local_notifications: ^17.1.2
 
 dev_dependencies:
   flutter_test:

@@ -10,9 +10,10 @@ class AssignedTaskProvider with ChangeNotifier {
 
   Future<void> fetchAssignedTasks(BuildContext context) async {
     try {
-      isLoading=true;
+      isLoading = true;
       _tasks = await ReportServices(context).fetchAssignedReports();
-      isLoading=false;
+
+      isLoading = false;
       notifyListeners();
     } catch (e) {
       rethrow;

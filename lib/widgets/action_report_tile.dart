@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import '../Action Team Module/providers/all_action_reports_approveal_provider.dart';
 import '../Action Team Module/providers/all_action_reports_provider.dart';
@@ -40,13 +41,9 @@ class _ActionReportTileState extends State<ActionReportTile> {
 
             return Card(
                 color: Colors.white,
-                // color: item.status!.contains('approved') ? Colors.green[100]: Colors.red[100],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
-                // side: BorderSide(
-                //   // color: item.status!.contains('open')?Colors.redAccent:Colors.greenAccent,
-                //    width:1)),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -85,9 +82,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 Expanded(
                                   child: Text(
                                     ' ${item.reported_by}',
-                                    style: TextStyle(
-                                        //  fontSize: 16
-                                        ),
+                                    style: TextStyle(),
                                   ),
                                 )
                               ],
@@ -105,9 +100,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 Expanded(
                                   child: Text(
                                     ' ${item.report_description}',
-                                    style: TextStyle(
-                                        //  fontSize: 16
-                                        ),
+                                    style: TextStyle(),
                                   ),
                                 )
                               ],
@@ -119,7 +112,6 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                   child: Text(
                                     ' ${item.resolution_description}',
                                     style: TextStyle(
-                                        //  fontSize: 16
                                         color: Colors.blue[700],
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -135,51 +127,94 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    FilledButton(
-                                      onPressed: () {
-                                        // Show a confirmation dialog before rejecting
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text("Reject?"),
-                                              content: Text(
-                                                  "Are you sure you want to reject this report?"),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // Close the dialog
-                                                  },
-                                                  child: Text("Cancel"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    // Handle the rejection logic here
-                                                    // ...
-                                                    Navigator.of(context)
-                                                        .pop(); // Close the dialog
-                                                  },
-                                                  child: Text("Confirm"),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.redAccent),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12.0, vertical: 0),
-                                        child: Text('Reject',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
-                                    ),
+                                    item.status != 'approved'
+                                        ? FilledButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: Text("Reject?"),
+                                                    content: Text(
+                                                        "Are you sure you want to reject this report?"),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop(); // Close the dialog
+                                                        },
+                                                        child: Text("Cancel"),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          DeleteActionReportProvider
+                                                              deleteActionReportProvider =
+                                                              Provider.of<
+                                                                      DeleteActionReportProvider>(
+                                                                  context,
+                                                                  listen:
+                                                                      false);
+
+                                                          deleteActionReportProvider
+                                                              .deleteActionReport(
+                                                                  '${item.action_report_id}')
+                                                              .then(
+                                                                  (success) async {
+                                                            if (success) {
+                                                              await Provider.of<
+                                                                          ActionReportsProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .fetchAllActionReports(
+                                                                      context);
+
+                                                              //PUSH NOTIFICATION
+                                                            }
+                                                          });
+
+                                                          Navigator.of(context)
+                                                              .pop(); // Close the dialog
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  SnackBar(
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .greenAccent,
+                                                            content: Text(
+                                                                'Report deleted'),
+                                                            duration: Duration(
+                                                                seconds: 2),
+                                                          ));
+                                                        },
+                                                        child: Text("Confirm"),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.white),
+                                              // Add elevation for a raised effect
+                                              elevation: MaterialStateProperty
+                                                  .all<double>(
+                                                      4.0), // Adjust as needed
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12.0,
+                                                      vertical: 0),
+                                              child: Text('Reject',
+                                                  style: TextStyle(
+                                                      color: Colors.red)),
+                                            ),
+                                          )
+                                        : Container(),
                                     SizedBox(width: 4),
                                     FilledButton(
                                       onPressed: () {
@@ -220,9 +255,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                 child: Column(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                        'Unable to load image'),
+                                                  children: const [
+                                                    Text('No Image Added'),
                                                   ],
                                                 ),
                                               );
@@ -233,7 +267,11 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Colors.blue),
+                                                Colors.white),
+                                        // Add elevation for a raised effect
+                                        elevation:
+                                            MaterialStateProperty.all<double>(
+                                                4.0), // Adjust as needed
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
@@ -251,11 +289,11 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                             ),
                                             Text('Image',
                                                 style: TextStyle(
-                                                    color: Colors.white)),
+                                                    color: Colors.blue)),
                                           ],
                                         ),
                                       ),
-                                    ),
+                                    )
                                   ],
                                 ),
                                 Padding(
@@ -277,10 +315,11 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all<Color>(
-                                        item.status!.contains('approved')
-                                            ? Colors.greenAccent
-                                            : Colors.yellowAccent,
-                                      ),
+                                              Colors.white),
+                                      // Add elevation for a raised effect
+                                      elevation:
+                                          MaterialStateProperty.all<double>(
+                                              4.0), // Adjust as needed
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -289,7 +328,10 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         item.status!.contains('approved')
                                             ? 'Approved'
                                             : 'Approve',
-                                        style: TextStyle(color: Colors.black),
+                                        style: item.status!.contains('approved')
+                                            ? TextStyle(
+                                                color: Colors.greenAccent)
+                                            : TextStyle(color: Colors.yellow),
                                       ),
                                     ),
                                   ),

@@ -128,7 +128,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                                     overflow: TextOverflow.ellipsis,
                                   )
                                 : Text(
-                                    'Citizen',
+                                    'Action Team',
                                     style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold),
@@ -148,9 +148,16 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              const Divider(
+                thickness: 1,
+                color: Color.fromARGB(255, 204, 204, 204),
+              ),
 
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.04,
+                height: MediaQuery.of(context).size.height * 0.02,
               ),
 
               //Assigned reports
@@ -163,7 +170,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                     child: SizedBox(
                       height: containerHeight,
                       child: Padding(
-                        padding: const EdgeInsets.all(22.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

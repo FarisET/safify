@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/update_user_report_status.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
+import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
-import 'package:safify/User%20Module/pages/home2.dart';
+import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Action Team Module/pages/action_team_home_page.dart';
@@ -20,7 +24,7 @@ import 'Admin Module/providers/analytics_incident_resolved_provider.dart';
 import 'Admin Module/providers/department_provider.dart';
 import 'Admin Module/providers/fetch_all_user_report_provider.dart';
 import 'Admin Module/providers/fetch_countOfSubtypes_provider.dart';
-import 'User Module/pages/home_page.dart';
+import 'User Module/pages/home.dart';
 import 'User Module/pages/login_page.dart';
 import 'User Module/pages/user_form.dart';
 import 'User Module/providers/fetch_user_report_provider.dart';
@@ -35,6 +39,11 @@ import 'package:device_preview/device_preview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize the notifications plugin
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  await Notifications.initialize(flutterLocalNotificationsPlugin);
+
   UserServices userServices = UserServices();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -115,6 +124,10 @@ class MyApp extends StatelessWidget {
             create: (context) => ActionTeamEfficiencyProviderClass()),
         ChangeNotifierProvider<DeleteUserReportProvider>(
             create: (context) => DeleteUserReportProvider()),
+        ChangeNotifierProvider<DeleteActionReportProvider>(
+            create: (context) => DeleteActionReportProvider()),
+        ChangeNotifierProvider<UserStatusProvider>(
+            create: (context) => UserStatusProvider())
       ],
       child: MaterialApp(
         useInheritedMediaQuery: true,
@@ -160,7 +173,7 @@ class MyApp extends StatelessWidget {
         home: initialScreen,
         debugShowCheckedModeBanner: false,
         routes: {
-          '/home_page': (context) => const HomePage(),
+          '/home_page': (context) => const HomePage2(),
           '/form_page': (context) => const UserForm(),
           //'login_page':(context) => const LoginPage(),
           '/admin_home_page': (context) => const AdminHomePage(),

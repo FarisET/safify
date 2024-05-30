@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/User%20Module/pages/home2.dart';
+import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/models/location.dart';
 
 import '../../models/ sub_location.dart';
@@ -17,7 +17,7 @@ import '../providers/incident_type_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
 import '../services/ReportServices.dart';
-import 'home_page.dart';
+import 'home.dart';
 
 class UserForm extends StatefulWidget {
   // ignore: avoid_types_as_parameter_names
@@ -31,7 +31,7 @@ class _UserFormState extends State<UserForm> {
   final _formKey = GlobalKey<FormState>();
   int selectedChipIndex = -1;
   List<bool> isSelected = [false, false, false];
-  List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
+  List<String> chipLabels = ['Minor', 'Major', 'Critical'];
   List<String> chipLabelsid = ['CRT1', 'CRT2', 'CRT3'];
   String incidentType = '';
   String incidentSubType = '';
@@ -131,7 +131,7 @@ class _UserFormState extends State<UserForm> {
           // If the exit is confirmed, replace the current route with the home page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => HomePage2()),
           );
           return false; // Prevent the user from going back
         } else {
@@ -152,7 +152,7 @@ class _UserFormState extends State<UserForm> {
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage2()),
                     );
                   },
                   child: Text('Yes'),
@@ -172,21 +172,30 @@ class _UserFormState extends State<UserForm> {
       },
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                  color: Theme.of(context).secondaryHeaderColor),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back,
+                color: Theme.of(context).secondaryHeaderColor),
+            onPressed: () {
+              // Add your navigation logic here, such as pop or navigate back
+              Navigator.of(context).pop();
+            },
+          ),
+          title: Text("SAFIFY",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Theme.of(context).secondaryHeaderColor,
+              )),
+          actions: [
+            IconButton(
+              icon: Image.asset('assets/images/safify_icon.png'),
               onPressed: () {
-                // Add your navigation logic here, such as pop or navigate back
-                Navigator.of(context).pop();
+                // Handle settings button press
               },
             ),
-            title: Text("Report Incident",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Theme.of(context).secondaryHeaderColor,
-                ))),
+          ],
+        ),
         body: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.sizeOf(context).width * 0.05,

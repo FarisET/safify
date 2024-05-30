@@ -186,39 +186,34 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                   child: Text("Cancel"),
                                                 ),
                                                 TextButton(
-                                                  onPressed: () {
-                                                    // Handle the rejection logic here
-                                                    // Get the provider instance
+                                                  onPressed: () async {
                                                     if (!'${item.status}'
                                                         .contains(
                                                             'in progress')) {
-                                                      DeleteUserReportProvider
-                                                          deleteUserReportProvider =
+                                                      final deleteUserReportProvider =
                                                           Provider.of<
                                                                   DeleteUserReportProvider>(
                                                               context,
                                                               listen: false);
+                                                      final success =
+                                                          await deleteUserReportProvider
+                                                              .deleteUserReport(
+                                                                  '${item.id}');
 
-                                                      // Call the function to delete the user report
-                                                      deleteUserReportProvider
-                                                          .deleteUserReport(
-                                                              '${item.id}')
-                                                          .then(
-                                                              (success) async {
-                                                        if (success) {
-                                                          await Provider.of<
-                                                                      AllUserReportsProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .fetchAllReports(
-                                                                  context);
-
-                                                        }
-                                                      });
+                                                      if (success) {
+                                                        final allUserReportsProvider =
+                                                            Provider.of<
+                                                                    AllUserReportsProvider>(
+                                                                context,
+                                                                listen: false);
+                                                        await allUserReportsProvider
+                                                            .fetchAllReports(
+                                                                context);
+                                                      }
 
                                                       Navigator.of(context)
-                                                          .pop(); // Close the dialog
-                                                          ScaffoldMessenger.of(
+                                                          .pop();
+                                                      ScaffoldMessenger.of(
                                                               context)
                                                           .showSnackBar(
                                                               SnackBar(
@@ -255,7 +250,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Colors.redAccent),
+                                                Colors.white),
+                                        // Add elevation for a raised effect
+                                        elevation:
+                                            MaterialStateProperty.all<double>(
+                                                4.0), // Adjust as needed
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
@@ -268,7 +267,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                             vertical: 0),
                                         child: Text('Delete',
                                             style:
-                                                TextStyle(color: Colors.white)),
+                                                TextStyle(color: Colors.red)),
                                       ),
                                     ),
                                     Padding(
@@ -305,7 +304,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                         style: ButtonStyle(
                                           backgroundColor:
                                               MaterialStateProperty.all<Color>(
-                                                  Colors.yellowAccent),
+                                                  Colors.white),
+                                          // Add elevation for a raised effect
+                                          elevation:
+                                              MaterialStateProperty.all<double>(
+                                                  4.0), // Adjust as needed
                                         ),
                                         child: Padding(
                                             padding: EdgeInsets.symmetric(
@@ -321,10 +324,10 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                     .contains('in progress')
                                                 ? Text('Assigned',
                                                     style: TextStyle(
-                                                        color: Colors.black))
+                                                        color: Colors.yellow))
                                                 : Text('Assign',
                                                     style: TextStyle(
-                                                        color: Colors.black))),
+                                                        color: Colors.yellow))),
                                       ),
                                     )
                                   ],
@@ -367,7 +370,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text('Unable to load image'),
+                                                Text('No Image Added'),
                                               ],
                                             ),
                                           );
@@ -378,7 +381,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.blue),
+                                            Colors.white),
+                                    // Add elevation for a raised effect
+                                    elevation:
+                                        MaterialStateProperty.all<double>(
+                                            4.0), // Adjust as needed
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
@@ -395,7 +402,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                         ),
                                         Text('Image',
                                             style:
-                                                TextStyle(color: Colors.white)),
+                                                TextStyle(color: Colors.blue)),
                                       ],
                                     ),
                                   ),

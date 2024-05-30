@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -11,7 +12,8 @@ class SubLocationProviderClass extends ChangeNotifier {
   List<SubLocation>? subLocationtPost;
   bool loading = false;
   String? selectedSubLocation;
-//  List<IncidentSubType>? filteredIncidentSubTypes;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
 
   Future<void> getSubLocationPostData(String selectedLocation) async {
     loading = true;
@@ -29,42 +31,39 @@ class SubLocationProviderClass extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void setSubLocationType(selectedVal){
+  void setSubLocationType(selectedVal) {
     selectedSubLocation = selectedVal;
     notifyListeners();
   }
-    //IPs
-    //stormfiber: 192.168.18.74
-    //mobile data: 192.168.71.223
+  //IPs
+  //stormfiber: 192.168.18.74
+  //mobile data: 192.168.71.223
 
-    Future<List<SubLocation>> fetchSubLocations(String selectedLocation) async {
+  Future<List<SubLocation>> fetchSubLocations(String selectedLocation) async {
     loading = true;
+    jwtToken = await storage.read(key: 'jwt');
     notifyListeners();
-     Uri url = Uri.parse('$IP_URL/userReport/dashboard/fetchsublocations?location_id=$selectedLocation');
-     final response = await http.get(
+    Uri url = Uri.parse(
+        '$IP_URL/userReport/dashboard/fetchsublocations?location_id=$selectedLocation');
+    final response = await http.get(
       url,
-      // body: {'incident_type_id': selectedIncidentType},
-      );
-          //   Fluttertoast.showToast(
-          //   msg: '${response.statusCode}',
-          //   toastLength: Toast.LENGTH_SHORT,
-          // );
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
 
-  if (response.statusCode == 200) {
-    List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-    List<SubLocation> subIncidentList = jsonResponse
-        .map((dynamic item) => SubLocation.fromJson(item as Map<String, dynamic>))
-        .toList();
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
+      List<SubLocation> subIncidentList = jsonResponse
+          .map((dynamic item) =>
+              SubLocation.fromJson(item as Map<String, dynamic>))
+          .toList();
       loading = false;
       notifyListeners();
-    return subIncidentList;
-  } 
-  loading = false;
-  notifyListeners();
-    throw Exception('Failed to load location Sub Types');
+      return subIncidentList;
     }
-
-
-
-  
+    loading = false;
+    notifyListeners();
+    throw Exception('Failed to load location Sub Types');
+  }
 }

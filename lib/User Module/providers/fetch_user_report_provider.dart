@@ -7,11 +7,16 @@ class UserReportsProvider with ChangeNotifier {
   List<Reports> get reports => _reports;
   bool isLoading = false;
 
+  void addReport(Reports report) {
+    _reports.add(report);
+    notifyListeners();
+  }
+
   Future<void> fetchReports(BuildContext context) async {
     try {
-      isLoading=true;
+      isLoading = true;
       _reports = await ReportServices(context).fetchReports();
-      isLoading=false;
+      isLoading = false;
       notifyListeners();
     } catch (e) {
       rethrow;

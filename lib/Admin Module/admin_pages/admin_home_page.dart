@@ -248,10 +248,9 @@ class _AdminHomePageState extends State<AdminHomePage>
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TabBar(
-                      labelColor:
-                          Colors.white, // Color of the selected tab's label
-                      unselectedLabelColor:
-                          Colors.white, // Color of unselected tabs' labels
+                      labelColor: Colors
+                          .white, // Color for all labels (unused in this approach)
+                      unselectedLabelColor: Colors.black,
                       labelStyle: TextStyle(
                         fontWeight: FontWeight
                             .bold, // Style for the selected tab's label

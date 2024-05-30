@@ -34,7 +34,7 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
             var item = assignProvider.tasks[i];
 
             return Card(
-              color: Colors.white,
+                color: Colors.white,
                 // color: item.status!.contains('open')
                 //     ? Colors.red[50]
                 //     : (item.status!.contains('in progress')
@@ -184,7 +184,10 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: MediaQuery.of(context).size.width*0.02,),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.02,
+                                    ),
                                     FilledButton(
                                       onPressed: () {
                                         if (item.image != null) {

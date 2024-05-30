@@ -132,7 +132,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                 FilledButton(
                                   onPressed: () {
                                     if (item.image != null) {
-
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -146,8 +145,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                                       .size
                                                       .height *
                                                   0.7, // 70% of screen width (square box)
-
-                                              // Limiting the child to the box's size and maintaining aspect ratio
                                               child: FittedBox(
                                                 fit: BoxFit
                                                     .contain, // Maintain aspect ratio, fit within the box
@@ -160,15 +157,14 @@ class _UserReportTileState extends State<UserReportTile> {
                                         },
                                       );
                                     } else {
-                                      //    Fluttertoast.showToast(msg: 'msg');
                                       showDialog(
                                         context: context,
                                         builder: (context) {
                                           return Dialog(
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text('Unable to load image'),
+                                              children: const [
+                                                Text('No Image Added'),
                                               ],
                                             ),
                                           );
@@ -179,12 +175,17 @@ class _UserReportTileState extends State<UserReportTile> {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.blue),
+                                            Colors.white),
+                                    elevation:
+                                        MaterialStateProperty.all<double>(
+                                            4.0), // Adjust as needed
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 0),
+                                        horizontal: 12.0, vertical: 8.0),
                                     child: Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center, // Center-align the content
                                       children: const [
                                         Icon(
                                           Icons.image,
@@ -193,9 +194,10 @@ class _UserReportTileState extends State<UserReportTile> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text('Image',
-                                            style:
-                                                TextStyle(color: Colors.white)),
+                                        Text(
+                                          'Image  ',
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
                                       ],
                                     ),
                                   ),

@@ -1,5 +1,7 @@
-//const IP_URL = 'http://192.168.18.119:3000';
-const IP_URL = 'https://safify-demo-server.onrender.com';
+//const IP_URL = 'http://localhost:3001';
+const IP_URL = 'http://10.0.2.2:3001';
+
+//https://safify-demo-server.onrender.com
 const PORT = 3000;
 
 

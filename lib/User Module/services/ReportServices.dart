@@ -3,9 +3,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/update_user_report_status.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import '../../models/action_report.dart';
@@ -18,6 +25,12 @@ class ReportServices {
   ReportServices(this.context);
   // Constructor for ReportServices
   String? current_user_id;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
+  Notifications notifications = Notifications();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  UserReportsProvider userReportsProvider = UserReportsProvider();
 
   // void getUsername() async {
 
@@ -26,16 +39,49 @@ class ReportServices {
   Future<List<Reports>> fetchReports() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     current_user_id = prefs.getString("user_id");
+    jwtToken = await storage.read(key: 'jwt');
+
     Uri url =
         Uri.parse('$IP_URL/userReport/dashboard/$current_user_id/reports');
-    final response = await http.get(url);
-
+    // final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
     if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-      List<Reports> reportList = jsonResponse
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      List<dynamic> result = jsonResponse['result'] as List<dynamic>;
+      List<Reports> reportList = result
           .map((dynamic item) => Reports.fromJson(item as Map<String, dynamic>))
           .toList();
+
+      //Notification
+      String isReportDeleted = jsonResponse['is_report_deleted'];
+      String deletedReportId = jsonResponse['deleted_report_id'] ?? '';
+
+      if (isReportDeleted == '1') {
+        notifications.sendNotification(
+          flutterLocalNotificationsPlugin,
+          context,
+          deletedReportId,
+        );
+        String? current_user_id = prefs.getString('user_id');
+        await Provider.of<UserStatusProvider>(context, listen: false)
+            .updateDeletedReportStatus(current_user_id!, false);
+      }
       return reportList;
+    } else {
+      final responseBody = jsonDecode(response.body);
+      final status = responseBody['status'];
+      if (status == 'Invalid token.') {
+        // Redirect to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
     }
 
     throw Exception('Failed to load Reports');
@@ -45,32 +91,81 @@ class ReportServices {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     current_user_id = prefs.getString('user_id');
+    jwtToken = await storage.read(key: 'jwt');
     print('USER-ID: $current_user_id');
     Uri url = Uri.parse(
         '$IP_URL/actionTeam/dashboard/$current_user_id/fetchAssignedTasks');
-    final response = await http.get(url);
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
     if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-      List<AssignTask> reportList = jsonResponse
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      List<dynamic> result = jsonResponse['result'] as List<dynamic>;
+      List<AssignTask> reportList = result
           .map((dynamic item) =>
               AssignTask.fromJson(item as Map<String, dynamic>))
           .toList();
+
+      //Notification
+      String isReportDeleted = jsonResponse['is_report_deleted'];
+      String? deletedReportId = jsonResponse['deleted_report_id'] ?? '';
+
+      if (isReportDeleted == '1') {
+        notifications.sendNotification(
+          flutterLocalNotificationsPlugin,
+          context,
+          deletedReportId!,
+        );
+        String? current_user_id = prefs.getString('user_id');
+        await Provider.of<UserStatusProvider>(context, listen: false)
+            .updateDeletedReportStatus(current_user_id!, false);
+      }
+
       return reportList;
+    } else {
+      final responseBody = jsonDecode(response.body);
+      final status = responseBody['status'];
+      if (status == 'Invalid token.') {
+        // Redirect to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
     }
 
     throw Exception('Failed to load Reports');
   }
 
   Future<List<Reports>> fetchAllReports() async {
+    jwtToken = await storage.read(key: 'jwt');
     Uri url = Uri.parse('$IP_URL/admin/dashboard/fetchAllUserReports');
-    final response = await http.get(url);
-
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
       List<Reports> allReportList = jsonResponse
           .map((dynamic item) => Reports.fromJson(item as Map<String, dynamic>))
           .toList();
       return allReportList;
+    } else {
+      final responseBody = jsonDecode(response.body);
+      final status = responseBody['message'];
+      if (status == 'Invalid token.') {
+        // Redirect to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
     }
 
     throw Exception('Failed to load all Reports');
@@ -78,11 +173,16 @@ class ReportServices {
 
   Future<void> postapprovedActionReport(
       int? user_report_id, int? action_report_id) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     Uri url = Uri.parse('$IP_URL/admin/dashboard/approvedActionReport');
 
     await http.post(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $jwtToken'
+      },
       body: jsonEncode(
         <String, dynamic>{
           "user_report_id": user_report_id,
@@ -101,6 +201,8 @@ class ReportServices {
       String description,
       DateTime date,
       String risklevel) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     current_user_id = prefs.getString("user_id");
     print('current_user_id:$current_user_id');
@@ -109,7 +211,10 @@ class ReportServices {
     try {
       final http.Response response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $jwtToken'
+        },
         body: jsonEncode(
           <String, dynamic>{
             "image": image,
@@ -127,7 +232,7 @@ class ReportServices {
           },
         ),
       );
-      final msg = json.decode(response.body)['status'];
+      final msg = json.decode(response.body)['message'];
 
       if (response.statusCode == 200) {
         return true;
@@ -138,6 +243,13 @@ class ReportServices {
         );
 
         return false;
+      }
+      if (msg == 'Invalid token.') {
+        // Redirect to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       }
     } catch (e) {
       Fluttertoast.showToast(
@@ -157,6 +269,8 @@ class ReportServices {
       String description,
       DateTime date,
       String risklevel) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     current_user_id = prefs.getString("user_id");
     print('current_user_id:$current_user_id');
@@ -166,7 +280,8 @@ class ReportServices {
           Uri.parse('$IP_URL/userReport/dashboard/$current_user_id/MakeReport');
 
       var request = http.MultipartRequest('POST', apiUri);
-
+// Adding the authorization header
+      request.headers['Authorization'] = 'Bearer $jwtToken';
       // Add other form data
       request.fields['report_description'] = description;
       request.fields['date_time'] = date
@@ -185,10 +300,11 @@ class ReportServices {
         'image', // Field name specified in the API
         imageFile.path,
       ));
-
       try {
         var response = await request.send();
         if (response.statusCode == 200) {
+          await Provider.of<UserReportsProvider>(context, listen: false)
+              .fetchReports(context);
           print('Report submitted successfully');
         } else {
           print('Failed to submit report');
@@ -202,8 +318,15 @@ class ReportServices {
   }
 
   Future<List<ActionReport>> fetchAllActionReports() async {
+    jwtToken = await storage.read(key: 'jwt');
+
     Uri url = Uri.parse('$IP_URL/admin/dashboard/fetchAllActionReports');
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
@@ -219,11 +342,16 @@ class ReportServices {
 
   Future<bool> postAssignedReport(int user_report_id, String user_id,
       String action_team_id, String incident_criticality_id) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     Uri url = Uri.parse('$IP_URL/admin/dashboard/InsertAssignTask');
     try {
       final http.Response response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $jwtToken'
+        },
         body: jsonEncode(
           <String, dynamic>{
             "user_report_id": user_report_id,
@@ -234,12 +362,25 @@ class ReportServices {
           },
         ),
       );
-      final msg = json.decode(response.body)['status'];
+      final msg = json.decode(response.body)['message'];
 
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 500) {
         // Handle the case where user is not found or password is invalid
+        return false;
+      } else if (response.statusCode == 403) {
+        final responseBody = jsonDecode(response.body);
+        final status = responseBody['status'];
+        if (status == 'Invalid token.') {
+          // Redirect to login page
+          Fluttertoast.showToast(msg: 'Session Timeout');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+          return false;
+        }
         return false;
       }
     } catch (e) {
@@ -265,6 +406,8 @@ class ReportServices {
       XFile? surrounding_image,
       XFile? proof_image,
       int? user_report_id) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? current_user_id = prefs.getString("user_id");
     print('current_user_id:$current_user_id');
@@ -274,6 +417,9 @@ class ReportServices {
           '$IP_URL/actionTeam/dashboard/$current_user_id/MakeActionReport'); // Replace with your API endpoint
 
       var request = http.MultipartRequest('POST', apiUri);
+
+      // Adding the authorization header
+      request.headers['Authorization'] = 'Bearer $jwtToken';
 
       // Add other form data
       request.fields['report_description'] = report_description!;
@@ -342,6 +488,8 @@ class ReportServices {
       XFile? surrounding_image,
       String? proof_image,
       int? user_report_id) async {
+    jwtToken = await storage.read(key: 'jwt');
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     current_user_id = prefs.getString("user_id");
     print('current_user_id:$current_user_id');
@@ -350,7 +498,10 @@ class ReportServices {
     try {
       final http.Response response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $jwtToken'
+        },
         body: jsonEncode(
           <String, dynamic>{
             "report_description": report_description,
@@ -425,6 +576,9 @@ class ReportServices {
     try {
       var request =
           http.MultipartRequest('POST', Uri.parse('$IP_URL/api/image/upload'));
+
+      // Adding the authorization header
+      request.headers['Authorization'] = 'Bearer $jwtToken';
 
       // Attach the image file to the request
       request.files

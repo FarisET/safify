@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
@@ -12,6 +13,8 @@ class ActionTeamProviderClass extends ChangeNotifier {
   List<ActionTeam>? actionTeamPost;
   bool loading = false;
   String? selectedActionTeam;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
 
   Future<void> getActionTeamPostData(String selectedDepartment) async {
     loading = true;
@@ -28,12 +31,16 @@ class ActionTeamProviderClass extends ChangeNotifier {
   Future<List<ActionTeam>> fetchActionTeams(String selectedDepartment) async {
     loading = true;
     notifyListeners();
+    jwtToken = await storage.read(key: 'jwt');
+
     print('Fetching incident sub types...ID: $selectedDepartment');
     Uri url = Uri.parse(
         '$IP_URL/admin/dashboard/fetchActionTeams?department_id=$selectedDepartment');
     final response = await http.get(
       url,
-      // body: {'incident_type_id': selectedIncidentType},
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
     );
     //   Fluttertoast.showToast(
     //   msg: '${response.statusCode}',
