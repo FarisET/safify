@@ -23,18 +23,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
-          .getCountResolvedPostData();
-      Provider.of<CountIncidentsReportedProvider>(context, listen: false)
-          .getCountReportedPostData();
-      Provider.of<CountByIncidentSubTypesProviderClass>(context, listen: false)
-          .getcountByIncidentSubTypesPostData();
-      Provider.of<CountByLocationProviderClass>(context, listen: false)
-          .getcountByIncidentLocationPostData();
-      Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-          .getactionTeamEfficiencyData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Use the mounted property to ensure the widget is still mounted
+      if (mounted) {
+        Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
+            .getCountResolvedPostData();
+        Provider.of<CountIncidentsReportedProvider>(context, listen: false)
+            .getCountReportedPostData();
+        Provider.of<CountByIncidentSubTypesProviderClass>(context,
+                listen: false)
+            .getcountByIncidentSubTypesPostData();
+        Provider.of<CountByLocationProviderClass>(context, listen: false)
+            .getcountByIncidentLocationPostData();
+        Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
+            .getactionTeamEfficiencyData();
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -49,7 +58,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: Theme.of(context).secondaryHeaderColor),
+          onPressed: () {
+            dispose();
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text(
           "Reporting Analytics",
           style: TextStyle(
@@ -77,14 +93,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         },
                       ),
                       TextButton(
-                        child: Text('Logout'),
+                        child: const Text('Logout'),
                         onPressed: () {
                           Navigator.of(dialogContext).pop();
                           handleLogout(context);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()),
+                                builder: (context) => const LoginPage()),
                           );
                         },
                       ),
@@ -109,13 +125,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: ListTile(
-                contentPadding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: Icon(
+                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                leading: const Icon(
                   Icons.personal_injury,
                   color: Colors.blue,
                   size: 31,
                 ),
-                title: Text('Total Incidents Reported'),
+                title: const Text('Total Incidents Reported'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
                   child: Text(countReportedProvider!),
@@ -132,13 +148,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: ListTile(
-                contentPadding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: Icon(
+                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                leading: const Icon(
                   Icons.check_box,
                   color: Colors.blue,
                   size: 31,
                 ),
-                title: Text('Total Incidents Resolved'),
+                title: const Text('Total Incidents Resolved'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
                   child: Text(countResolvedProvider!),
@@ -155,169 +171,196 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildIncidentSubtypeChart() {
-    final countByIncidentSubTypeProvider =
-        Provider.of<CountByIncidentSubTypesProviderClass>(context)
-            .countByIncidentSubTypes;
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        elevation: 3,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer<CountByIncidentSubTypesProviderClass>(
+      builder: (context, provider, child) {
+        if (provider.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = provider.countByIncidentSubTypes
+                ?.where((item) => item.incident_count! > 0)
+                .toList() ??
+            [];
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            elevation: 3,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+              child: Column(
                 children: [
-                  Icon(
-                    Icons.category,
-                    color: Colors.blue,
-                    size: 31,
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        Icons.category,
+                        color: Colors.blue,
+                        size: 31,
+                      ),
+                      Text(
+                        'Types of Incidents Breakdown',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Text('')
+                    ],
                   ),
-                  Text(
-                    'Types of Incidents Breakdown',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                  SizedBox(
+                    height: 200,
+                    child: SfCircularChart(
+                      title: const ChartTitle(text: 'Incident Subtypes'),
+                      legend: const Legend(isVisible: true),
+                      series: <CircularSeries>[
+                        PieSeries<CountByIncidentSubTypes, String>(
+                          dataSource: data,
+                          xValueMapper: (CountByIncidentSubTypes item, _) =>
+                              item.incident_subtype_description,
+                          yValueMapper: (CountByIncidentSubTypes item, _) =>
+                              item.incident_count,
+                          dataLabelSettings:
+                              const DataLabelSettings(isVisible: true),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text('')
                 ],
               ),
-              SizedBox(
-                  height: 200,
-                  child: SfCartesianChart(
-                    primaryXAxis: CategoryAxis(),
-                    title: ChartTitle(text: 'Incident Subtypes'),
-                    series: <CartesianSeries>[
-                      ColumnSeries<CountByIncidentSubTypes, String>(
-                        dataSource: countByIncidentSubTypeProvider ??
-                            [], // Ensure it's not null
-                        xValueMapper: (CountByIncidentSubTypes data, _) =>
-                            data.incident_subtype_description,
-                        yValueMapper: (CountByIncidentSubTypes data, _) =>
-                            data.incident_count,
-                      ),
-                    ],
-                  )),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildIncidentLocationChart() {
-    final countByLocationProvider =
-        Provider.of<CountByLocationProviderClass>(context, listen: false)
-            .countByLocation;
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        elevation: 3,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer<CountByLocationProviderClass>(
+      builder: (context, provider, child) {
+        if (provider.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = provider.countByLocation
+                ?.where((item) => item.incident_count! > 0)
+                .toList() ??
+            [];
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            elevation: 3,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+              child: Column(
                 children: [
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.blue,
-                    size: 31,
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.blue,
+                        size: 31,
+                      ),
+                      Text(
+                        'Incidents Breakdown by Location',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Text('')
+                    ],
                   ),
-                  Text(
-                    'Incidents breakdown by location',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                  SizedBox(
+                    height: 200,
+                    child: SfCircularChart(
+                      title: const ChartTitle(text: 'Incident Locations'),
+                      legend: const Legend(isVisible: true),
+                      series: <CircularSeries>[
+                        PieSeries<CountByLocation, String>(
+                          dataSource: data,
+                          xValueMapper: (CountByLocation item, _) =>
+                              item.location_name,
+                          yValueMapper: (CountByLocation item, _) =>
+                              item.incident_count,
+                          dataLabelSettings:
+                              const DataLabelSettings(isVisible: true),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text('')
                 ],
               ),
-              SizedBox(
-                height: 200,
-                child: SfCircularChart(
-                  title: ChartTitle(text: 'Incident Locations'),
-                  legend: Legend(isVisible: true),
-                  series: <CircularSeries>[
-                    PieSeries<CountByLocation, String>(
-                      dataSource: countByLocationProvider,
-                      xValueMapper: (CountByLocation data, _) =>
-                          data.location_name,
-                      yValueMapper: (CountByLocation data, _) =>
-                          data.incident_count,
-                      dataLabelSettings: DataLabelSettings(isVisible: true),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildActionTeamEfficiencyChart() {
-    final actionTeamEfficiencyProvider =
-        Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-            .actionTeamEfficiency;
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        elevation: 3,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    Icons.group,
-                    color: Colors.blue,
-                    size: 31,
-                  ),
-                  Text(
-                    'Action Team Efficiencies',
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  Text('')
-                ],
-              ),
-              SizedBox(
-                height: 200,
-                child: SfCartesianChart(
-                  primaryXAxis: const CategoryAxis(),
-                  title: const ChartTitle(text: 'Team Efficiency'),
-                  series: <CartesianSeries>[
-                    BarSeries<ActionTeamEfficiency, String>(
-                      dataSource: actionTeamEfficiencyProvider,
-                      xValueMapper: (ActionTeamEfficiency data, _) =>
-                          data.action_team_name,
-                      yValueMapper: (ActionTeamEfficiency data, _) =>
-                          double.tryParse(data.efficiency_value ?? '0') ?? 0.0,
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: true),
+    return Consumer<ActionTeamEfficiencyProviderClass>(
+        builder: (context, provider, child) {
+      if (provider.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final data = provider.actionTeamEfficiency
+              ?.where((item) => double.tryParse(item.efficiency_value!)! > 0)
+              .toList() ??
+          [];
+
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          elevation: 3,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            child: Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.group,
+                      color: Colors.blue,
+                      size: 31,
                     ),
+                    Text(
+                      'Action Team Efficiencies',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text('')
                   ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 200,
+                  child: SfCartesianChart(
+                    primaryXAxis: const CategoryAxis(),
+                    title: const ChartTitle(text: 'Team Efficiency'),
+                    series: <CartesianSeries>[
+                      BarSeries<ActionTeamEfficiency, String>(
+                        dataSource: data,
+                        xValueMapper: (ActionTeamEfficiency data, _) =>
+                            data.action_team_name,
+                        yValueMapper: (ActionTeamEfficiency data, _) =>
+                            double.tryParse(data.efficiency_value ?? '0') ??
+                            0.0,
+                        dataLabelSettings:
+                            const DataLabelSettings(isVisible: true),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void handleLogout(BuildContext context) async {

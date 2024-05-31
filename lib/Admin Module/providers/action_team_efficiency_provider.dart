@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:safify/models/action_team_efficiency.dart';
 
@@ -10,8 +11,8 @@ import '../../constants.dart';
 class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
   List<ActionTeamEfficiency>? actionTeamEfficiency;
   bool loading = false;
-
-//  String? selectedDepartment;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
 
   Future<List<ActionTeamEfficiency>?> getactionTeamEfficiencyData() async {
     loading = true;
@@ -35,20 +36,19 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
   Future<List<ActionTeamEfficiency>> fetchActionTeamEfficiency() async {
     loading = true;
     notifyListeners();
-    print('Fetching fetchActionTeamEfficiency...');
-    final client = HttpClient();
+    //final client = HttpClient();
+    jwtToken = await storage.read(key: 'jwt');
 
     Uri url = Uri.parse('$IP_URL/analytics/fetchEfficiency');
-    client.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final response = await http.get(url);
+    // client.badCertificateCallback =
+    //     (X509Certificate cert, String host, int port) => true;
     // final response = await http.get(url);
-
-    // Fluttertoast.showToast(
-    //   msg: '${response.statusCode}',
-    //   toastLength: Toast.LENGTH_SHORT,
-    // );
-
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
     if (response.statusCode == 200) {
       // Parse the JSON response
       List<dynamic> jsonResponse = jsonDecode(response.body);
@@ -65,19 +65,16 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
 
         loading = false;
         notifyListeners();
-        print('ActionTeamEfficiency Loaded');
         return actionTeamEfficiencyList;
       } else {
         loading = false;
         notifyListeners();
-        print('Invalid format in JSON response');
         throw Exception('Invalid format in JSON response');
       }
     }
 
     loading = false;
     notifyListeners();
-    print('Failed to load ActionTeamEfficiency');
     throw Exception('Failed to load ActionTeamEfficiency');
   }
 }

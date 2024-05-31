@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:safify/models/count_incidents_by_location.dart';
 
@@ -10,7 +10,8 @@ import '../../constants.dart';
 class CountByLocationProviderClass extends ChangeNotifier {
   List<CountByLocation>? countByLocation;
   bool loading = false;
-//  String? selectedDepartment;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
 
   Future<List<CountByLocation>?> getcountByIncidentLocationPostData() async {
     loading = true;
@@ -25,56 +26,50 @@ class CountByLocationProviderClass extends ChangeNotifier {
     } catch (e) {
       loading = false;
       notifyListeners();
-      print('Error loading countByIncidentSubTypes: $e');
-      // You might want to handle the error accordingly
-      throw Exception('Failed to load countByIncidentSubTypes');
+      print('Error fetching count by location: $e');
+      throw Exception('Failed to load count by location subtypes');
     }
   }
 
-  Future<List<CountByLocation>> fetchTotalIncidentsLocation() async {
+  Future<List<CountByLocation>?> fetchTotalIncidentsLocation() async {
     loading = true;
     notifyListeners();
-    print('Fetching countByIncidentSubTypes...');
 
-    Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnLocations');
-    final response = await http.get(url);
+    try {
+      jwtToken = await storage.read(key: 'jwt');
+      if (jwtToken == null) {
+        throw Exception('JWT token is null');
+      }
 
-    // Fluttertoast.showToast(
-    //   msg: '${response.statusCode}',
-    //   toastLength: Toast.LENGTH_SHORT,
-    // );
+      Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnLocations');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      // Parse the JSON response
-      List<dynamic> jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = jsonDecode(response.body);
 
-      // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
-      if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
-        List<Map<String, dynamic>> incidentsData =
-            (jsonResponse[0] as List<dynamic>).cast<
-                Map<String,
-                    dynamic>>(); // Explicitly cast each item in the list
-
-        // Map the incident data to your CountByIncidentSubTypes model
-        List<CountByLocation> countByIncidentLocationList = incidentsData
-            .map((item) => CountByLocation.fromJson(item))
+        List<CountByLocation> countByIncidentLocationList = jsonResponse
+            .map((item) =>
+                CountByLocation.fromJson(item as Map<String, dynamic>))
             .toList();
 
         loading = false;
         notifyListeners();
-        print('countByLocation Loaded');
         return countByIncidentLocationList;
       } else {
-        loading = false;
-        notifyListeners();
-        print('Invalid format in JSON response');
-        throw Exception('Invalid format in JSON response');
+        throw Exception('Failed to load countByIncidentLocations');
       }
+    } catch (e) {
+      loading = false;
+      notifyListeners();
+      rethrow;
+    } finally {
+      loading = false;
+      notifyListeners();
     }
-
-    loading = false;
-    notifyListeners();
-    print('Failed to load countByIncidentLocations');
-    throw Exception('Failed to load countByIncidentLocations');
   }
 }

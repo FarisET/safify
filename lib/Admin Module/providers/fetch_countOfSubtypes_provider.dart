@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../../constants.dart';
@@ -10,7 +10,8 @@ import '../../models/count_incidents_by_subtype.dart';
 class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   List<CountByIncidentSubTypes>? countByIncidentSubTypes;
   bool loading = false;
-//  String? selectedDepartment;
+  String? jwtToken;
+  final storage = const FlutterSecureStorage();
 
   Future<List<CountByIncidentSubTypes>?>
       getcountByIncidentSubTypesPostData() async {
@@ -26,7 +27,6 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
     } catch (e) {
       loading = false;
       notifyListeners();
-      print('Error loading countByIncidentSubTypes: $e');
       // You might want to handle the error accordingly
       throw Exception('Failed to load countByIncidentSubTypes');
     }
@@ -35,48 +35,65 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   Future<List<CountByIncidentSubTypes>> fetchTotalIncidentsOnSubTypes() async {
     loading = true;
     notifyListeners();
-    print('Fetching countByIncidentSubTypes...');
+    try {
+      jwtToken = await storage.read(key: 'jwt');
+      if (jwtToken == null) {
+        throw Exception('JWT token is null');
+      }
+      Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnSubTypes');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+        },
+      );
 
-    Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnSubTypes');
-    final response = await http.get(url);
+      // Fluttertoast.showToast(
+      //   msg: '${response.statusCode}',
+      //   toastLength: Toast.LENGTH_SHORT,
+      // );
 
-    // Fluttertoast.showToast(
-    //   msg: '${response.statusCode}',
-    //   toastLength: Toast.LENGTH_SHORT,
-    // );
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        List<dynamic> jsonResponse = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      // Parse the JSON response
-      List<dynamic> jsonResponse = jsonDecode(response.body);
+        // List<CountByLocation> countByIncidentLocationList = jsonResponse
+        //     .map((item) =>
+        //         CountByLocation.fromJson(item as Map<String, dynamic>))
+        //     .toList();
 
-      // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
-      if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
-        List<Map<String, dynamic>> incidentsData =
-            (jsonResponse[0] as List<dynamic>).cast<
-                Map<String,
-                    dynamic>>(); // Explicitly cast each item in the list
+        // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
+        //if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
+        // List<Map<String, dynamic>> incidentsData =
+        //     (jsonResponse[0] as List<dynamic>).cast<
+        //         Map<String,
+        //             dynamic>>(); // Explicitly cast each item in the list
 
         // Map the incident data to your CountByIncidentSubTypes model
-        List<CountByIncidentSubTypes> countByIncidentSubTypesList =
-            incidentsData
-                .map((item) => CountByIncidentSubTypes.fromJson(item))
-                .toList();
+        List<CountByIncidentSubTypes> countByIncidentSubTypesList = jsonResponse
+            .map((item) => CountByIncidentSubTypes.fromJson(item))
+            .toList();
 
         loading = false;
         notifyListeners();
         print('countByIncidentSubTypes Loaded');
         return countByIncidentSubTypesList;
-      } else {
-        loading = false;
-        notifyListeners();
-        print('Invalid format in JSON response');
-        throw Exception('Invalid format in JSON response');
-      }
-    }
 
-    loading = false;
-    notifyListeners();
-    print('Failed to load countByIncidentSubTypes');
-    throw Exception('Failed to load countByIncidentSubTypes');
+        // } else {
+        //   loading = false;
+        //   notifyListeners();
+        //   print('Invalid format in JSON response');
+        //   throw Exception('Invalid format in JSON response');
+      } else {
+        throw Exception('Failed to load countByIncidentSubTypes');
+      }
+    } catch (e) {
+      loading = false;
+      notifyListeners();
+      rethrow;
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
   }
 }
