@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class Notifications {
+  late FirebaseMessaging firebaseMessaging;
+
   static Future<void> initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var initializationSettingsAndroid = const AndroidInitializationSettings(
@@ -41,5 +45,25 @@ class Notifications {
     final message = 'Your report (ID: $deletedReportId) was rejected.';
     await flutterLocalNotificationsPlugin.show(0, 'Report Rejected', message,
         notificationDetails); // Corrected variable name
+  }
+
+  Future<String?> updateTokenToServer() async {
+    try {
+      await Firebase.initializeApp();
+
+      String? token = await FirebaseMessaging.instance.getToken();
+      print("Firebase Messaging Token: $token");
+
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        // Handle the new token here, if necessary
+        print("New Firebase Messaging Token: $newToken");
+        // Optionally send the new token to your backend server
+      });
+
+      return token;
+    } catch (e) {
+      print("Error getting Firebase Messaging Token: $e");
+      return null;
+    }
   }
 }

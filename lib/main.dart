@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +37,7 @@ import 'User Module/providers/sub_location_provider.dart';
 import 'animations/page_transition.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,17 @@ void main() async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   await Notifications.initialize(flutterLocalNotificationsPlugin);
+
+  //Firebase
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyDIh4cWRgMLFfsZQaiPBStLT8kzyMt89Rg',
+      appId: '1:855278908118:android:b1ec327af3b35d59090f77',
+      messagingSenderId: '855278908118',
+      projectId: 'safify-7973d',
+      storageBucket: 'safify-7973d.appspot.com',
+    ),
+  );
 
   UserServices userServices = UserServices();
   SystemChrome.setPreferredOrientations(
@@ -138,25 +151,24 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           secondaryHeaderColor: Colors.grey.shade800,
           hintColor: Color.fromARGB(255, 204, 204, 204),
-
           scaffoldBackgroundColor: Colors.grey.shade200,
 
           // Define the default `TextTheme`. Use this to specify the default
           // text styling for headlines, titles, bodies of text, and more.
-
           textTheme: TextTheme(
             titleLarge:
                 GoogleFonts.roboto(fontSize: 24, color: Colors.grey.shade800),
-            // ···
             titleMedium: GoogleFonts.roboto(),
             bodyLarge: GoogleFonts.openSans(),
-            //     bodyLarge: GoogleFonts.openSans(),
             bodyMedium: GoogleFonts.openSans(),
             bodySmall: GoogleFonts.pacifico(),
-
             displaySmall: GoogleFonts.pacifico(),
           ),
-          // ignore: prefer_const_constructors
+
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            secondary: Colors.grey.shade800,
+          ),
+
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
               TargetPlatform.android: _customPageTransitionBuilder(),
@@ -175,9 +187,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/home_page': (context) => const HomePage2(),
           '/form_page': (context) => const UserForm(),
-          //'login_page':(context) => const LoginPage(),
           '/admin_home_page': (context) => const AdminHomePage(),
-          '/action_team_home_page': (context) => const ActionTeamHomePage()
+          '/action_team_home_page': (context) => const ActionTeamHomePage(),
         },
       ),
     );

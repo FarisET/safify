@@ -2,17 +2,20 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 
 class UserServices {
   final storage = const FlutterSecureStorage();
-
-  Future<void> storeJwtAndRole(String jwt, String role, String userName) async {
+  Notifications notifications = Notifications();
+  Future<void> storeJwtAndRoleAndDevToken(
+      String jwt, String role, String userName, String deviceToken) async {
     await storage.write(key: 'jwt', value: jwt);
     await storage.write(key: 'role_name', value: role);
     await storage.write(key: 'user_name', value: userName);
+    await storage.write(key: 'device_token', value: deviceToken);
   }
 
   Future<String?> getJwt() async {
@@ -27,9 +30,15 @@ class UserServices {
     return await storage.read(key: 'user_name');
   }
 
+  Future<String?> getDevToken() async {
+    return await storage.read(key: 'device_token');
+  }
+
   Future<void> logout() async {
     await storage.delete(key: 'jwt');
     await storage.delete(key: 'role_name');
+    await storage.delete(key: 'device_token');
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("user_id");
   }
@@ -37,6 +46,16 @@ class UserServices {
   Future<bool> login(String id, String password) async {
     Uri url = Uri.parse('$IP_URL/user/login');
     try {
+      String? deviceToken = await notifications.updateTokenToServer();
+
+      if (deviceToken == null) {
+        Fluttertoast.showToast(
+          msg: "Failed to get device token",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+        return false;
+      }
+
       final http.Response response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
@@ -44,6 +63,7 @@ class UserServices {
           <String, String>{
             "user_id": id,
             "user_pass": password,
+            "device_token": deviceToken,
           },
         ),
       );
@@ -59,7 +79,8 @@ class UserServices {
           String? userName = decodedToken['user_name'];
 
           if (role != null) {
-            await storeJwtAndRole(token, role, userName!);
+            await storeJwtAndRoleAndDevToken(
+                token, role, userName!, deviceToken);
             return true;
           }
         }
