@@ -140,7 +140,9 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                   children: [
                                     Visibility(
                                       visible:
-                                          !item.status!.contains('approved'),
+                                          !item.status!.contains('approved') ||
+                                              !item.status!
+                                                  .contains('Approval pending'),
                                       child: FilledButton(
                                         onPressed: () async {
                                           //Add to Assigned form
@@ -227,8 +229,7 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                                   mainAxisSize:
                                                       MainAxisSize.min,
                                                   children: const [
-                                                    Text(
-                                                        'Unable to load image'),
+                                                    Text('No image available'),
                                                   ],
                                                 ),
                                               );

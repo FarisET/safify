@@ -38,24 +38,75 @@ import 'animations/page_transition.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the notifications plugin
+  Notifications notifications = Notifications();
+
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   await Notifications.initialize(flutterLocalNotificationsPlugin);
 
-  //Firebase
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyDIh4cWRgMLFfsZQaiPBStLT8kzyMt89Rg',
-      appId: '1:855278908118:android:b1ec327af3b35d59090f77',
-      messagingSenderId: '855278908118',
-      projectId: 'safify-7973d',
-      storageBucket: 'safify-7973d.appspot.com',
-    ),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+  //Firebase
+  // await Firebase.initializeApp(
+  //   options: const FirebaseOptions(
+  //     apiKey: 'AIzaSyDIh4cWRgMLFfsZQaiPBStLT8kzyMt89Rg',
+  //     appId: '1:855278908118:android:b1ec327af3b35d59090f77',
+  //     messagingSenderId: '855278908118',
+  //     projectId: 'safify-7973d',
+  //     storageBucket: 'safify-7973d.appspot.com',
+  //   ),
+  // );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Request permission for notifications
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  // Update notification presentation options for foreground messages
+  await messaging.setForegroundNotificationPresentationOptions(
+    alert: true, // Display an alert notification
+    badge: true, // Update the app's badge
+    sound: true, // Play a sound for the notification
+  );
+
+  print('User granted permission: ${settings.authorizationStatus}');
+
+  RemoteMessage? initialMessage = await messaging.getInitialMessage();
+  if (initialMessage != null) {
+    handleNotificationMessage(initialMessage);
+  }
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    RemoteNotification notification = message.notification!;
+    print('Message notification title: ${notification.title}');
+    print('Message notification body: ${notification.body}');
+
+    notifications.sendNotification(flutterLocalNotificationsPlugin,
+        notification.title as String, notification.body as String);
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
+
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+
+  //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.instance.requestPermission();
 
   UserServices userServices = UserServices();
   SystemChrome.setPreferredOrientations(
@@ -70,7 +121,7 @@ void main() async {
   if (userId != null && userRole != null) {
     if (userRole == "admin") {
       initialScreen = const AdminHomePage();
-    } else if (userRole == "student") {
+    } else if (userRole == "user") {
       initialScreen = const HomePage2();
     } else if (userRole == "action_team") {
       initialScreen = const ActionTeamHomePage();
@@ -91,6 +142,26 @@ void main() async {
   //   ),
   // ));
 }
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
+}
+
+void handleNotificationMessage(RemoteMessage message) {
+  // Your notification handling logic here
+  // print('Message data: ${message.data}');
+  if (message.notification != null) {
+    // print('Message also contained a notification: ${message.notification}');
+  }
+}
+
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//  Notifications notifications = Notifications();
+//   await Firebase.initializeApp();
+//   Notifications.showNotification(
+//       message); // Show notification when in background
+// }
 
 customAnimations animate = customAnimations();
 

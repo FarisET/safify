@@ -34,19 +34,40 @@ class UserServices {
     return await storage.read(key: 'device_token');
   }
 
-  Future<void> logout() async {
-    await storage.delete(key: 'jwt');
-    await storage.delete(key: 'role_name');
-    await storage.delete(key: 'device_token');
-
+  Future<bool> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("user_id");
+    String? user_id = prefs.getString("user_id");
+    Uri url = Uri.parse('$IP_URL/user/logout');
+    try {
+      final http.Response response = await http.put(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(
+          <String, String>{
+            "user_id": user_id!,
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        await storage.delete(key: 'jwt');
+        await storage.delete(key: 'role_name');
+        await storage.delete(key: 'device_token');
+        prefs.remove("user_id");
+        return true;
+      } else {
+        throw Exception("Logout Failed: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   Future<bool> login(String id, String password) async {
     Uri url = Uri.parse('$IP_URL/user/login');
     try {
       String? deviceToken = await notifications.updateTokenToServer();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setInt('loginTime', DateTime.now().millisecondsSinceEpoch);
 
       if (deviceToken == null) {
         Fluttertoast.showToast(

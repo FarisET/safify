@@ -41,33 +41,40 @@ class SubIncidentProviderClass extends ChangeNotifier {
 
   Future<List<IncidentSubType>> fetchIncidentSubTypes(
       String selectedIncidentType) async {
-    loading = true;
-    notifyListeners();
-    Uri url = Uri.parse(
-        '$IP_URL/userReport/dashboard/fetchincidentsubType?incident_type_id=$selectedIncidentType');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
-      },
-    );
-    //   Fluttertoast.showToast(
-    //   msg: '${response.statusCode}',
-    //   toastLength: Toast.LENGTH_SHORT,
-    // );
+    try {
+      loading = true;
+      notifyListeners();
+      Uri url = Uri.parse(
+          '$IP_URL/userReport/dashboard/fetchincidentsubType?incident_type_id=$selectedIncidentType');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+        },
+      );
+      //   Fluttertoast.showToast(
+      //   msg: '${response.statusCode}',
+      //   toastLength: Toast.LENGTH_SHORT,
+      // );
 
-    if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-      List<IncidentSubType> subIncidentList = jsonResponse
-          .map((dynamic item) =>
-              IncidentSubType.fromJson(item as Map<String, dynamic>))
-          .toList();
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
+        List<IncidentSubType> subIncidentList = jsonResponse
+            .map((dynamic item) =>
+                IncidentSubType.fromJson(item as Map<String, dynamic>))
+            .toList();
+        loading = false;
+        notifyListeners();
+        return subIncidentList;
+      } else {
+        loading = false;
+        notifyListeners();
+        throw Exception('Failed to load Incident Sub Types');
+      }
+    } catch (error) {
       loading = false;
       notifyListeners();
-      return subIncidentList;
+      throw Exception('Failed to load Incident Sub Types: $error');
     }
-    loading = false;
-    notifyListeners();
-    throw Exception('Failed to load Incident Sub Types');
   }
 }

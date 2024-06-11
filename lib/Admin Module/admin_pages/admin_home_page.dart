@@ -121,19 +121,33 @@ class _AdminHomePageState extends State<AdminHomePage>
                         TextButton(
                           child: const Text('Cancel'),
                           onPressed: () {
-                            Navigator.of(dialogContext).pop();
+                            Navigator.of(dialogContext)
+                                .pop(); // Close the dialog
                           },
                         ),
                         TextButton(
                           child: Text('Logout'),
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                            handleLogout(context);
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
-                            );
+                          onPressed: () async {
+                            Navigator.of(dialogContext)
+                                .pop(); // Close the dialog
+                            // Perform logout actions here
+                            bool res = await handleLogout(context);
+                            if (res == true) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  content: const Text('Logout Failed'),
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                            }
                           },
                         ),
                       ],
@@ -315,8 +329,13 @@ class _AdminHomePageState extends State<AdminHomePage>
     );
   }
 
-  void handleLogout(BuildContext context) async {
+  Future<bool> handleLogout(BuildContext context) async {
     UserServices userServices = UserServices();
-    await userServices.logout();
+    bool res = await userServices.logout();
+    if (res == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

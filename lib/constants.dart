@@ -1,6 +1,7 @@
 //const IP_URL = 'http://localhost:3001';
-const IP_URL = 'http://10.0.2.2:3001';
+const IP_URL = 'https://safify-v1-beta1.el.r.appspot.com';
 
+//'https://safify-v1-beta1.el.r.appspot.com'
 //https://safify-demo-server.onrender.com
 const PORT = 3000;
 

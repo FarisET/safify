@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/fetch_assigned_tasks_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../User Module/services/ReportServices.dart';
@@ -133,14 +134,17 @@ class _ActionReportState extends State<ActionReportForm>
                 color: Theme.of(context).secondaryHeaderColor,
               )),
           bottom: TabBar(
-            overlayColor: MaterialStateProperty.all<Color>(Colors.blue.shade100),
+            overlayColor:
+                MaterialStateProperty.all<Color>(Colors.blue.shade100),
             indicatorColor: Theme.of(context).primaryColor,
             controller: _tabController,
             tabs: [
               Tab(
                   child: Text(
                 ("Incident Details"),
-                style: TextStyle(color: Theme.of(context).secondaryHeaderColor,),
+                style: TextStyle(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
               )),
               Tab(
                   child: Text(
@@ -243,69 +247,70 @@ class _ActionReportState extends State<ActionReportForm>
                                 ),
                               ),
                               onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return ClipRRect(
-                                      clipBehavior: Clip.hardEdge,
-                                      child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Wrap(
-                                            direction: Axis.horizontal,
-                                            alignment:
-                                                WrapAlignment.spaceAround,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      _pickImageFromCamera1();
-                                                    },
-                                                    icon: Icon(Icons.camera),
-                                                    iconSize: 50,
-                                                    color: Colors.blue,
-                                                  ),
-                                                  Text(
-                                                    'Camera',
-                                                    style: TextStyle(
-                                                      color: Colors.blue,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      _pickImageFromGallery1();
-                                                    },
-                                                    icon: Icon(
-                                                        Icons.browse_gallery),
-                                                    iconSize: 50,
-                                                    color: Colors.blue,
-                                                  ),
-                                                  Text(
-                                                    'Gallery',
-                                                    style: TextStyle(
-                                                      color: Colors.blue,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
+                                _showBottomSheet1();
+                                // showModalBottomSheet(
+                                //   context: context,
+                                //   builder: (BuildContext context) {
+                                //     return ClipRRect(
+                                //       clipBehavior: Clip.hardEdge,
+                                //       child: SizedBox(
+                                //         width:
+                                //             MediaQuery.of(context).size.width,
+                                //         child: Padding(
+                                //           padding: const EdgeInsets.all(12.0),
+                                //           child: Wrap(
+                                //             direction: Axis.horizontal,
+                                //             alignment:
+                                //                 WrapAlignment.spaceAround,
+                                //             children: [
+                                //               Column(
+                                //                 children: [
+                                //                   IconButton(
+                                //                     onPressed: () {
+                                //                       _pickImageFromCamera1();
+                                //                     },
+                                //                     icon: Icon(Icons.camera),
+                                //                     iconSize: 50,
+                                //                     color: Colors.blue,
+                                //                   ),
+                                //                   Text(
+                                //                     'Camera',
+                                //                     style: TextStyle(
+                                //                       color: Colors.blue,
+                                //                       fontWeight:
+                                //                           FontWeight.bold,
+                                //                     ),
+                                //                   ),
+                                //                 ],
+                                //               ),
+                                //               Column(
+                                //                 children: [
+                                //                   IconButton(
+                                //                     onPressed: () {
+                                //                       _pickImageFromGallery1();
+                                //                     },
+                                //                     icon: Icon(
+                                //                         Icons.browse_gallery),
+                                //                     iconSize: 50,
+                                //                     color: Colors.blue,
+                                //                   ),
+                                //                   Text(
+                                //                     'Gallery',
+                                //                     style: TextStyle(
+                                //                       color: Colors.blue,
+                                //                       fontWeight:
+                                //                           FontWeight.bold,
+                                //                     ),
+                                //                   ),
+                                //                 ],
+                                //               ),
+                                //             ],
+                                //           ),
+                                //         ),
+                                //       ),
+                                //     );
+                                //   },
+                                // );
                               },
                               child: Padding(
                                 padding:
@@ -558,65 +563,66 @@ class _ActionReportState extends State<ActionReportForm>
                               ),
                             ),
                             onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ClipRRect(
-                                    clipBehavior: Clip.hardEdge,
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Wrap(
-                                          direction: Axis.horizontal,
-                                          alignment: WrapAlignment.spaceAround,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                IconButton(
-                                                  onPressed: () {
-                                                    _pickImageFromCamera();
-                                                  },
-                                                  icon: Icon(Icons.camera),
-                                                  iconSize: 50,
-                                                  color: Colors.blue,
-                                                ),
-                                                Text(
-                                                  'Camera',
-                                                  style: TextStyle(
-                                                    color: Colors.blue,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              children: [
-                                                IconButton(
-                                                  onPressed: () {
-                                                    _pickImageFromGallery();
-                                                  },
-                                                  icon: Icon(
-                                                      Icons.browse_gallery),
-                                                  iconSize: 50,
-                                                  color: Colors.blue,
-                                                ),
-                                                Text(
-                                                  'Gallery',
-                                                  style: TextStyle(
-                                                    color: Colors.blue,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
+                              _showBottomSheet();
+                              // showModalBottomSheet(
+                              //   context: context,
+                              //   builder: (BuildContext context) {
+                              //     return ClipRRect(
+                              //       clipBehavior: Clip.hardEdge,
+                              //       child: SizedBox(
+                              //         width: MediaQuery.of(context).size.width,
+                              //         child: Padding(
+                              //           padding: const EdgeInsets.all(12.0),
+                              //           child: Wrap(
+                              //             direction: Axis.horizontal,
+                              //             alignment: WrapAlignment.spaceAround,
+                              //             children: [
+                              //               Column(
+                              //                 children: [
+                              //                   IconButton(
+                              //                     onPressed: () {
+                              //                       _pickImageFromCamera();
+                              //                     },
+                              //                     icon: Icon(Icons.camera),
+                              //                     iconSize: 50,
+                              //                     color: Colors.blue,
+                              //                   ),
+                              //                   Text(
+                              //                     'Camera',
+                              //                     style: TextStyle(
+                              //                       color: Colors.blue,
+                              //                       fontWeight: FontWeight.bold,
+                              //                     ),
+                              //                   ),
+                              //                 ],
+                              //               ),
+                              //               Column(
+                              //                 children: [
+                              //                   IconButton(
+                              //                     onPressed: () {
+                              //                       _pickImageFromGallery();
+                              //                     },
+                              //                     icon: Icon(
+                              //                         Icons.browse_gallery),
+                              //                     iconSize: 50,
+                              //                     color: Colors.blue,
+                              //                   ),
+                              //                   Text(
+                              //                     'Gallery',
+                              //                     style: TextStyle(
+                              //                       color: Colors.blue,
+                              //                       fontWeight: FontWeight.bold,
+                              //                     ),
+                              //                   ),
+                              //                 ],
+                              //               ),
+                              //             ],
+                              //           ),
+                              //         ),
+                              //       ),
+                              //     );
+                              //   },
+                              // );
                             },
                             child: Padding(
                               padding:
@@ -643,32 +649,63 @@ class _ActionReportState extends State<ActionReportForm>
                             icon: Icon(Icons.arrow_back_ios),
                           ),
                           ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  handleReportSubmitted(context, this);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.blue,
-                                      content: Text('Report Submitted'),
-                                    ),
-                                  );
-
-                                  // setState(() {
-                                  //   workPrfImg = null;
-                                  //   incidentSiteImg = null;
-                                  // });
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ActionTeamHomePage()),
-                                  );
-                                  _processData();
+                              onPressed: () async {
+                                if (workPrfImg != null &&
+                                    resolutionDescController.text.isNotEmpty &&
+                                    reportedByController.text.isNotEmpty) {
+                                  int flag = await handleReportSubmitted(
+                                      context, this);
+                                  if (flag == 1) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.blue,
+                                          content: Text('Report Submitted'),
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                      await Provider.of<AssignedTaskProvider>(
+                                              context,
+                                              listen: false)
+                                          .fetchAssignedTasks(context)
+                                          .then((_) {
+                                        // setState(() {
+                                        //   workPrfImg = null;
+                                        //   incidentSiteImg = null;
+                                        // });
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ActionTeamHomePage()),
+                                        );
+                                        _processData();
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content:
+                                              Text('Failed to Submit Form'),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text('Failed to Submit Form'),
+                                      ),
+                                    );
+                                  }
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.red,
-                                      content: Text('Form invalid'),
+                                    SnackBar(
+                                      backgroundColor: Colors.redAccent,
+                                      content: Text(
+                                          'Please fill in all required fields'),
                                     ),
                                   );
                                 }
@@ -686,6 +723,122 @@ class _ActionReportState extends State<ActionReportForm>
         ),
       ),
     );
+  }
+
+  void _showBottomSheet() {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(
+                top: MediaQuery.sizeOf(context).height * .03,
+                bottom: MediaQuery.sizeOf(context).height * .05),
+            children: [
+              //pick profile picture label
+              Text('Add Image',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).secondaryHeaderColor)),
+
+              //for adding some space
+              SizedBox(height: MediaQuery.sizeOf(context).height * .02),
+
+              //buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //pick from gallery button
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
+                              MediaQuery.sizeOf(context).height * .15)),
+                      onPressed: () async {
+                        _pickImageFromCamera();
+                      },
+                      child: Image.asset('assets/images/camera.png')),
+
+                  //take picture from camera button
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
+                              MediaQuery.sizeOf(context).height * .15)),
+                      onPressed: () async {
+                        _pickImageFromGallery();
+                      },
+                      child: Image.asset('assets/images/add_image.png')),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  void _showBottomSheet1() {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(
+                top: MediaQuery.sizeOf(context).height * .03,
+                bottom: MediaQuery.sizeOf(context).height * .05),
+            children: [
+              //pick profile picture label
+              Text('Add Image',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).secondaryHeaderColor)),
+
+              //for adding some space
+              SizedBox(height: MediaQuery.sizeOf(context).height * .02),
+
+              //buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //pick from gallery button
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
+                              MediaQuery.sizeOf(context).height * .15)),
+                      onPressed: () async {
+                        _pickImageFromCamera1();
+                      },
+                      child: Image.asset('assets/images/camera.png')),
+
+                  //take picture from camera button
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
+                              MediaQuery.sizeOf(context).height * .15)),
+                      onPressed: () async {
+                        _pickImageFromGallery1();
+                      },
+                      child: Image.asset('assets/images/add_image.png')),
+                ],
+              )
+            ],
+          );
+        });
   }
 
   Future _pickImageFromGallery1() async {
@@ -736,35 +889,45 @@ class _ActionReportState extends State<ActionReportForm>
     }
   }
 
-  void handleReportSubmitted(
+  Future<int> handleReportSubmitted(
       BuildContext context, _ActionReportState userFormState) async {
     ReportServices reportServices = ReportServices(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //    String? user_id = prefs.getString("this_user_id");
     int? userReportId = prefs.getInt("user_report_id");
-    print('user_report_id:$userReportId');
-    //  print('user_id:$user_id');
-    // print(userFormState.incidentController.text);
-    // print(userFormState.rootCauseController1.text);
-    // print(userFormState.rootCauseController2.text);
-    // print(userFormState.rootCauseController3.text);
-    // print(userFormState.rootCauseController4.text);
-    // print(userFormState.resolutionDescController.text);
-    print(userFormState.incidentSiteImg.toString());
+
+//    print(userFormState.incidentSiteImg.toString());
 
     if (userReportId != null) {
-      await reportServices.uploadActionReportWithImagesFuture(
-          userFormState.incidentController.text, //desciption
-          userFormState.rootCauseController1.text,
-          userFormState.rootCauseController2.text,
-          userFormState.rootCauseController3.text,
-          userFormState.rootCauseController4.text,
-          userFormState.rootCauseController5.text,
-          userFormState.resolutionDescController.text,
-          userFormState.reportedByController.text,
-          userFormState.incidentSiteImg,
-          userFormState.workPrfImg,
-          userReportId);
+      if (incidentSiteImg != null) {
+        int flag = await reportServices.uploadActionReportWithImagesFuture(
+            userFormState.incidentController.text, //desciption
+            userFormState.rootCauseController1.text,
+            userFormState.rootCauseController2.text,
+            userFormState.rootCauseController3.text,
+            userFormState.rootCauseController4.text,
+            userFormState.rootCauseController5.text,
+            userFormState.resolutionDescController.text,
+            userFormState.reportedByController.text,
+            userFormState.incidentSiteImg,
+            userFormState.workPrfImg,
+            userReportId);
+        return flag;
+      } else {
+        int flag = await reportServices.postActionReport(
+            userFormState.incidentController.text, //desciption
+            userFormState.rootCauseController1.text,
+            userFormState.rootCauseController2.text,
+            userFormState.rootCauseController3.text,
+            userFormState.rootCauseController4.text,
+            userFormState.rootCauseController5.text,
+            userFormState.resolutionDescController.text,
+            userFormState.reportedByController.text,
+            userFormState.workPrfImg,
+            userReportId);
+        return flag;
+      }
     }
+    return 0;
   }
 }

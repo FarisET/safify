@@ -201,6 +201,20 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                                   '${item.id}');
 
                                                       if (success) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                SnackBar(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .greenAccent,
+                                                          content: Text(
+                                                              'Report deleted'),
+                                                          duration: Duration(
+                                                              seconds: 2),
+                                                        ));
                                                         final allUserReportsProvider =
                                                             Provider.of<
                                                                     AllUserReportsProvider>(
@@ -210,20 +224,6 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                             .fetchAllReports(
                                                                 context);
                                                       }
-
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                              SnackBar(
-                                                        backgroundColor:
-                                                            Colors.greenAccent,
-                                                        content: Text(
-                                                            'Report deleted'),
-                                                        duration: Duration(
-                                                            seconds: 2),
-                                                      ));
                                                     } else {
                                                       ScaffoldMessenger.of(
                                                               context)

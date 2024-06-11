@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
+import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/models/location.dart';
 
 import '../../models/ sub_location.dart';
@@ -74,6 +75,7 @@ class _UserFormState extends State<UserForm> {
   String? SelectedLocationType;
   String SelectedSubLocationType = '';
   XFile? returnedImage;
+  bool isRiskLevelSelected = false;
 
   DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
@@ -262,6 +264,13 @@ class _UserFormState extends State<UserForm> {
                                               BorderRadius.circular(12),
                                         ),
                                         child: FormField<String>(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Category is required';
+                                            }
+                                            return null;
+                                          },
                                           builder:
                                               (FormFieldState<String> state) {
                                             return DropdownButton<String>(
@@ -367,6 +376,13 @@ class _UserFormState extends State<UserForm> {
                                                 BorderRadius.circular(12),
                                           ),
                                           child: FormField<String>(
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Sub Cateogry is required';
+                                              }
+                                              return null;
+                                            },
                                             builder:
                                                 (FormFieldState<String> state) {
                                               return DropdownButton<String>(
@@ -523,6 +539,13 @@ class _UserFormState extends State<UserForm> {
                                               BorderRadius.circular(12),
                                         ),
                                         child: FormField<String>(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Location is required';
+                                            }
+                                            return null;
+                                          },
                                           builder:
                                               (FormFieldState<String> state) {
                                             return DropdownButton<String>(
@@ -628,6 +651,13 @@ class _UserFormState extends State<UserForm> {
                                                 BorderRadius.circular(12),
                                           ),
                                           child: FormField<String>(
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Sub Location is required';
+                                              }
+                                              return null;
+                                            },
                                             builder:
                                                 (FormFieldState<String> state) {
                                               return DropdownButton<String>(
@@ -932,6 +962,7 @@ class _UserFormState extends State<UserForm> {
                                                 i == index ? selected : false;
                                             risklevel = chipLabelsid[index];
                                           }
+                                          isRiskLevelSelected = true;
                                         });
                                       },
                                     );
@@ -963,39 +994,73 @@ class _UserFormState extends State<UserForm> {
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
                               ),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  handleReportSubmitted(
+                              //_formKey.currentState!.validate()
+                              onPressed: () async {
+                                if (isFirstIncidentDropdownSelected &&
+                                    isFirstLocationDropdownSelected &&
+                                    isRiskLevelSelected &&
+                                    (incidentSubType != '') &&
+                                    (SelectedSubLocationType != '')) {
+                                  int flag = await handleReportSubmitted(
                                       context, this, returnedImage);
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                        SnackBar(
-                                          backgroundColor:
-                                              Theme.of(context).primaryColor,
-                                          content: Text('Report Submitted'),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      )
-                                      .closed
-                                      .then((reason) {
-                                    setState(() {
-                                      returnedImage = null;
-                                      Provider.of<IncidentProviderClass>(
+                                  if (flag == 1) {
+                                    // Show loading indicator
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        content: Text('Report Submitted'),
+                                        duration: Duration(seconds: 3),
+                                      ));
+
+                                      await Provider.of<UserReportsProvider>(
                                               context,
                                               listen: false)
-                                          .selectedIncident = null;
-                                      Provider.of<LocationProviderClass>(
-                                              context,
-                                              listen: false)
-                                          .selectedLocation = null;
-                                    });
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomePage2()),
+                                          .fetchReports(context)
+                                          .then((_) {
+                                        // Fetch reports completed, proceed with other tasks
+                                        setState(() {
+                                          returnedImage = null;
+                                          Provider.of<IncidentProviderClass>(
+                                                  context,
+                                                  listen: false)
+                                              .selectedIncident = null;
+                                          Provider.of<LocationProviderClass>(
+                                                  context,
+                                                  listen: false)
+                                              .selectedLocation = null;
+                                        });
+                                        _processData();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomePage2()),
+                                        );
+                                      });
+                                    } else {
+                                      throw Exception("not mounted");
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        content:
+                                            Text('Failed to Submit Report'),
+                                        duration: Duration(seconds: 3),
+                                      ),
                                     );
-                                    _processData();
-                                  });
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: Colors.redAccent,
+                                      content: Text(
+                                          'Please fill in all required fields'),
+                                    ),
+                                  );
                                 }
                               },
                               child: Padding(
@@ -1116,8 +1181,8 @@ class _UserFormState extends State<UserForm> {
   }
 }
 
-void handleReportSubmitted(BuildContext context, _UserFormState userFormState,
-    XFile? selectedImage) async {
+Future<int> handleReportSubmitted(BuildContext context,
+    _UserFormState userFormState, XFile? selectedImage) async {
   if (selectedImage != null) {
     // Upload image first
     //   bool imageUploaded = await uploadImage(selectedImage);
@@ -1125,7 +1190,7 @@ void handleReportSubmitted(BuildContext context, _UserFormState userFormState,
     //if (imageUploaded) {
     // If image upload is successful, proceed with report submission
     ReportServices reportServices = ReportServices(context);
-    await reportServices.uploadReportWithImage(
+    int flag = await reportServices.uploadReportWithImage(
       userFormState.returnedImage,
       //  userFormState.id,
       userFormState.SelectedSubLocationType,
@@ -1133,13 +1198,21 @@ void handleReportSubmitted(BuildContext context, _UserFormState userFormState,
       userFormState.description,
       userFormState.date,
       userFormState.risklevel,
+    );
 
+    return flag;
+  } else {
+    ReportServices reportServices = ReportServices(context);
+    int flag = await reportServices.postReport(
+      //userFormState.returnedImage,
+      //  userFormState.id,
+      userFormState.SelectedSubLocationType,
+      userFormState.incidentSubType,
+      userFormState.description,
+      userFormState.date,
+      userFormState.risklevel,
       // userFormState.status,
     );
-    // } else {
-    //   print('Image upload failed');
-    // }
-  } else {
-    print('No image selected');
+    return flag;
   }
 }

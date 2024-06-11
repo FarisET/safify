@@ -1,15 +1,27 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:bitmap/bitmap.dart';
+
+class BitmapUtils {
+  static Future<Uint8List> getBitmapFromAsset(String path) async {
+    final ByteData bytes = await rootBundle.load(path);
+    return bytes.buffer.asUint8List();
+  }
+}
 
 class Notifications {
   late FirebaseMessaging firebaseMessaging;
+  late Bitmap bitmap;
 
   static Future<void> initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var initializationSettingsAndroid = const AndroidInitializationSettings(
-        '@drawable/safify_icon'); // Replace with your icon name
+        '@drawable/ic_launcher'); // Replace with your icon name
     var initializationSettingsIOS =
         DarwinInitializationSettings(); // Use appropriate class based on platform
     var initializationSettings = InitializationSettings(
@@ -22,8 +34,12 @@ class Notifications {
 
   Future<void> sendNotification(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
-      BuildContext context,
-      String deletedReportId) async {
+      String title,
+      String body) async {
+    final largeIconPath =
+        await BitmapUtils.getBitmapFromAsset('@drawable/safify_icon');
+    final ByteArrayAndroidBitmap largeIcon =
+        ByteArrayAndroidBitmap(largeIconPath);
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       'channel id', // Customize channel ID
@@ -32,8 +48,14 @@ class Notifications {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Ticker',
+      icon: '@drawable/safify_icon',
+      styleInformation: BigPictureStyleInformation(
+        DrawableResourceAndroidBitmap(
+            '@drawable/ic_launcher'), // Ensure this icon exists in your drawable directories
+        largeIcon: DrawableResourceAndroidBitmap('@drawable/ic_launcher'),
+      ),
     );
-
+//android/app/src/main/res/drawable/safify_icon
     const DarwinNotificationDetails iosNotificationDetails =
         DarwinNotificationDetails(); // Customize iOS details
 
@@ -42,9 +64,9 @@ class Notifications {
       iOS: iosNotificationDetails,
     );
 
-    final message = 'Your report (ID: $deletedReportId) was rejected.';
-    await flutterLocalNotificationsPlugin.show(0, 'Report Rejected', message,
-        notificationDetails); // Corrected variable name
+    final message = body;
+    await flutterLocalNotificationsPlugin.show(
+        0, title, message, notificationDetails); // Corrected variable name
   }
 
   Future<String?> updateTokenToServer() async {

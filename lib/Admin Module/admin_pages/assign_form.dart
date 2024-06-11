@@ -30,7 +30,7 @@ class _AssignFormState extends State<AssignForm> {
   List<String> dropdownMenuEntries = [];
   String? user_id;
   bool _confirmedExit = false;
-
+  bool isRiskLevelSelected = false;
   void _processData() {
     // Process your data and upload to the server
     _formKey.currentState?.reset();
@@ -373,6 +373,7 @@ class _AssignFormState extends State<AssignForm> {
                                             // print(
                                             //     'crit level: $incident_criticality_id');
                                           }
+                                          isRiskLevelSelected = true;
                                         });
                                       },
                                     );
@@ -391,27 +392,58 @@ class _AssignFormState extends State<AssignForm> {
                                 ),
                               ),
                               onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  handleReportSubmitted(context, this);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.blue,
-                                      content: Text('Task Assigned'),
-                                    ),
-                                  );
-                                  _processData();
-                                  //  SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  // prefs.remove('this_user_id');
-                                  // prefs.remove('user_report_id');
-                                  setState(() {
-                                    SelectedDepartment = null;
-                                  });
+                                if (SelectedDepartment != '' &&
+                                    SelectedDepartment != null &&
+                                    actionTeam != '' &&
+                                    isRiskLevelSelected) {
+                                  int flag = await handleReportSubmitted(
+                                      context, this);
 
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AdminHomePage()),
-                                  );
+                                  if (flag == 1) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.blue,
+                                          content: Text('Task Assigned'),
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                      _processData();
+                                      setState(() {
+                                        SelectedDepartment = null;
+                                      });
+
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdminHomePage()),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        backgroundColor: Colors.redAccent,
+                                        content: Text('Failed: Please retry'),
+                                        duration: Duration(seconds: 3),
+                                      ));
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      backgroundColor: Colors.redAccent,
+                                      content: Text('Assignment Failed'),
+                                      duration: Duration(seconds: 3),
+                                    ));
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    backgroundColor: Colors.redAccent,
+                                    content:
+                                        Text('Please Fill all required fields'),
+                                    duration: Duration(seconds: 3),
+                                  ));
                                 }
                               },
                               child: Text('Assign'),
@@ -424,19 +456,22 @@ class _AssignFormState extends State<AssignForm> {
     );
   }
 
-  void handleReportSubmitted(
+  Future<int> handleReportSubmitted(
       BuildContext context, _AssignFormState userFormState) async {
     ReportServices reportServices = ReportServices(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user_id = prefs.getString("this_user_id");
     int? user_report_id = prefs.getInt("user_report_id");
+
     if (user_id != null && user_report_id != null) {
-      await reportServices.postAssignedReport(
+      int flag = await reportServices.postAssignedReport(
         user_report_id,
         user_id,
         userFormState.actionTeam,
         userFormState.incident_criticality_id,
       );
+      return flag;
     }
+    return 0;
   }
 }

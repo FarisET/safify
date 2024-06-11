@@ -84,16 +84,27 @@ class _HomePage2State extends State<HomePage2> {
                             ),
                             TextButton(
                               child: Text('Logout'),
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.of(dialogContext)
                                     .pop(); // Close the dialog
                                 // Perform logout actions here
-                                handleLogout(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
-                                );
+                                bool res = await handleLogout(context);
+                                if (res == true) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                      content: const Text('Logout Failed'),
+                                      duration: const Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ],
@@ -232,7 +243,7 @@ class _HomePage2State extends State<HomePage2> {
             _OptionItem(
                 icon: Icon(Icons.copy_all_rounded,
                     color: Colors.blue[600], size: 26),
-                name: 'Start Inspection',
+                name: 'Start Inspection (coming soon)',
                 description: 'Capture an incident, hazard',
                 onTap: () {}),
 
@@ -296,7 +307,12 @@ class _OptionItem extends StatelessWidget {
   }
 }
 
-void handleLogout(BuildContext context) async {
+Future<bool> handleLogout(BuildContext context) async {
   UserServices userServices = UserServices();
-  await userServices.logout();
+  bool res = await userServices.logout();
+  if (res == true) {
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -161,6 +161,24 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                               .then(
                                                                   (success) async {
                                                             if (success) {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Close the dialog
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .greenAccent,
+                                                                content: Text(
+                                                                    'Report deleted'),
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            2),
+                                                              ));
                                                               await Provider.of<
                                                                           ActionReportsProvider>(
                                                                       context,
@@ -172,21 +190,6 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                               //PUSH NOTIFICATION
                                                             }
                                                           });
-
-                                                          Navigator.of(context)
-                                                              .pop(); // Close the dialog
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  SnackBar(
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .greenAccent,
-                                                            content: Text(
-                                                                'Report deleted'),
-                                                            duration: Duration(
-                                                                seconds: 2),
-                                                          ));
                                                         },
                                                         child: Text("Confirm"),
                                                       ),
