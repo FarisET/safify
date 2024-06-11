@@ -90,6 +90,7 @@ class UserServices {
       );
       final status = json.decode(response.body)['status'];
       final token = json.decode(response.body)['token'];
+      final error = json.decode(response.body)['error'];
 
       if (response.statusCode == 200) {
         if (token != null) {
@@ -108,6 +109,29 @@ class UserServices {
       } else if (response.statusCode == 401) {
         Fluttertoast.showToast(
           msg: status,
+          toastLength: Toast.LENGTH_SHORT,
+        );
+
+        return false;
+      } else if (response.statusCode == 500 &&
+          error == "This Account is Already Logged in From Another Device") {
+        Fluttertoast.showToast(
+          msg: "Already logged in from another device",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+
+        return false;
+      } else if (response.statusCode == 500 &&
+          error == "Authentication failed") {
+        Fluttertoast.showToast(
+          msg: "Authentication failed",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+
+        return false;
+      } else if (response.statusCode == 500 && error == "Wrong Password") {
+        Fluttertoast.showToast(
+          msg: "Wrong Password",
           toastLength: Toast.LENGTH_SHORT,
         );
 
