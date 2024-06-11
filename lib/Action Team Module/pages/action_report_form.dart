@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +37,8 @@ class _ActionReportState extends State<ActionReportForm>
   XFile? incidentSiteImg;
   XFile? workPrfImg;
   bool _confirmedExit = false;
+
+  bool isSubmitting = false;
 
   ImageUtils imageUtils = ImageUtils();
 
@@ -649,68 +652,111 @@ class _ActionReportState extends State<ActionReportForm>
                             icon: Icon(Icons.arrow_back_ios),
                           ),
                           ElevatedButton(
-                              onPressed: () async {
-                                if (workPrfImg != null &&
-                                    resolutionDescController.text.isNotEmpty &&
-                                    reportedByController.text.isNotEmpty) {
-                                  int flag = await handleReportSubmitted(
-                                      context, this);
-                                  if (flag == 1) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.blue,
-                                          content: Text('Report Submitted'),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
-                                      await Provider.of<AssignedTaskProvider>(
-                                              context,
-                                              listen: false)
-                                          .fetchAssignedTasks(context)
-                                          .then((_) {
-                                        // setState(() {
-                                        //   workPrfImg = null;
-                                        //   incidentSiteImg = null;
-                                        // });
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ActionTeamHomePage()),
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () async {
+                                      if (workPrfImg != null &&
+                                          resolutionDescController
+                                              .text.isNotEmpty &&
+                                          reportedByController
+                                              .text.isNotEmpty) {
+                                        int flag = await handleReportSubmitted(
+                                            context, this);
+                                        if (flag == 1) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                backgroundColor: Colors.blue,
+                                                content:
+                                                    Text('Report Submitted'),
+                                                duration: Duration(seconds: 3),
+                                              ),
+                                            );
+                                            await Provider.of<
+                                                        AssignedTaskProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .fetchAssignedTasks(context)
+                                                .then((_) {
+                                              // setState(() {
+                                              //   workPrfImg = null;
+                                              //   incidentSiteImg = null;
+                                              // });
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ActionTeamHomePage()),
+                                              );
+                                              _processData();
+                                            });
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                backgroundColor: Colors.red,
+                                                content: Text(
+                                                    'Failed to Submit Form'),
+                                              ),
+                                            );
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.red,
+                                              content:
+                                                  Text('Failed to Submit Form'),
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.redAccent,
+                                            content: Text(
+                                                'Please fill in all required fields'),
+                                          ),
                                         );
-                                        _processData();
-                                      });
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content:
-                                              Text('Failed to Submit Form'),
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor: Colors.red,
-                                        content: Text('Failed to Submit Form'),
-                                      ),
-                                    );
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      backgroundColor: Colors.redAccent,
-                                      content: Text(
-                                          'Please fill in all required fields'),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Text('Submit')),
+                                      }
+                                    },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: SizedBox(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.03,
+                                  child: isSubmitting
+                                      ? Row(
+                                          children: [
+                                            Text(
+                                              'Submitting',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            SizedBox(
+                                              height: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.03,
+                                              width: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.03,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : Center(child: Text('Submit')),
+                                ),
+                              )),
                         ],
                       ),
                       SizedBox(height: 18)
@@ -891,6 +937,15 @@ class _ActionReportState extends State<ActionReportForm>
 
   Future<int> handleReportSubmitted(
       BuildContext context, _ActionReportState userFormState) async {
+    setState(() {
+      isSubmitting = true;
+    });
+    // await Future.delayed(Duration(seconds: 2));
+
+    print("pressed");
+
+    // return -1;
+
     ReportServices reportServices = ReportServices(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //    String? user_id = prefs.getString("this_user_id");
@@ -912,6 +967,10 @@ class _ActionReportState extends State<ActionReportForm>
             userFormState.incidentSiteImg,
             userFormState.workPrfImg,
             userReportId);
+
+        setState(() {
+          isSubmitting = false;
+        });
         return flag;
       } else {
         int flag = await reportServices.postActionReport(
@@ -925,6 +984,10 @@ class _ActionReportState extends State<ActionReportForm>
             userFormState.reportedByController.text,
             userFormState.workPrfImg,
             userReportId);
+
+        setState(() {
+          isSubmitting = false;
+        });
         return flag;
       }
     }

@@ -27,7 +27,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.safify"
     compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    // ndkVersion "27.0.11902837"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11

@@ -167,139 +167,88 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                           ? MainAxisAlignment.spaceEvenly
                                           : MainAxisAlignment.start,
                                   children: [
-                                    FilledButton(
-                                      onPressed: () {
-                                        // Show a confirmation dialog before rejecting
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text("Delete?"),
-                                              content: Text(
-                                                  "Are you sure you want to delete this report?"),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // Close the dialog
-                                                  },
-                                                  child: Text("Cancel"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    if (!'${item.status}'
-                                                        .contains(
-                                                            'in progress')) {
-                                                      final deleteUserReportProvider =
-                                                          Provider.of<
-                                                                  DeleteUserReportProvider>(
-                                                              context,
-                                                              listen: false);
-                                                      final success =
-                                                          await deleteUserReportProvider
-                                                              .deleteUserReport(
-                                                                  '${item.id}');
+                                    Visibility(
+                                      visible: (item.status == 'open'),
+                                      child: FilledButton(
+                                        onPressed: () {
+                                          // Show a confirmation dialog before rejecting
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text("Delete?"),
+                                                content: Text(
+                                                    "Are you sure you want to delete this report?"),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop(); // Close the dialog
+                                                    },
+                                                    child: Text("Cancel"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      if (!'${item.status}'
+                                                          .contains(
+                                                              'in progress')) {
+                                                        final deleteUserReportProvider =
+                                                            Provider.of<
+                                                                    DeleteUserReportProvider>(
+                                                                context,
+                                                                listen: false);
+                                                        final success =
+                                                            await deleteUserReportProvider
+                                                                .deleteUserReport(
+                                                                    '${item.id}');
 
-                                                      if (success) {
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        if (success) {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  SnackBar(
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .greenAccent,
+                                                            content: Text(
+                                                                'Report deleted'),
+                                                            duration: Duration(
+                                                                seconds: 2),
+                                                          ));
+                                                          final allUserReportsProvider =
+                                                              Provider.of<
+                                                                      AllUserReportsProvider>(
+                                                                  context,
+                                                                  listen:
+                                                                      false);
+                                                          await allUserReportsProvider
+                                                              .fetchAllReports(
+                                                                  context);
+                                                        }
+                                                      } else {
                                                         ScaffoldMessenger.of(
                                                                 context)
                                                             .showSnackBar(
                                                                 SnackBar(
                                                           backgroundColor:
-                                                              Colors
-                                                                  .greenAccent,
+                                                              Colors.redAccent,
                                                           content: Text(
-                                                              'Report deleted'),
+                                                              'Denied: task in progress'),
                                                           duration: Duration(
                                                               seconds: 2),
                                                         ));
-                                                        final allUserReportsProvider =
-                                                            Provider.of<
-                                                                    AllUserReportsProvider>(
-                                                                context,
-                                                                listen: false);
-                                                        await allUserReportsProvider
-                                                            .fetchAllReports(
-                                                                context);
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
                                                       }
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                              SnackBar(
-                                                        backgroundColor:
-                                                            Colors.redAccent,
-                                                        content: Text(
-                                                            'Denied: task in progress'),
-                                                        duration: Duration(
-                                                            seconds: 2),
-                                                      ));
-                                                      Navigator.of(context)
-                                                          .pop(); // Close the dialog
-                                                    }
-                                                  },
-                                                  child: Text("Confirm"),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
-                                        // Add elevation for a raised effect
-                                        elevation:
-                                            MaterialStateProperty.all<double>(
-                                                4.0), // Adjust as needed
-                                      ),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: MediaQuery.of(context)
-                                                        .size
-                                                        .width <
-                                                    390
-                                                ? 6.0
-                                                : 12.0,
-                                            vertical: 0),
-                                        child: Text('Delete',
-                                            style:
-                                                TextStyle(color: Colors.red)),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: FilledButton(
-                                        onPressed: () async {
-                                          //Add to Assigned form
-                                          //  Fluttertoast.showToast(msg: '${item.id}');
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-//                                        if (item != null && item.user_id != null) {
-                                          if (item.user_id != null) {
-                                            await prefs.setString(
-                                                "this_user_id",
-                                                (item.user_id!));
-                                          }
-                                          if (item.id != null) {
-                                            await prefs.setInt(
-                                                "user_report_id", (item.id!));
-                                          }
-
-                                          //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AssignForm()),
+                                                    },
+                                                    child: Text("Confirm"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           );
-                                          //                           }
-                                          // print('user_id: ${prefs.getString('this_user_id')}');
-                                          // print('id: ${item.id}');
                                         },
                                         style: ButtonStyle(
                                           backgroundColor:
@@ -311,23 +260,82 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                   4.0), // Adjust as needed
                                         ),
                                         child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    MediaQuery.of(context)
-                                                                .size
-                                                                .width <
-                                                            390
-                                                        ? 6.0
-                                                        : 12.0,
-                                                vertical: 0),
-                                            child: '${item.status}'
-                                                    .contains('in progress')
-                                                ? Text('Assigned',
-                                                    style: TextStyle(
-                                                        color: Colors.yellow))
-                                                : Text('Assign',
-                                                    style: TextStyle(
-                                                        color: Colors.yellow))),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: MediaQuery.of(context)
+                                                          .size
+                                                          .width <
+                                                      390
+                                                  ? 6.0
+                                                  : 12.0,
+                                              vertical: 0),
+                                          child: Text('Delete',
+                                              style:
+                                                  TextStyle(color: Colors.red)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Visibility(
+                                        visible: (item.status == 'open'),
+                                        child: FilledButton(
+                                          onPressed: () async {
+                                            //Add to Assigned form
+                                            //  Fluttertoast.showToast(msg: '${item.id}');
+                                            SharedPreferences prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            //                                        if (item != null && item.user_id != null) {
+                                            if (item.user_id != null) {
+                                              await prefs.setString(
+                                                  "this_user_id",
+                                                  (item.user_id!));
+                                            }
+                                            if (item.id != null) {
+                                              await prefs.setInt(
+                                                  "user_report_id", (item.id!));
+                                            }
+
+                                            //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AssignForm()),
+                                            );
+                                            //                           }
+                                            // print('user_id: ${prefs.getString('this_user_id')}');
+                                            // print('id: ${item.id}');
+                                          },
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.white),
+                                            // Add elevation for a raised effect
+                                            elevation: MaterialStateProperty
+                                                .all<double>(
+                                                    4.0), // Adjust as needed
+                                          ),
+                                          child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      MediaQuery.of(context)
+                                                                  .size
+                                                                  .width <
+                                                              390
+                                                          ? 6.0
+                                                          : 12.0,
+                                                  vertical: 0),
+                                              child: '${item.status}'
+                                                      .contains('in progress')
+                                                  ? Text('Assigned',
+                                                      style: TextStyle(
+                                                          color: Colors.yellow))
+                                                  : Text('Assign',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.yellow))),
+                                        ),
                                       ),
                                     )
                                   ],

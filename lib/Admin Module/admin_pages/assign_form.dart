@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
 
 import 'dart:io';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +60,8 @@ class _AssignFormState extends State<AssignForm> {
   File? selectedImage; // Declare selectedImage as nullable
   String title = "PPE Violation";
   String? SelectedDepartment;
+
+  bool isSubmitting = false;
 
   DropdownMenuItem<String> buildDepartmentMenuItem(Department type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<Department>(
@@ -391,62 +395,122 @@ class _AssignFormState extends State<AssignForm> {
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
                               ),
-                              onPressed: () async {
-                                if (SelectedDepartment != '' &&
-                                    SelectedDepartment != null &&
-                                    actionTeam != '' &&
-                                    isRiskLevelSelected) {
-                                  int flag = await handleReportSubmitted(
-                                      context, this);
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () async {
+                                      if (SelectedDepartment != '' &&
+                                          SelectedDepartment != null &&
+                                          actionTeam != '' &&
+                                          isRiskLevelSelected) {
+                                        // setState(() {
+                                        //   isSubmitting = true;
+                                        // });
+                                        int flag = await handleReportSubmitted(
+                                            context, this);
 
-                                  if (flag == 1) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.blue,
-                                          content: Text('Task Assigned'),
+                                        if (flag == 1) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                backgroundColor: Colors.blue,
+                                                content: Text('Task Assigned'),
+                                                duration: Duration(seconds: 3),
+                                              ),
+                                            );
+                                            _processData();
+                                            setState(() {
+                                              SelectedDepartment = null;
+                                            });
+
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AdminHomePage()),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                              backgroundColor: Colors.redAccent,
+                                              content:
+                                                  Text('Failed: Please retry'),
+                                              duration: Duration(seconds: 3),
+                                            ));
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                            backgroundColor: Colors.redAccent,
+                                            content: Text('Assignment Failed'),
+                                            duration: Duration(seconds: 3),
+                                          ));
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          backgroundColor: Colors.redAccent,
+                                          content: Text(
+                                              'Please Fill all required fields'),
                                           duration: Duration(seconds: 3),
-                                        ),
-                                      );
-                                      _processData();
-                                      setState(() {
-                                        SelectedDepartment = null;
-                                      });
-
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AdminHomePage()),
-                                      );
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        backgroundColor: Colors.redAccent,
-                                        content: Text('Failed: Please retry'),
-                                        duration: Duration(seconds: 3),
-                                      ));
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      backgroundColor: Colors.redAccent,
-                                      content: Text('Assignment Failed'),
-                                      duration: Duration(seconds: 3),
-                                    ));
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    backgroundColor: Colors.redAccent,
-                                    content:
-                                        Text('Please Fill all required fields'),
-                                    duration: Duration(seconds: 3),
-                                  ));
-                                }
-                              },
-                              child: Text('Assign'),
+                                        ));
+                                      }
+                                    },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: SizedBox(
+                                    // height: MediaQuery.sizeOf(context).height *
+                                    //     0.04,
+                                    child: isSubmitting
+                                        ? SizedBox(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "Assigning..",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                SizedBox(
+                                                  height:
+                                                      MediaQuery.sizeOf(context)
+                                                              .height *
+                                                          0.03,
+                                                  width:
+                                                      MediaQuery.sizeOf(context)
+                                                              .height *
+                                                          0.03,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            height: MediaQuery.sizeOf(context)
+                                                    .height *
+                                                0.03,
+                                            child: Center(
+                                              child: Text(
+                                                "Assign",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          )),
+                              ),
                             ),
                           ),
                         ]),
@@ -458,6 +522,15 @@ class _AssignFormState extends State<AssignForm> {
 
   Future<int> handleReportSubmitted(
       BuildContext context, _AssignFormState userFormState) async {
+    setState(() {
+      isSubmitting = true;
+    });
+    // print("presse");
+
+    // await Future.delayed(Duration(seconds: 2));
+
+    // return -1;
+
     ReportServices reportServices = ReportServices(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user_id = prefs.getString("this_user_id");
@@ -470,8 +543,14 @@ class _AssignFormState extends State<AssignForm> {
         userFormState.actionTeam,
         userFormState.incident_criticality_id,
       );
+      setState(() {
+        isSubmitting = false;
+      });
       return flag;
     }
+    setState(() {
+      isSubmitting = false;
+    });
     return 0;
   }
 }

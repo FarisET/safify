@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +43,8 @@ class _UserFormState extends State<UserForm> {
   bool _confirmedExit = false;
   bool isFirstIncidentDropdownSelected = false;
   bool isFirstLocationDropdownSelected = false;
+
+  bool isSubmitting = false;
 
   void _processData() {
     if (mounted) {
@@ -995,81 +999,117 @@ class _UserFormState extends State<UserForm> {
                                 ),
                               ),
                               //_formKey.currentState!.validate()
-                              onPressed: () async {
-                                if (isFirstIncidentDropdownSelected &&
-                                    isFirstLocationDropdownSelected &&
-                                    isRiskLevelSelected &&
-                                    (incidentSubType != '') &&
-                                    (SelectedSubLocationType != '')) {
-                                  int flag = await handleReportSubmitted(
-                                      context, this, returnedImage);
-                                  if (flag == 1) {
-                                    // Show loading indicator
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        content: Text('Report Submitted'),
-                                        duration: Duration(seconds: 3),
-                                      ));
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () async {
+                                      if (isFirstIncidentDropdownSelected &&
+                                          isFirstLocationDropdownSelected &&
+                                          isRiskLevelSelected &&
+                                          (incidentSubType != '') &&
+                                          (SelectedSubLocationType != '')) {
+                                        print("pressed");
+                                        int flag = await handleReportSubmitted(
+                                            context, this, returnedImage);
+                                        if (flag == 1) {
+                                          // Show loading indicator
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                              content: Text('Report Submitted'),
+                                              duration: Duration(seconds: 3),
+                                            ));
 
-                                      await Provider.of<UserReportsProvider>(
-                                              context,
-                                              listen: false)
-                                          .fetchReports(context)
-                                          .then((_) {
-                                        // Fetch reports completed, proceed with other tasks
-                                        setState(() {
-                                          returnedImage = null;
-                                          Provider.of<IncidentProviderClass>(
-                                                  context,
-                                                  listen: false)
-                                              .selectedIncident = null;
-                                          Provider.of<LocationProviderClass>(
-                                                  context,
-                                                  listen: false)
-                                              .selectedLocation = null;
-                                        });
-                                        _processData();
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  HomePage2()),
+                                            await Provider.of<
+                                                        UserReportsProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .fetchReports(context)
+                                                .then((_) {
+                                              // Fetch reports completed, proceed with other tasks
+                                              setState(() {
+                                                returnedImage = null;
+                                                Provider.of<IncidentProviderClass>(
+                                                        context,
+                                                        listen: false)
+                                                    .selectedIncident = null;
+                                                Provider.of<LocationProviderClass>(
+                                                        context,
+                                                        listen: false)
+                                                    .selectedLocation = null;
+                                              });
+                                              _processData();
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomePage2()),
+                                              );
+                                            });
+                                          } else {
+                                            throw Exception("not mounted");
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                              content: Text(
+                                                  'Failed to Submit Report'),
+                                              duration: Duration(seconds: 3),
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.redAccent,
+                                            content: Text(
+                                                'Please fill in all required fields'),
+                                          ),
                                         );
-                                      });
-                                    } else {
-                                      throw Exception("not mounted");
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        content:
-                                            Text('Failed to Submit Report'),
-                                        duration: Duration(seconds: 3),
-                                      ),
-                                    );
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      backgroundColor: Colors.redAccent,
-                                      content: Text(
-                                          'Please fill in all required fields'),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
-                                child: Text('Submit',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                                      }
+                                    },
+                              child: SizedBox(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0),
+                                  child: isSubmitting
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'Submitting',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            SizedBox(
+                                              height: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.02,
+                                              width: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.02,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : Text(
+                                          'Submit',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white),
+                                        ),
+                                ),
                               ),
                             )
                           ],
@@ -1179,40 +1219,57 @@ class _UserFormState extends State<UserForm> {
           );
         });
   }
-}
 
-Future<int> handleReportSubmitted(BuildContext context,
-    _UserFormState userFormState, XFile? selectedImage) async {
-  if (selectedImage != null) {
-    // Upload image first
-    //   bool imageUploaded = await uploadImage(selectedImage);
+  Future<int> handleReportSubmitted(BuildContext context,
+      _UserFormState userFormState, XFile? selectedImage) async {
+    setState(() {
+      isSubmitting = true;
+    });
+    // print(isSubmitting);
+    // await Future.delayed(Duration(seconds: 3));
+    // print("tesing submit button");
 
-    //if (imageUploaded) {
-    // If image upload is successful, proceed with report submission
-    ReportServices reportServices = ReportServices(context);
-    int flag = await reportServices.uploadReportWithImage(
-      userFormState.returnedImage,
-      //  userFormState.id,
-      userFormState.SelectedSubLocationType,
-      userFormState.incidentSubType,
-      userFormState.description,
-      userFormState.date,
-      userFormState.risklevel,
-    );
+    // print(isSubmitting);
 
-    return flag;
-  } else {
-    ReportServices reportServices = ReportServices(context);
-    int flag = await reportServices.postReport(
-      //userFormState.returnedImage,
-      //  userFormState.id,
-      userFormState.SelectedSubLocationType,
-      userFormState.incidentSubType,
-      userFormState.description,
-      userFormState.date,
-      userFormState.risklevel,
-      // userFormState.status,
-    );
-    return flag;
+    // return 0;
+
+    if (selectedImage != null) {
+      // Upload image first
+      //   bool imageUploaded = await uploadImage(selectedImage);
+
+      //if (imageUploaded) {
+      // If image upload is successful, proceed with report submission
+      ReportServices reportServices = ReportServices(context);
+      int flag = await reportServices.uploadReportWithImage(
+        userFormState.returnedImage,
+        //  userFormState.id,
+        userFormState.SelectedSubLocationType,
+        userFormState.incidentSubType,
+        userFormState.description,
+        userFormState.date,
+        userFormState.risklevel,
+      );
+      setState(() {
+        isSubmitting = false;
+      });
+
+      return flag;
+    } else {
+      ReportServices reportServices = ReportServices(context);
+      int flag = await reportServices.postReport(
+        //userFormState.returnedImage,
+        //  userFormState.id,
+        userFormState.SelectedSubLocationType,
+        userFormState.incidentSubType,
+        userFormState.description,
+        userFormState.date,
+        userFormState.risklevel,
+        // userFormState.status,
+      );
+      setState(() {
+        isSubmitting = false;
+      });
+      return flag;
+    }
   }
 }
