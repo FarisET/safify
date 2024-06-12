@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/utils/string_utils.dart';
 
 import '../User Module/providers/fetch_user_report_provider.dart';
 
@@ -74,7 +75,7 @@ class _UserReportTileState extends State<UserReportTile> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                        '${item.incidentCriticalityLevel}',
+                                        '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
                                         style: TextStyle(
                                             color: item
                                                     .incidentCriticalityLevel!
@@ -105,6 +106,7 @@ class _UserReportTileState extends State<UserReportTile> {
                               ],
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.edit, color: Colors.blue, size: 20),
                                 Expanded(
@@ -190,12 +192,13 @@ class _UserReportTileState extends State<UserReportTile> {
                                         Icon(
                                           Icons.image,
                                           size: 16,
+                                          color: Colors.blue,
                                         ),
                                         SizedBox(
                                           width: 5,
                                         ),
                                         Text(
-                                          'Image  ',
+                                          'Image',
                                           style: TextStyle(color: Colors.blue),
                                         ),
                                       ],
@@ -203,16 +206,17 @@ class _UserReportTileState extends State<UserReportTile> {
                                   ),
                                 ),
                                 item.status!.contains('completed')
-                                    ? Text('completed',
+                                    ? Text('Completed',
                                         style: TextStyle(
                                             color: Colors.green,
                                             fontWeight: FontWeight.bold))
                                     : item.status!.contains('in progress')
-                                        ? Text('in progress',
+                                        ? Text('In progress',
                                             style: TextStyle(
                                                 color: Colors.orange,
                                                 fontWeight: FontWeight.bold))
-                                        : Text('${item.status}',
+                                        : Text(
+                                            '${capitalizeFirstLetter(item.status)}',
                                             style: TextStyle(
                                                 color: Colors.red,
                                                 fontWeight: FontWeight.bold))

@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Action Team Module/pages/action_report_form.dart';
@@ -77,21 +78,18 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                   //     fontWeight: FontWeight.bold,
                                   //   ),
                                   //   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Text(
-                                        '${item.incident_criticality_level}',
-                                        style: TextStyle(
-                                            color: item
-                                                    .incident_criticality_level!
-                                                    .contains('minor')
-                                                ? Colors.green
-                                                : (item.incident_criticality_level!
-                                                        .contains('serious')
-                                                    ? Colors.orange
-                                                    : Colors.red),
-                                            fontWeight: FontWeight.bold)),
-                                  ),
+                                  Text(
+                                      '${capitalizeFirstLetter(item.incident_criticality_level)}',
+                                      style: TextStyle(
+                                          color: item
+                                                  .incident_criticality_level!
+                                                  .contains('minor')
+                                              ? Colors.green
+                                              : (item.incident_criticality_level!
+                                                      .contains('serious')
+                                                  ? Colors.orange
+                                                  : Colors.red),
+                                          fontWeight: FontWeight.bold))
                                 ],
                               ),
                             ),
@@ -276,7 +274,8 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                             style: TextStyle(
                                                 color: Colors.orange,
                                                 fontWeight: FontWeight.bold))
-                                        : Text('${item.status}',
+                                        : Text(
+                                            '${capitalizeFirstLetter(item.status)}',
                                             style: TextStyle(
                                                 color: Colors.green,
                                                 fontWeight: FontWeight.bold)),
