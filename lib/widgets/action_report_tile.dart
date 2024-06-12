@@ -301,6 +301,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                             vertical: 0),
                                         child: Row(
                                           children: const [
+                                            Icon(Icons.image,
+                                                size: 16, color: Colors.blue),
                                             SizedBox(
                                               width: 5,
                                             ),
@@ -347,7 +349,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         style: item.status!.contains('approved')
                                             ? TextStyle(
                                                 color: Colors.greenAccent)
-                                            : TextStyle(color: Colors.yellow),
+                                            : TextStyle(
+                                                color: Colors.amber.shade700),
                                       ),
                                     ),
                                   ),
