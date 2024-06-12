@@ -49,6 +49,7 @@ dependencies:
   firebase_messaging: ^14.9.4
   bitmap: ^0.2.0
   lottie: ^3.1.2
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -11,6 +11,7 @@ import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -134,7 +135,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 title: const Text('Total Incidents Reported'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
-                  child: Text(countReportedProvider!),
+                  child: Text(countReportedProvider != null
+                      ? countReportedProvider!
+                      : ''),
                 ),
               ),
             ),
@@ -157,7 +160,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 title: const Text('Total Incidents Resolved'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
-                  child: Text(countResolvedProvider!),
+                  child: Text(countResolvedProvider != null
+                      ? countResolvedProvider!
+                      : ''),
                 ),
               ),
             ),
@@ -390,3 +395,85 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
 //   ActionTeamEfficiency(this.action_team_name, this.efficiency_value);
 // }
+
+ Shimmer.fromColors(
+      baseColor: Colors.grey[300],
+      highlightColor: Colors.grey[100],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          elevation: 3,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.category,
+                      color: Colors.blue,
+                      size: 31,
+                    ),
+                    Text(
+                      'Types of Incidents Breakdown',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text('')
+                  ],
+                ),
+                SizedBox(
+                  height: 200,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  width: double.infinity,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
