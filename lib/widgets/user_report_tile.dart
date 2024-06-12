@@ -72,21 +72,17 @@ class _UserReportTileState extends State<UserReportTile> {
                                   //     fontWeight: FontWeight.bold,
                                   //   ),
                                   //   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Text(
-                                        '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
-                                        style: TextStyle(
-                                            color: item
-                                                    .incidentCriticalityLevel!
-                                                    .contains('minor')
-                                                ? Colors.green
-                                                : (item.incidentCriticalityLevel!
-                                                        .contains('serious')
-                                                    ? Colors.orange
-                                                    : Colors.red),
-                                            fontWeight: FontWeight.bold)),
-                                  ),
+                                  Text(
+                                      '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
+                                      style: TextStyle(
+                                          color: item.incidentCriticalityLevel!
+                                                  .contains('minor')
+                                              ? Colors.green
+                                              : (item.incidentCriticalityLevel!
+                                                      .contains('serious')
+                                                  ? Colors.orange
+                                                  : Colors.red),
+                                          fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),

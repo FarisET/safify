@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
+import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Admin Module/admin_pages/assign_form.dart';
@@ -65,6 +66,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 0.0),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -76,21 +78,17 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Text(
-                                        '${item.incidentCriticalityLevel}',
-                                        style: TextStyle(
-                                            color: item
-                                                    .incidentCriticalityLevel!
-                                                    .contains('minor')
-                                                ? Colors.green
-                                                : (item.incidentCriticalityLevel!
-                                                        .contains('serious')
-                                                    ? Colors.orange
-                                                    : Colors.red),
-                                            fontWeight: FontWeight.bold)),
-                                  ),
+                                  Text(
+                                      '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
+                                      style: TextStyle(
+                                          color: item.incidentCriticalityLevel!
+                                                  .contains('minor')
+                                              ? Colors.green
+                                              : (item.incidentCriticalityLevel!
+                                                      .contains('serious')
+                                                  ? Colors.orange
+                                                  : Colors.red),
+                                          fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
@@ -99,6 +97,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   MediaQuery.of(context).size.height * 0.005,
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 '${item.status}'.contains('open')
                                     ? Icon(Icons.start,
@@ -110,7 +109,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                         : Icon(Icons.check,
                                             color: Colors.greenAccent,
                                             size: 20),
-                                Text(' ${item.status}')
+                                Text(' ${capitalizeFirstLetter(item.status)}')
                               ],
                             ),
                             SizedBox(
@@ -118,6 +117,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   MediaQuery.of(context).size.height * 0.005,
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.location_city,
                                     color: Colors.blue, size: 20),
@@ -140,6 +140,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   MediaQuery.of(context).size.height * 0.005,
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.edit, color: Colors.blue, size: 20),
                                 Expanded(
@@ -405,8 +406,13 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                         vertical: 0),
                                     child: Row(
                                       children: const [
+                                        Icon(
+                                          Icons.image,
+                                          size: 16,
+                                          color: Colors.blue,
+                                        ),
                                         SizedBox(
-                                          width: 5,
+                                          width: 10,
                                         ),
                                         Text('Image',
                                             style:
