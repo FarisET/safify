@@ -232,7 +232,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[300],
+                                  color: Colors.blue,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Padding(
@@ -290,7 +290,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                           text: 'User Reports',
                         ),
                         Tab(
-                          text: 'Action Team Reports',
+                          text: 'Action Reports',
                         ),
                       ],
                     ),

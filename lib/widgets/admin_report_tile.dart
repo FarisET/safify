@@ -66,29 +66,41 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 0.0),
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    item.incidentSubtypeDescription!,
-                                    style: TextStyle(
-                                      color: Colors.blue[800],
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                  Flexible(
+                                    flex: 70,
+                                    child: Text(
+                                      item.incidentSubtypeDescription!,
+                                      style: TextStyle(
+                                        color: Colors.blue[800],
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                      '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
-                                      style: TextStyle(
-                                          color: item.incidentCriticalityLevel!
-                                                  .contains('minor')
-                                              ? Colors.green
-                                              : (item.incidentCriticalityLevel!
-                                                      .contains('serious')
-                                                  ? Colors.orange
-                                                  : Colors.red),
-                                          fontWeight: FontWeight.bold)),
+                                  Flexible(
+                                    flex: 30,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 4.0),
+                                      child: Text(
+                                          '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: item
+                                                      .incidentCriticalityLevel!
+                                                      .contains('minor')
+                                                  ? Colors.green
+                                                  : (item.incidentCriticalityLevel!
+                                                          .contains('serious')
+                                                      ? Colors.orange
+                                                      : Colors.red),
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -310,8 +322,9 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                           },
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.white),
+                                                WidgetStatePropertyAll(
+                                                    Color.fromARGB(
+                                                        255, 255, 255, 255)),
                                             // Add elevation for a raised effect
                                             elevation: MaterialStateProperty
                                                 .all<double>(
@@ -334,8 +347,8 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                                           color: Colors.yellow))
                                                   : Text('Assign',
                                                       style: TextStyle(
-                                                          color:
-                                                              Colors.yellow))),
+                                                          color: Colors.amber
+                                                              .shade600))),
                                         ),
                                       ),
                                     )

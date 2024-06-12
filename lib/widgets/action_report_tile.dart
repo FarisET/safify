@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
+import 'package:safify/styles/app_theme.dart';
 import '../Action Team Module/providers/all_action_reports_approveal_provider.dart';
 import '../Action Team Module/providers/all_action_reports_provider.dart';
 import '../User Module/services/ReportServices.dart';
@@ -282,14 +283,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                           );
                                         }
                                       },
-                                      style: ButtonStyle(
-                                        backgroundColor: WidgetStatePropertyAll(
-                                            Color.fromARGB(255, 248, 249, 255)),
-                                        // Add elevation for a raised effect
-                                        elevation:
-                                            MaterialStateProperty.all<double>(
-                                                4.0), // Adjust as needed
-                                      ),
+                                      style: imgButtonStyle,
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: MediaQuery.of(context)
@@ -300,13 +294,17 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                 : 12.0,
                                             vertical: 0),
                                         child: Row(
-                                          children: const [
+                                          children: [
+                                            Icon(Icons.image,
+                                                size: 16, color: Colors.blue),
                                             SizedBox(
                                               width: 5,
                                             ),
-                                            Text('Image',
-                                                style: TextStyle(
-                                                    color: Colors.blue)),
+                                            Text(
+                                              'Image',
+                                              style:
+                                                  TextStyle(color: Colors.blue),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -347,7 +345,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         style: item.status!.contains('approved')
                                             ? TextStyle(
                                                 color: Colors.greenAccent)
-                                            : TextStyle(color: Colors.yellow),
+                                            : TextStyle(
+                                                color: Colors.amber.shade700),
                                       ),
                                     ),
                                   ),
