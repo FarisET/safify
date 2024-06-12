@@ -40,6 +40,8 @@ class _ActionReportState extends State<ActionReportForm>
 
   bool isSubmitting = false;
 
+  bool proofOfWorkError = false;
+
   ImageUtils imageUtils = ImageUtils();
 
   @override
@@ -163,6 +165,8 @@ class _ActionReportState extends State<ActionReportForm>
           ),
         ),
         body: Form(
+          // autovalidateMode: AutovalidateMode
+          // .onUserInteraction, // Validation occurs when the user interacts with the form
           key: _formKey,
           child: TabBarView(
             controller: _tabController,
@@ -181,61 +185,81 @@ class _ActionReportState extends State<ActionReportForm>
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: reportedByController,
-                            decoration: InputDecoration(
-                              labelText: 'Reported By',
-                              hintText: 'Enter your name',
-                              prefixIcon:
-                                  Icon(Icons.person, color: Colors.blue),
-                              fillColor: Colors.blue,
-                              labelStyle: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.normal,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextFormField(
+                                controller: reportedByController,
+                                decoration: InputDecoration(
+                                  labelText: 'Reported By',
+                                  hintText: 'Enter your name',
+                                  prefixIcon:
+                                      Icon(Icons.person, color: Colors.blue),
+                                  fillColor: Colors.blue,
+                                  labelStyle: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blue),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.green),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '* Required';
+                                  }
+                                  return null;
+                                },
+                                //                  onChanged: (value) => setState(() => description = value),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Enter Something';
-                              }
-                              return null;
-                            },
-                            //                  onChanged: (value) => setState(() => description = value),
+                              // requiredLabel(true),
+                            ],
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: incidentController,
-                            decoration: InputDecoration(
-                              labelText: 'Incident detail',
-                              hintText: 'Describe the incident in detail',
-                              prefixIcon:
-                                  Icon(Icons.description, color: Colors.blue),
-                              fillColor: Colors.blue,
-                              labelStyle: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.normal,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                controller: incidentController,
+                                decoration: InputDecoration(
+                                  labelText: 'Incident detail',
+                                  hintText: 'Describe the incident in detail',
+                                  prefixIcon: Icon(Icons.description,
+                                      color: Colors.blue),
+                                  fillColor: Colors.blue,
+                                  labelStyle: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blue),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.green),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
+                                //                  onChanged: (value) => setState(() => description = value),
+                                maxLength: 200,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                            ),
-                            //                  onChanged: (value) => setState(() => description = value),
-                            maxLength: 200,
+                            ],
                           ),
                         ),
                         Padding(
@@ -251,69 +275,6 @@ class _ActionReportState extends State<ActionReportForm>
                               ),
                               onPressed: () {
                                 _showBottomSheet1();
-                                // showModalBottomSheet(
-                                //   context: context,
-                                //   builder: (BuildContext context) {
-                                //     return ClipRRect(
-                                //       clipBehavior: Clip.hardEdge,
-                                //       child: SizedBox(
-                                //         width:
-                                //             MediaQuery.of(context).size.width,
-                                //         child: Padding(
-                                //           padding: const EdgeInsets.all(12.0),
-                                //           child: Wrap(
-                                //             direction: Axis.horizontal,
-                                //             alignment:
-                                //                 WrapAlignment.spaceAround,
-                                //             children: [
-                                //               Column(
-                                //                 children: [
-                                //                   IconButton(
-                                //                     onPressed: () {
-                                //                       _pickImageFromCamera1();
-                                //                     },
-                                //                     icon: Icon(Icons.camera),
-                                //                     iconSize: 50,
-                                //                     color: Colors.blue,
-                                //                   ),
-                                //                   Text(
-                                //                     'Camera',
-                                //                     style: TextStyle(
-                                //                       color: Colors.blue,
-                                //                       fontWeight:
-                                //                           FontWeight.bold,
-                                //                     ),
-                                //                   ),
-                                //                 ],
-                                //               ),
-                                //               Column(
-                                //                 children: [
-                                //                   IconButton(
-                                //                     onPressed: () {
-                                //                       _pickImageFromGallery1();
-                                //                     },
-                                //                     icon: Icon(
-                                //                         Icons.browse_gallery),
-                                //                     iconSize: 50,
-                                //                     color: Colors.blue,
-                                //                   ),
-                                //                   Text(
-                                //                     'Gallery',
-                                //                     style: TextStyle(
-                                //                       color: Colors.blue,
-                                //                       fontWeight:
-                                //                           FontWeight.bold,
-                                //                     ),
-                                //                   ),
-                                //                 ],
-                                //               ),
-                                //             ],
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     );
-                                //   },
-                                // );
                               },
                               child: Padding(
                                 padding:
@@ -530,6 +491,8 @@ class _ActionReportState extends State<ActionReportForm>
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: TextFormField(
+                          validator: (value) =>
+                              value!.isEmpty ? '*Required' : null,
                           controller: resolutionDescController,
                           decoration: InputDecoration(
                             labelText: 'Resolution',
@@ -549,6 +512,14 @@ class _ActionReportState extends State<ActionReportForm>
                               borderSide: BorderSide(color: Colors.green),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
                           ),
                           //  onChanged: (value) => setState(() => resolutionDescController = value),
                           maxLines: 3,
@@ -556,90 +527,52 @@ class _ActionReportState extends State<ActionReportForm>
                       ),
                       Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: OutlinedButton(
-                            style: ElevatedButton.styleFrom(
-                              side: BorderSide(color: Colors.blue),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: OutlinedButton(
+                                style: ElevatedButton.styleFrom(
+                                  side: BorderSide(
+                                      color: proofOfWorkError
+                                          ? Colors.red
+                                          : Colors.blue),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _showBottomSheet();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 22.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.attach_file,
+                                          color: proofOfWorkError
+                                              ? Colors.red
+                                              : Colors.blue),
+                                      Text(
+                                        workPrfImg != null
+                                            ? 'Image Added'
+                                            : 'Proof of work',
+                                        style: TextStyle(
+                                            color: proofOfWorkError
+                                                ? Colors.red
+                                                : Colors.blue),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                            onPressed: () {
-                              _showBottomSheet();
-                              // showModalBottomSheet(
-                              //   context: context,
-                              //   builder: (BuildContext context) {
-                              //     return ClipRRect(
-                              //       clipBehavior: Clip.hardEdge,
-                              //       child: SizedBox(
-                              //         width: MediaQuery.of(context).size.width,
-                              //         child: Padding(
-                              //           padding: const EdgeInsets.all(12.0),
-                              //           child: Wrap(
-                              //             direction: Axis.horizontal,
-                              //             alignment: WrapAlignment.spaceAround,
-                              //             children: [
-                              //               Column(
-                              //                 children: [
-                              //                   IconButton(
-                              //                     onPressed: () {
-                              //                       _pickImageFromCamera();
-                              //                     },
-                              //                     icon: Icon(Icons.camera),
-                              //                     iconSize: 50,
-                              //                     color: Colors.blue,
-                              //                   ),
-                              //                   Text(
-                              //                     'Camera',
-                              //                     style: TextStyle(
-                              //                       color: Colors.blue,
-                              //                       fontWeight: FontWeight.bold,
-                              //                     ),
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //               Column(
-                              //                 children: [
-                              //                   IconButton(
-                              //                     onPressed: () {
-                              //                       _pickImageFromGallery();
-                              //                     },
-                              //                     icon: Icon(
-                              //                         Icons.browse_gallery),
-                              //                     iconSize: 50,
-                              //                     color: Colors.blue,
-                              //                   ),
-                              //                   Text(
-                              //                     'Gallery',
-                              //                     style: TextStyle(
-                              //                       color: Colors.blue,
-                              //                       fontWeight: FontWeight.bold,
-                              //                     ),
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //             ],
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     );
-                              //   },
-                              // );
-                            },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 22.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.attach_file),
-                                  Text(workPrfImg != null
-                                      ? 'Image Added'
-                                      : 'Proof of work'),
-                                ],
-                              ),
-                            ),
-                          ),
+                            Visibility(
+                                visible: proofOfWorkError,
+                                child: requiredLabel(true)),
+                          ],
                         ),
                       ),
                       Row(
@@ -655,6 +588,7 @@ class _ActionReportState extends State<ActionReportForm>
                               onPressed: isSubmitting
                                   ? null
                                   : () async {
+                                      _formKey.currentState!.validate();
                                       if (workPrfImg != null &&
                                           resolutionDescController
                                               .text.isNotEmpty &&
@@ -712,6 +646,11 @@ class _ActionReportState extends State<ActionReportForm>
                                           );
                                         }
                                       } else {
+                                        if (workPrfImg == null) {
+                                          setState(() {
+                                            proofOfWorkError = true;
+                                          });
+                                        }
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
@@ -771,7 +710,33 @@ class _ActionReportState extends State<ActionReportForm>
     );
   }
 
+  Padding requiredLabel(bool isRequired) {
+    return isRequired
+        ? Padding(
+            padding: const EdgeInsets.only(top: 2, left: 8),
+            child: Text("* Required",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 12,
+                )),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(top: 2, left: 8),
+            child: Text(
+              ' (optional)',
+              style: TextStyle(
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12),
+            ),
+          );
+  }
+
   void _showBottomSheet() {
+    setState(() {
+      proofOfWorkError = false;
+    });
+
     showModalBottomSheet(
         context: context,
         shape: const RoundedRectangleBorder(
@@ -937,6 +902,7 @@ class _ActionReportState extends State<ActionReportForm>
 
   Future<int> handleReportSubmitted(
       BuildContext context, _ActionReportState userFormState) async {
+    _formKey.currentState!.validate();
     setState(() {
       isSubmitting = true;
     });

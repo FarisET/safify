@@ -232,8 +232,8 @@ class MyApp extends StatelessWidget {
             titleMedium: GoogleFonts.roboto(),
             bodyLarge: GoogleFonts.openSans(),
             bodyMedium: GoogleFonts.openSans(),
-            bodySmall: GoogleFonts.pacifico(),
-            displaySmall: GoogleFonts.pacifico(),
+            bodySmall: GoogleFonts.roboto(),
+            displaySmall: GoogleFonts.roboto(),
           ),
 
           colorScheme: ColorScheme.fromSwatch().copyWith(
