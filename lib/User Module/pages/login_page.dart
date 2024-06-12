@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController cpassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   UserServices userServices = UserServices();
+
+  bool isSubmitting = false;
 
   @override
   void initState() {
@@ -109,13 +112,41 @@ class _LoginPageState extends State<LoginPage> {
                             closeApp();
                           },
                           child: Text('CANCEL')),
-                      ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              handleSubmitted(context);
-                            }
-                          },
-                          child: Text('Login'))
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.05,
+                        // width: MediaQuery.sizeOf(context).height * 0.1,
+                        child: ElevatedButton(
+                            onPressed: isSubmitting
+                                ? null
+                                : () {
+                                    if (_formKey.currentState!.validate()) {
+                                      handleSubmitted(context);
+                                    }
+                                  },
+                            child: isSubmitting
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('Loading'),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.025,
+                                        width:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.025,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.grey,
+                                          // strokeWidth: 3,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Text('Login')),
+                      )
                     ],
                   ),
                 ),
@@ -165,6 +196,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void handleSubmitted(BuildContext context) async {
+    setState(() {
+      isSubmitting = true;
+    });
+
     UserServices userServices = UserServices();
     final loginSuccessful = await userServices.login(
         cuserid.text.toString(), cpassword.text.toString());
@@ -201,6 +236,9 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     }
+    setState(() {
+      isSubmitting = false;
+    });
   }
 
   void closeApp() {
