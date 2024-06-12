@@ -10,6 +10,7 @@ import 'package:safify/Admin%20Module/providers/delete_action_report_provider.da
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
+import 'package:safify/User%20Module/pages/splash_screen.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -253,7 +254,9 @@ class MyApp extends StatelessWidget {
                 const ErrorPage(), // Replace with your error handling page
           );
         },
-        home: initialScreen,
+        home: SplashScreen(
+          initalWidget: initialScreen!,
+        ),
         debugShowCheckedModeBanner: false,
         routes: {
           '/home_page': (context) => const HomePage2(),

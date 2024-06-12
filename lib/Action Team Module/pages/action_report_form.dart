@@ -338,10 +338,27 @@ class _ActionReportState extends State<ActionReportForm>
                                     MediaQuery.sizeOf(context).width * 0.05,
                                 vertical:
                                     MediaQuery.sizeOf(context).height * 0.02),
-                            child: Text(
-                              'Answer the series of quesitons to find the root cause of the incident',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Answer the series of questions to find the root cause of the incident',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.01,
+                                ),
+                                Text(
+                                  'Note: The root cause is the underlying reason for the incident. It is the cause that, if corrected, would prevent the incident from happening again. The five whys technique is a simple but effective tool for uncovering the root cause of a problem.',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic),
+                                ),
+                              ],
                             )),
                         Stepper(
                           currentStep: _currentStep,
