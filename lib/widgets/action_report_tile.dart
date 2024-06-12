@@ -42,11 +42,11 @@ class _ActionReportTileState extends State<ActionReportTile> {
             return Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -87,39 +87,54 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 )
                               ],
                             ),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.timer, color: Colors.blue, size: 20),
-                                Text(
-                                    ' ${item.date_time?.split('T')[0]} | ${item.date_time?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: Text(
+                                      '${item.date_time?.split('T')[0]} | ${item.date_time?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}'),
+                                )
                               ],
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.edit, color: Colors.blue, size: 20),
                                 Expanded(
-                                  child: Text(
-                                    ' ${item.report_description}',
-                                    style: TextStyle(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text(
+                                      '${item.report_description}',
+                                      style: TextStyle(),
+                                    ),
                                   ),
                                 )
                               ],
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.check, color: Colors.blue, size: 20),
                                 Expanded(
-                                  child: Text(
-                                    ' ${item.resolution_description}',
-                                    style: TextStyle(
-                                        color: Colors.blue[700],
-                                        fontWeight: FontWeight.bold),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text(
+                                      '${item.resolution_description}',
+                                      style: TextStyle(
+                                          color: Colors.blue[700],
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 )
                               ],
                             ),
                             SizedBox(
-                              height: 30,
+                              height: MediaQuery.sizeOf(context).height * 0.04,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,9 +283,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         }
                                       },
                                       style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
+                                        backgroundColor: WidgetStatePropertyAll(
+                                            Color.fromARGB(255, 248, 249, 255)),
                                         // Add elevation for a raised effect
                                         elevation:
                                             MaterialStateProperty.all<double>(
@@ -316,9 +330,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                       }
                                     },
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.white),
+                                      backgroundColor: WidgetStatePropertyAll(
+                                          Color.fromARGB(255, 255, 255, 255)),
                                       // Add elevation for a raised effect
                                       elevation:
                                           MaterialStateProperty.all<double>(

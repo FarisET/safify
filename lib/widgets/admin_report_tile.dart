@@ -48,14 +48,14 @@ class _AdminReportTileState extends State<AdminReportTile> {
                 //         ? Colors.orange[100]
                 //         : Colors.[100]),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 // side: BorderSide(
                 //   // color: item.status!.contains('open')?Colors.redAccent:Colors.greenAccent,
                 //    width:1)),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -388,13 +388,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                     }
                                   },
                                   style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
+                                    backgroundColor: WidgetStatePropertyAll(
+                                        Color.fromARGB(255, 250, 251, 255)),
                                     // Add elevation for a raised effect
-                                    elevation:
-                                        MaterialStateProperty.all<double>(
-                                            4.0), // Adjust as needed
+                                    elevation: WidgetStatePropertyAll(
+                                        4), // Adjust as needed
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
