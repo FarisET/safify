@@ -5,13 +5,13 @@ import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawerTemp extends StatelessWidget {
   final String totalIncidentsReported;
   final String totalIncidentsResolved;
   final List<CountByIncidentSubTypes>? incidentSubtypeBreakdown;
   final List<CountByLocation>? incidentLocationBreakdown;
   final List<ActionTeamEfficiency>? actionTeamEfficiencyBreakdown;
-  AppDrawer({
+  AppDrawerTemp({
     required this.totalIncidentsReported,
     required this.totalIncidentsResolved,
     required this.incidentSubtypeBreakdown,

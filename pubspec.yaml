@@ -48,6 +48,8 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   firebase_messaging: ^14.9.4
   bitmap: ^0.2.0
+  image_editor: ^1.0.2
+  image: ^4.2.0
 
 dev_dependencies:
   flutter_test:

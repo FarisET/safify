@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/update_user_report_status.dart';
+import 'package:safify/Admin%20Module/admin_pages/create_user_form.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
@@ -260,6 +261,7 @@ class MyApp extends StatelessWidget {
           '/form_page': (context) => const UserForm(),
           '/admin_home_page': (context) => const AdminHomePage(),
           '/action_team_home_page': (context) => const ActionTeamHomePage(),
+          '/create_user_form': (context) => const CreatUserForm()
         },
       ),
     );
