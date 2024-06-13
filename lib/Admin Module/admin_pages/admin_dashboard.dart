@@ -7,6 +7,7 @@ import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%
 import 'package:safify/Admin%20Module/providers/fetch_countOfSubtypes_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/components/shimmer_box.dart';
 import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
@@ -179,7 +180,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Consumer<CountByIncidentSubTypesProviderClass>(
       builder: (context, provider, child) {
         if (provider.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return ShimmerBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.sizeOf(context).height * 0.3,
+          );
         }
         final data = provider.countByIncidentSubTypes
                 ?.where((item) => item.incident_count! > 0)
@@ -243,7 +247,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Consumer<CountByLocationProviderClass>(
       builder: (context, provider, child) {
         if (provider.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return ShimmerBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.sizeOf(context).height * 0.3,
+          );
         }
         final data = provider.countByLocation
                 ?.where((item) => item.incident_count! > 0)
@@ -307,7 +314,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Consumer<ActionTeamEfficiencyProviderClass>(
         builder: (context, provider, child) {
       if (provider.loading) {
-        return const Center(child: CircularProgressIndicator());
+        return ShimmerBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.sizeOf(context).height * 0.3,
+        );
       }
       final data = provider.actionTeamEfficiency
               ?.where((item) => double.tryParse(item.efficiency_value!)! > 0)
@@ -395,85 +405,3 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
 //   ActionTeamEfficiency(this.action_team_name, this.efficiency_value);
 // }
-
- Shimmer.fromColors(
-      baseColor: Colors.grey[300],
-      highlightColor: Colors.grey[100],
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-          elevation: 3,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.category,
-                      color: Colors.blue,
-                      size: 31,
-                    ),
-                    Text(
-                      'Types of Incidents Breakdown',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    Text('')
-                  ],
-                ),
-                SizedBox(
-                  height: 200,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  width: double.infinity,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
