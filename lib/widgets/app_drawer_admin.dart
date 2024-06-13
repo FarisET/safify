@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:safify/User%20Module/services/pdf_download_service.dart';
 
 class AppDrawer extends StatelessWidget {
   final String? username;
@@ -88,6 +89,27 @@ class AppDrawer extends StatelessWidget {
                   onTap: () {
                     // Navigate to Add Category page
                     //  Navigator.pushNamed(context, '/addCategory');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.download,
+                      color: Theme.of(context).secondaryHeaderColor),
+                  title: Text(
+                    'Download PDF',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: mainHeaderSize,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                  onTap: () async {
+                    // Navigate to Add Category page
+                    //  Navigator.pushNamed(context, '/addCategory');
+                    final pdfService = PDFDownloadService();
+                    await pdfService.downloadPDF(
+                        'https://api.arya.ai/images/test.pdf', "dummy.pdf");
+                    // await Future.delayed(Duration(seconds: 1));
+                    print("Download PDF");
                   },
                 ),
               ],
