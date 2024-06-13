@@ -28,6 +28,22 @@ class ImageUtils {
     }
   }
 
+  Future<File?> pickImageFromCamera() async {
+    try {
+      XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        // Convert XFile to File
+        File file = File(pickedFile.path);
+        return file;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+      return null;
+    }
+  }
+
   Future<File?> imageToMemoryFile(ui.Image image) async {
     // Convert the Image to a Uint8List
     final ByteData? byteData = await image.toByteData(

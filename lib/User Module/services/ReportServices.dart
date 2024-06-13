@@ -251,7 +251,7 @@ class ReportServices {
   }
 
   Future<int> uploadReportWithImage(
-      XFile? imageFile,
+      File? imageFile,
       String sublocation,
       String incidentSubType,
       String description,

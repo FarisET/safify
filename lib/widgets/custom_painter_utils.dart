@@ -25,7 +25,7 @@ class DrawingPainter extends CustomPainter {
 
     Paint paint = Paint()
       ..color = Colors.red
-      ..strokeWidth = 5.0
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 
     for (int i = 0; i < points.length - 1; i++) {

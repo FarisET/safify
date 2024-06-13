@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:safify/widgets/custom_painter_utils.dart';
 
 class DrawingCanvas extends StatefulWidget {
@@ -14,8 +16,9 @@ class DrawingCanvas extends StatefulWidget {
 
 class _DrawingCanvasState extends State<DrawingCanvas> {
   List<Offset?> points = [];
-  late ui.Image _image;
+  ui.Image? _image;
   bool _isImageLoaded = false;
+  DrawingPainter? drawingPainter;
 
   @override
   void initState() {
@@ -36,17 +39,19 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(
         recorder,
-        Rect.fromPoints(Offset(0, 0),
-            Offset(_image.width.toDouble(), _image.height.toDouble())));
-
+        Rect.fromPoints(const Offset(0, 0),
+            Offset(_image!.width.toDouble(), _image!.height.toDouble())));
+    // Size imgSize = Size(_image!.width.toDouble(), _image!.height.toDouble());
+    // drawingPainter?.paint(canvas, imgSize);
     // Draw the image
     final paint = Paint();
-    canvas.drawImage(_image, Offset.zero, paint);
+
+    canvas.drawImage(_image!, Offset.zero, paint);
 
     // Draw the points
     final drawPaint = Paint()
       ..color = Colors.red
-      ..strokeWidth = 5.0
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
     for (int i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
@@ -55,7 +60,7 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
     }
 
     final picture = recorder.endRecording();
-    final img = await picture.toImage(_image.width, _image.height);
+    final img = await picture.toImage(_image!.width, _image!.height);
     return img;
   }
 
@@ -79,17 +84,20 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
       body: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            RenderBox renderBox = context.findRenderObject() as RenderBox;
-            points.add(renderBox.globalToLocal(details.globalPosition));
+            final RenderBox renderBox = context.findRenderObject() as RenderBox;
+            final offset = renderBox.globalToLocal(details.localPosition);
+            points.add(offset);
           });
         },
         onPanEnd: (details) {
           points.add(null); // Indicates end of drawing stroke
         },
-        child: CustomPaint(
-          painter: DrawingPainter(points, widget.imageStream),
-          child: Container(),
-        ),
+        child: _isImageLoaded
+            ? CustomPaint(
+                size: Size(_image!.width.toDouble(), _image!.height.toDouble()),
+                painter: DrawingPainter(points, widget.imageStream),
+              )
+            : const Center(child: CircularProgressIndicator()),
       ),
     );
   }
