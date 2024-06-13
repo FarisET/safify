@@ -51,6 +51,10 @@ void main() async {
       FlutterLocalNotificationsPlugin();
   await Notifications.initialize(flutterLocalNotificationsPlugin);
 
+  var androidInitSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  var iosinitSettings = DarwinInitializationSettings();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
