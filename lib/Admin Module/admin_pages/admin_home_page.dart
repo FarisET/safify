@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
 import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
+import 'package:safify/widgets/app_drawer_admin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -80,6 +81,7 @@ class _AdminHomePageState extends State<AdminHomePage>
     // final actionTeamEfficiencyProvider =
     //     Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
     //         .actionTeamEfficiency;
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     double screenHeight = MediaQuery.of(context).size.height;
     double containerHeight = screenHeight * 0.7;
@@ -87,16 +89,23 @@ class _AdminHomePageState extends State<AdminHomePage>
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: Image.asset('assets/images/safify_icon.png'),
-              onPressed: () =>
-                  Scaffold.of(context).openDrawer(), // Open drawer on tap
-            ),
+            child: Builder(builder: (context) {
+              return IconButton(
+                icon: Icon(
+                  Icons.menu,
+                  color: Theme.of(context).primaryColor,
+                ),
+                // onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                onPressed: () =>
+                    Scaffold.of(context).openDrawer(), // Open drawer on tap
+              );
+            }),
           ),
           title: Text(
             "Home",
@@ -159,13 +168,9 @@ class _AdminHomePageState extends State<AdminHomePage>
             ),
           ],
         ),
-        // drawer: AppDrawer(
-        //   totalIncidentsReported: countReportedProvider ?? 'null value',
-        //   totalIncidentsResolved: countResolvedProvider ?? 'null value',
-        //   incidentSubtypeBreakdown: countByIncidentSubTypeProvider,
-        //   incidentLocationBreakdown: countByLocationProvider,
-        //   actionTeamEfficiencyBreakdown: actionTeamEfficiencyProvider,
-        // ),
+        drawer: AppDrawer(
+          username: user_id!,
+        ),
 
         //     backgroundColor: Colors.blue[600],
         body: SafeArea(

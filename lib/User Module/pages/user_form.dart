@@ -1,13 +1,17 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/models/location.dart';
+import 'package:safify/widgets/drawing_canvas_utils.dart';
+import 'package:safify/widgets/image_utils.dart';
 
 import '../../models/ sub_location.dart';
 import '../../models/incident_sub_type.dart';
@@ -43,7 +47,10 @@ class _UserFormState extends State<UserForm> {
   bool _confirmedExit = false;
   bool isFirstIncidentDropdownSelected = false;
   bool isFirstLocationDropdownSelected = false;
-
+  File? _imageFile;
+  final ImageUtils _imageService = ImageUtils();
+  bool _isEditing = false;
+  ImageStream? _imageStream;
   bool isSubmitting = false;
 
   void _processData() {
@@ -78,9 +85,9 @@ class _UserFormState extends State<UserForm> {
   String? SelectedIncidentType;
   String? SelectedLocationType;
   String SelectedSubLocationType = '';
-  XFile? returnedImage;
+  File? returnedImage;
   bool isRiskLevelSelected = false;
-
+  ImageUtils imageUtils = ImageUtils();
   DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
         type, type.Incident_Type_ID, type.Incident_Type_Description
@@ -107,6 +114,12 @@ class _UserFormState extends State<UserForm> {
         type, type.Sub_Location_ID, type.Sub_Location_Name
         // Add the condition to check if it's selected based on your logic
         );
+  }
+
+  void _editImage() {
+    setState(() {
+      _isEditing = true;
+    });
   }
 
   @override
@@ -187,7 +200,7 @@ class _UserFormState extends State<UserForm> {
               Navigator.of(context).pop();
             },
           ),
-          title: Text("SAFIFY",
+          title: Text("Report an Incident",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -1126,15 +1139,79 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
+  Future<void> _pickImageGallery(BuildContext context) async {
+    ImageUtils imageUtils = ImageUtils();
+    File? image = await imageUtils.pickImageFromGallery();
+    if (image != null) {
+      // Create an ImageStream from the selected image
+      final ImageStream imageStream =
+          FileImage(image).resolve(ImageConfiguration());
+
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream)),
+      );
+
+      if (editedImage != null) {
+        File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+        setState(() {
+          returnedImage = finalImg;
+        });
+        Fluttertoast.showToast(msg: 'Image edited and saved');
+      } else {
+        setState(() {
+          returnedImage = image;
+        });
+        Fluttertoast.showToast(msg: 'Image editing failed');
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'No Image Selected');
+    }
+  }
+
+  Future<void> _pickImageCamera(BuildContext context) async {
+    ImageUtils imageUtils = ImageUtils();
+    File? image = await imageUtils.pickImageFromCamera();
+    if (image != null) {
+      // Create an ImageStream from the selected image
+      final ImageStream imageStream =
+          FileImage(image).resolve(ImageConfiguration());
+
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream)),
+      );
+
+      if (editedImage != null) {
+        File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+        setState(() {
+          returnedImage = finalImg;
+        });
+        Fluttertoast.showToast(msg: 'Image edited and saved');
+      } else {
+        setState(() {
+          returnedImage = image;
+        });
+        Fluttertoast.showToast(msg: 'Image editing failed');
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'No Image Selected');
+    }
+  }
+
   Future _pickImageFromGallery() async {
     XFile? returnedImage1 =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        (await ImagePicker().pickImage(source: ImageSource.gallery));
     //  if (returnedImage != null) {
     //    uploadImage(returnedImage);
 
     if (returnedImage1 != null) {
       setState(() {
-        returnedImage = returnedImage1;
+        returnedImage = returnedImage1 as File?;
       });
       //  Fluttertoast.showToast(msg: 'Image captured');
       Navigator.pop(context);
@@ -1144,23 +1221,43 @@ class _UserFormState extends State<UserForm> {
     }
   }
 
-  Future _pickImageFromCamera() async {
-    XFile? returnedImage1 =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    //  if (returnedImage != null) {
-    //    uploadImage(returnedImage);
+  // Future _pickImageFromCamera() async {
+  //   XFile? returnedImage1 =
+  //       (await ImagePicker().pickImage(source: ImageSource.camera));
+  //   //  if (returnedImage != null) {
+  //   //    uploadImage(returnedImage);
 
-    if (returnedImage1 != null) {
-      setState(() {
-        returnedImage = returnedImage1;
-      });
-      //   Fluttertoast.showToast(msg: 'Image captured');
-      Navigator.pop(context);
-    } else {
-      Text('No image selected');
-      Navigator.pop(context);
-    }
-  }
+  //   if (returnedImage1 != null) {
+  //     setState(() {
+  //       returnedImage = returnedImage1 as File?;
+  //     });
+  //     //  Fluttertoast.showToast(msg: 'Image captured');
+  //     Navigator.pop(context);
+  //   } else {
+  //     Text('No image selected');
+  //     Navigator.pop(context);
+  //   }
+  // }
+
+  // Future _pickImageFromCamera() async {
+  //   XFile? returnedImage1 =
+  //       (await ImagePicker().pickImage(source: ImageSource.camera));
+  //   //  if (returnedImage != null) {
+  //   //    uploadImage(returnedImage);
+
+  //   if (returnedImage1 != null) {
+  //     setState(() {
+  //       returnedImage = returnedImage1;
+  //       _isEditing = false;
+  //       _imageStream = FileImage(_imageFile!).resolve(ImageConfiguration());
+  //     });
+  //     //   Fluttertoast.showToast(msg: 'Image captured');
+  //     Navigator.pop(context);
+  //   } else {
+  //     Text('No image selected');
+  //     Navigator.pop(context);
+  //   }
+  // }
 
   void _showBottomSheet() {
     showModalBottomSheet(
@@ -1198,7 +1295,8 @@ class _UserFormState extends State<UserForm> {
                           fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
                               MediaQuery.sizeOf(context).height * .15)),
                       onPressed: () async {
-                        _pickImageFromCamera();
+                        // _pickImageFromCamera();
+                        _pickImageCamera(context);
                       },
                       child: Image.asset('assets/images/camera.png')),
 
@@ -1210,7 +1308,8 @@ class _UserFormState extends State<UserForm> {
                           fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
                               MediaQuery.sizeOf(context).height * .15)),
                       onPressed: () async {
-                        _pickImageFromGallery();
+                        //_pickImageFromGallery();
+                        _pickImageGallery(context);
                       },
                       child: Image.asset('assets/images/add_image.png')),
                 ],
@@ -1221,7 +1320,7 @@ class _UserFormState extends State<UserForm> {
   }
 
   Future<int> handleReportSubmitted(BuildContext context,
-      _UserFormState userFormState, XFile? selectedImage) async {
+      _UserFormState userFormState, File? selectedImage) async {
     setState(() {
       isSubmitting = true;
     });

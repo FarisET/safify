@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 
 class UserServices {
+  String? jwtToken;
   final storage = const FlutterSecureStorage();
   Notifications notifications = Notifications();
   Future<void> storeJwtAndRoleAndDevToken(
@@ -131,7 +132,7 @@ class UserServices {
         return false;
       } else if (response.statusCode == 500 && error == "Wrong Password") {
         Fluttertoast.showToast(
-          msg: "Wrong Password",
+          msg: "Authentication failed",
           toastLength: Toast.LENGTH_SHORT,
         );
 
@@ -147,6 +148,41 @@ class UserServices {
     }
 
     return false;
+  }
+
+  Future<int> createUser(
+      String userid, String username, String password, String role) async {
+    try {
+      jwtToken = await storage.read(key: 'jwt');
+
+      Uri url = Uri.parse('$IP_URL/admin/dashboard/createUser');
+
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $jwtToken'
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            "user_id": userid,
+            "user_pass": password,
+            "user_name": username,
+            "role_name": role,
+          },
+        ),
+      );
+      final responseBody = jsonDecode(response.body);
+      final status = responseBody['message'];
+
+      if (response.statusCode == 200) {
+        return 1;
+      }
+    } catch (e) {
+      print('Error posting approved action report: $e');
+      throw Exception('Failed to post approved action report');
+    }
+    return 0;
   }
 
   Map<String, dynamic> parseJwt(String token) {
