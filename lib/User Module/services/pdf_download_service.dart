@@ -61,6 +61,8 @@ class PDFDownloadService {
     var status = await Permission.storage.request();
     if (status.isGranted) {
       Directory? directory = await getExternalStorageDirectory();
+      // Directory directory = Directory('/storage/emulated/0/Download');
+
       if (directory != null) {
         String newPath = "${directory.path}/PDF_Downloads";
         directory = Directory(newPath);
@@ -68,7 +70,23 @@ class PDFDownloadService {
         if (!await directory.exists()) {
           await directory.create(recursive: true);
         }
+
         String filePath = "${directory.path}/$fileName";
+        int counter = 1;
+        String baseName = fileName;
+        String extension = '';
+
+        if (fileName.contains('.')) {
+          baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+          extension = fileName.substring(fileName.lastIndexOf('.'));
+        }
+
+        while (await File(filePath).exists()) {
+          filePath = "${directory.path}/${baseName}_$counter$extension";
+          counter++;
+        }
+
+        print(filePath);
 
         try {
           await _showNotification('Starting download', 'Downloading PDF...');
