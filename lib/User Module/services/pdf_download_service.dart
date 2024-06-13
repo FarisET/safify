@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class PDFDownloadService {
   final Dio _dio = Dio();
@@ -14,15 +16,26 @@ class PDFDownloadService {
   }
 
   void _initializeNotifications() {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        InitializationSettings(android: initializationSettingsAndroid);
+    _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) async {
+        final String? payload = notificationResponse.payload;
+        if (payload != null) {
+          print('Payload: $payload');
+          await OpenFile.open(payload);
+        }
+      },
     );
-    _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> _showNotification(String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  Future<void> _showNotification(String title, String body,
+      {String? filePath}) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'download_channel',
       'Downloads',
@@ -31,15 +44,21 @@ class PDFDownloadService {
       priority: Priority.high,
       showProgress: true,
       onlyAlertOnce: true,
+      additionalFlags:
+          Int32List.fromList(<int>[0x01000000]), // FLAG_UPDATE_CURRENT
+      enableVibration: false,
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
-    const NotificationDetails platformChannelSpecifics =
+
+    final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-    await _flutterLocalNotificationsPlugin.show(
-        0, title, body, platformChannelSpecifics);
+
+    await _flutterLocalNotificationsPlugin
+        .show(0, title, body, platformChannelSpecifics, payload: filePath);
   }
 
-  Future<void> _updateNotification(int progress) async {
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
+  Future<void> _updateNotification(int progress, String filepath) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'download_channel',
       'Downloads',
@@ -51,17 +70,19 @@ class PDFDownloadService {
       maxProgress: 100,
       progress: progress,
     );
-    NotificationDetails platformChannelSpecifics =
+
+    final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
+
     await _flutterLocalNotificationsPlugin.show(
-        0, 'Downloading PDF', 'Progress: $progress%', platformChannelSpecifics);
+        0, 'Downloading PDF', 'Progress: $progress%', platformChannelSpecifics,
+        payload: filepath);
   }
 
   Future<void> downloadPDF(String url, String fileName) async {
     var status = await Permission.storage.request();
     if (status.isGranted) {
       Directory? directory = await getExternalStorageDirectory();
-      // Directory directory = Directory('/storage/emulated/0/Download');
 
       if (directory != null) {
         String newPath = "${directory.path}/PDF_Downloads";
@@ -96,12 +117,13 @@ class PDFDownloadService {
             onReceiveProgress: (received, total) {
               if (total != -1) {
                 int progress = (received / total * 100).toInt();
-                _updateNotification(progress);
+                _updateNotification(progress, filePath);
               }
             },
           );
           await _showNotification(
-              'Download complete', 'File downloaded to $filePath');
+              'Download complete', 'File downloaded to $filePath',
+              filePath: filePath);
         } catch (e) {
           await _showNotification(
               'Download failed', 'Error downloading file: $e');
