@@ -106,10 +106,11 @@ class AppDrawer extends StatelessWidget {
                     // Navigate to Add Category page
                     //  Navigator.pushNamed(context, '/addCategory');
                     final pdfService = PDFDownloadService();
-                    await pdfService.downloadPDF(
-                        'https://api.arya.ai/images/test.pdf', "dummy.pdf");
-                    // await Future.delayed(Duration(seconds: 1));
-                    print("Download PDF");
+                    // await pdfService.downloadPDF(
+                    //     'https://api.arya.ai/images/test.pdf', "dummy.pdf");
+                    // // await Future.delayed(Duration(seconds: 1));
+                    // print("Download PDF");
+                    await pdfService.getPdf();
                   },
                 ),
               ],

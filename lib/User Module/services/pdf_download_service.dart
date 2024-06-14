@@ -2,12 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:safify/constants.dart';
 
 class PDFDownloadService {
   final Dio _dio = Dio();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -81,6 +84,12 @@ class PDFDownloadService {
 
   Future<void> downloadPDF(String url, String fileName) async {
     var status = await Permission.storage.request();
+    final jwt = await _storage.read(key: 'jwt');
+    if (jwt == null) {
+      print('Error: JWT token not found');
+      return;
+    }
+
     if (status.isGranted) {
       Directory? directory = await getExternalStorageDirectory();
 
@@ -114,6 +123,11 @@ class PDFDownloadService {
           await _dio.download(
             url,
             filePath,
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $jwt',
+              },
+            ),
             onReceiveProgress: (received, total) {
               if (total != -1) {
                 int progress = (received / total * 100).toInt();
@@ -121,6 +135,7 @@ class PDFDownloadService {
               }
             },
           );
+          ;
           await _showNotification(
               'Download complete', 'File downloaded to $filePath',
               filePath: filePath);
@@ -136,5 +151,11 @@ class PDFDownloadService {
       await _showNotification('Permission denied',
           'Storage permission is required to download files');
     }
+  }
+
+  Future<void> getPdf() async {
+    const url = '$IP_URL/admin/dashboard/generateUserReportPDF';
+    final fileName = 'user_report.pdf';
+    await downloadPDF(url, fileName);
   }
 }
