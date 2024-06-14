@@ -207,7 +207,8 @@ class AppDrawer extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         onChanged: (value) => month = value,
                         validator: (value) {
-                          if (double.tryParse(value!) == null) {
+                          if (month.isNotEmpty &&
+                              double.tryParse(value!) == null) {
                             return 'Please enter a valid year';
                           }
                           if (month.isNotEmpty &&
@@ -228,15 +229,17 @@ class AppDrawer extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         onChanged: (value) => day = value,
                         validator: (value) {
-                          if (double.tryParse(value!) == null) {
+                          if (day.isNotEmpty &&
+                              double.tryParse(value!) == null) {
                             return 'Please enter a valid year';
                           }
                           if (day.isNotEmpty &&
                               (int.parse(day) < 1 || int.parse(day) > 31)) {
                             return 'Please enter a number between 1 and 31';
                           }
-                          if (!isValidDate(int.tryParse(day),
-                              int.tryParse(month), int.tryParse(year))) {
+                          if (day.isNotEmpty &&
+                              !isValidDate(int.tryParse(day),
+                                  int.tryParse(month), int.tryParse(year))) {
                             return 'Please enter a valid date';
                           }
                           ;
@@ -261,7 +264,8 @@ class AppDrawer extends StatelessWidget {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   Navigator.of(context).pop();
-                  pdfDownloadService.getPdf(day, month, year);
+                  pdfDownloadService.getPdf(day.isEmpty ? null : day,
+                      month.isEmpty ? null : month, year.isEmpty ? null : year);
                 }
               },
             ),
