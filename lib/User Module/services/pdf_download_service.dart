@@ -77,12 +77,27 @@ class PDFDownloadService {
     final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await _flutterLocalNotificationsPlugin.show(
-        0, 'Downloading PDF', 'Progress: $progress%', platformChannelSpecifics,
-        payload: filepath);
+    if (progress < 100) {
+      await _flutterLocalNotificationsPlugin.show(
+        0,
+        'Starting download...',
+        'Progress: $progress%',
+        platformChannelSpecifics,
+        payload: filepath,
+      );
+    } else {
+      await _flutterLocalNotificationsPlugin.show(
+        0,
+        'Download complete',
+        'File downloaded to $filepath',
+        platformChannelSpecifics,
+        payload: filepath,
+      );
+    }
   }
 
-  Future<void> downloadPDF(String url, String fileName) async {
+  Future<void> downloadPDF(
+      String url, String fileName, Map<String, dynamic> queryParams) async {
     var status = await Permission.storage.request();
     final jwt = await _storage.read(key: 'jwt');
     if (jwt == null) {
@@ -122,6 +137,8 @@ class PDFDownloadService {
           await _showNotification('Starting download', 'Downloading PDF...');
           await _dio.download(
             url,
+            // data: reqBody,
+            queryParameters: queryParams,
             filePath,
             options: Options(
               headers: {
@@ -153,9 +170,24 @@ class PDFDownloadService {
     }
   }
 
-  Future<void> getPdf() async {
+  Future<void> getPdf(String? day, String? month, String? year) async {
     const url = '$IP_URL/admin/dashboard/generateUserReportPDF';
     final fileName = 'user_report.pdf';
-    await downloadPDF(url, fileName);
+    // print("date: $day, month: $month, year: $year");
+
+    // Construct the request body
+    Map<String, dynamic> queryParams = {};
+
+    if (day != null && month != null && year != null) {
+      queryParams['date'] = '$year-$month-$day';
+    } else if (year != null && month != null) {
+      queryParams['year'] = year;
+      queryParams['month'] = month;
+    } else if (year != null) {
+      queryParams['year'] = year;
+    }
+
+    print("Request body: $queryParams");
+    await downloadPDF(url, fileName, queryParams);
   }
 }
