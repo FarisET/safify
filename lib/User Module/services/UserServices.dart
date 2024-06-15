@@ -115,7 +115,7 @@ class UserServices {
 
         return false;
       } else if (response.statusCode == 500 &&
-          error == "This Account is Already Logged in From Another Device") {
+          error == ("This Account is Already Logged in From Another Device")) {
         Fluttertoast.showToast(
           msg: "Already logged in from another device",
           toastLength: Toast.LENGTH_SHORT,
