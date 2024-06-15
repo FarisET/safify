@@ -9,8 +9,8 @@ import 'package:bitmap/bitmap.dart';
 
 class BitmapUtils {
   static Future<Uint8List> getBitmapFromAsset(String path) async {
-    final ByteData bytes = await rootBundle.load(path);
-    return bytes.buffer.asUint8List();
+    final ByteData? bytes = await rootBundle.load(path);
+    return bytes!.buffer.asUint8List();
   }
 }
 

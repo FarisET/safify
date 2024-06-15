@@ -99,8 +99,8 @@ void main() async {
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     RemoteNotification notification = message.notification!;
-    print('Message notification title: ${notification.title}');
-    print('Message notification body: ${notification.body}');
+    // print('Message notification title: ${notification.title}');
+    // print('Message notification body: ${notification.body}');
 
     notifications.sendNotification(flutterLocalNotificationsPlugin,
         notification.title as String, notification.body as String);

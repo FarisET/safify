@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DrawingCanvas extends StatefulWidget {
   final ImageStream imageStream;
@@ -16,7 +17,6 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
   List<Offset?> points = [];
   ui.Image? _image;
   bool _isImageLoaded = false;
-  double scaleFactor = 1.0;
 
   @override
   void initState() {
@@ -29,21 +29,8 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
       setState(() {
         _image = imageInfo.image;
         _isImageLoaded = true;
-        scaleFactor = _calculateScaleFactor(context, _image!);
       });
     }));
-  }
-
-  double _calculateScaleFactor(BuildContext context, ui.Image image) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final imageWidth = image.width.toDouble();
-    final imageHeight = image.height.toDouble();
-
-    final scaleWidth = screenWidth / imageWidth;
-    final scaleHeight = screenHeight / imageHeight;
-
-    return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
   }
 
   Future<ui.Image> _exportImage() async {
@@ -118,23 +105,29 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
           setState(() {
             final RenderBox renderBox = context.findRenderObject() as RenderBox;
             final offset = renderBox.globalToLocal(details.localPosition);
-            points.add(offset / scaleFactor); // Adjust point for scale factor
+            points.add(offset);
           });
         },
         onPanEnd: (details) {
-          points.add(null); // Indicates end of drawing stroke
+          setState(() {
+            points.add(null); // Indicates end of drawing stroke
+          });
         },
         child: _isImageLoaded
             ? Center(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: CustomPaint(
-                    size: Size(
-                      _image!.width.toDouble() * scaleFactor,
-                      _image!.height.toDouble() * scaleFactor,
+                child: FittedBox(
+                  fit: BoxFit
+                      .contain, // Ensure the image fits without distortion
+                  child: SizedBox(
+                    width: _image!.width.toDouble(),
+                    child: AspectRatio(
+                      aspectRatio: _image!.width / _image!.height,
+                      child: CustomPaint(
+                        size: Size(_image!.width.toDouble(),
+                            _image!.height.toDouble()),
+                        painter: DrawingPainter(points, _image),
+                      ),
                     ),
-                    painter: DrawingPainter(points, _image, scaleFactor),
                   ),
                 ),
               )
@@ -147,16 +140,12 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
 class DrawingPainter extends CustomPainter {
   final List<Offset?> points;
   final ui.Image? image;
-  final double scaleFactor;
 
-  DrawingPainter(this.points, this.image, this.scaleFactor);
+  DrawingPainter(this.points, this.image);
 
   @override
   void paint(Canvas canvas, Size size) {
     if (image != null) {
-      // Scale the canvas
-      canvas.scale(scaleFactor, scaleFactor);
-
       // Draw the image
       final paint = Paint();
       canvas.drawImage(image!, Offset.zero, paint);
@@ -164,8 +153,10 @@ class DrawingPainter extends CustomPainter {
       // Draw the points
       final drawPaint = Paint()
         ..color = Colors.red
-        ..strokeWidth = 2.0 / scaleFactor
+        ..strokeWidth = 2.0
         ..strokeCap = StrokeCap.round;
+
+      // points.add(Offset(0, 0));
 
       for (int i = 0; i < points.length - 1; i++) {
         if (points[i] != null && points[i + 1] != null) {

@@ -136,13 +136,11 @@ class _UserReportTileState extends State<UserReportTile> {
                                           return Dialog(
                                             child: SizedBox(
                                               width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.7, // 70% of screen width
+                                                  .size
+                                                  .width, // 70% of screen width
                                               height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.7, // 70% of screen width (square box)
+                                                  .size
+                                                  .height, // 70% of screen width (square box)
                                               child: FittedBox(
                                                 fit: BoxFit
                                                     .contain, // Maintain aspect ratio, fit within the box

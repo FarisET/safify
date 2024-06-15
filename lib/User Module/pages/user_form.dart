@@ -1203,23 +1203,23 @@ class _UserFormState extends State<UserForm> {
     }
   }
 
-  Future _pickImageFromGallery() async {
-    XFile? returnedImage1 =
-        (await ImagePicker().pickImage(source: ImageSource.gallery));
-    //  if (returnedImage != null) {
-    //    uploadImage(returnedImage);
+  // Future _pickImageFromGallery() async {
+  //   XFile? returnedImage1 =
+  //       (await ImagePicker().pickImage(source: ImageSource.gallery));
+  //   //  if (returnedImage != null) {
+  //   //    uploadImage(returnedImage);
 
-    if (returnedImage1 != null) {
-      setState(() {
-        returnedImage = returnedImage1 as File?;
-      });
-      //  Fluttertoast.showToast(msg: 'Image captured');
-      Navigator.pop(context);
-    } else {
-      Text('No image selected');
-      Navigator.pop(context);
-    }
-  }
+  //   if (returnedImage1 != null) {
+  //     setState(() {
+  //       returnedImage = returnedImage1 as File?;
+  //     });
+  //     //  Fluttertoast.showToast(msg: 'Image captured');
+  //     Navigator.pop(context);
+  //   } else {
+  //     Text('No image selected');
+  //     Navigator.pop(context);
+  //   }
+  // }
 
   // Future _pickImageFromCamera() async {
   //   XFile? returnedImage1 =
