@@ -133,17 +133,28 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Image'),
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: Theme.of(context).secondaryHeaderColor),
+          onPressed: () {
+            // Add your navigation logic here, such as pop or navigate back
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text("Edit Image",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Theme.of(context).secondaryHeaderColor,
+            )),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _isImageLoaded
-                ? () async {
-                    final editedImage = await _exportImage();
-                    Navigator.pop(context, editedImage);
-                  }
-                : null,
-          )
+            icon: Image.asset('assets/images/safify_icon.png'),
+            onPressed: () {
+              // Handle settings button press
+            },
+          ),
         ],
       ),
       body: Column(
@@ -207,9 +218,12 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Please circle the object you are referring to in the image.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              'Note: Circle the object you are referring to in the image.',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic),
             ),
           ),
           Padding(
