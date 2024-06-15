@@ -2,6 +2,9 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class DrawingCanvas extends StatefulWidget {
   final ImageStream imageStream;
@@ -13,10 +16,13 @@ class DrawingCanvas extends StatefulWidget {
 }
 
 class _DrawingCanvasState extends State<DrawingCanvas> {
-  List<Offset?> points = [];
+  List<List<Offset?>> strokes = [];
+  List<Offset?> currentStroke = [];
   ui.Image? _image;
   bool _isImageLoaded = false;
   double scaleFactor = 1.0;
+  Offset imageOffset = Offset.zero;
+  Color penColor = Colors.red;
 
   @override
   void initState() {
@@ -29,21 +35,31 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
       setState(() {
         _image = imageInfo.image;
         _isImageLoaded = true;
-        scaleFactor = _calculateScaleFactor(context, _image!);
+        _calculateScaleAndOffset(context, _image!);
       });
     }));
   }
 
-  double _calculateScaleFactor(BuildContext context, ui.Image image) {
+  void _calculateScaleAndOffset(BuildContext context, ui.Image image) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height -
+        kToolbarHeight -
+        150; // Adjusted height to accommodate buttons and note
     final imageWidth = image.width.toDouble();
     final imageHeight = image.height.toDouble();
 
     final scaleWidth = screenWidth / imageWidth;
     final scaleHeight = screenHeight / imageHeight;
 
-    return scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
+    scaleFactor = scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
+
+    final fittedWidth = imageWidth * scaleFactor;
+    final fittedHeight = imageHeight * scaleFactor;
+
+    imageOffset = Offset(
+      (screenWidth - fittedWidth) / 2,
+      (screenHeight - fittedHeight) / 2,
+    );
   }
 
   Future<ui.Image> _exportImage() async {
@@ -57,14 +73,17 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
     final paint = Paint();
     canvas.drawImage(_image!, Offset.zero, paint);
 
-    // Draw the points
+    // Draw the strokes
     final drawPaint = Paint()
-      ..color = Colors.red
+      ..color = penColor
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i]!, points[i + 1]!, drawPaint);
+
+    for (var stroke in strokes) {
+      for (int i = 0; i < stroke.length - 1; i++) {
+        if (stroke[i] != null && stroke[i + 1] != null) {
+          canvas.drawLine(stroke[i]!, stroke[i + 1]!, drawPaint);
+        }
       }
     }
 
@@ -96,6 +115,20 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
     return img;
   }
 
+  void _changePenColor(Color color) {
+    setState(() {
+      penColor = color;
+    });
+  }
+
+  void _undo() {
+    setState(() {
+      if (strokes.isNotEmpty) {
+        strokes.removeLast();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,63 +146,168 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
           )
         ],
       ),
-      body: GestureDetector(
-        onPanUpdate: (details) {
-          setState(() {
-            final RenderBox renderBox = context.findRenderObject() as RenderBox;
-            final offset = renderBox.globalToLocal(details.localPosition);
-            points.add(offset / scaleFactor); // Adjust point for scale factor
-          });
-        },
-        onPanEnd: (details) {
-          points.add(null); // Indicates end of drawing stroke
-        },
-        child: _isImageLoaded
-            ? Center(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: CustomPaint(
-                    size: Size(
-                      _image!.width.toDouble() * scaleFactor,
-                      _image!.height.toDouble() * scaleFactor,
-                    ),
-                    painter: DrawingPainter(points, _image, scaleFactor),
-                  ),
+      body: Column(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onPanStart: (details) {
+                setState(() {
+                  currentStroke = [];
+                  final RenderBox renderBox =
+                      context.findRenderObject() as RenderBox;
+                  final localPosition =
+                      renderBox.globalToLocal(details.localPosition);
+                  final adjustedPosition =
+                      (localPosition - imageOffset) / scaleFactor;
+                  currentStroke.add(adjustedPosition);
+                });
+              },
+              onPanUpdate: (details) {
+                setState(() {
+                  final RenderBox renderBox =
+                      context.findRenderObject() as RenderBox;
+                  final localPosition =
+                      renderBox.globalToLocal(details.localPosition);
+                  final adjustedPosition =
+                      (localPosition - imageOffset) / scaleFactor;
+                  if (adjustedPosition.dx >= 0 &&
+                      adjustedPosition.dx <= _image!.width &&
+                      adjustedPosition.dy >= 0 &&
+                      adjustedPosition.dy <= _image!.height) {
+                    currentStroke.add(adjustedPosition);
+                    if (strokes.isNotEmpty && strokes.last == currentStroke) {
+                      strokes.removeLast();
+                    }
+                    strokes.add(currentStroke);
+                  }
+                });
+              },
+              onPanEnd: (details) {
+                setState(() {
+                  currentStroke.add(null); // Indicates end of drawing stroke
+                  strokes.add(currentStroke);
+                });
+              },
+              child: _isImageLoaded
+                  ? Center(
+                      child: CustomPaint(
+                        size: Size(
+                          MediaQuery.of(context).size.width,
+                          MediaQuery.of(context).size.height -
+                              kToolbarHeight -
+                              150, // Adjusted height to accommodate buttons and note
+                        ),
+                        painter: DrawingPainter(strokes, _image, scaleFactor,
+                            imageOffset, penColor),
+                      ),
+                    )
+                  : Center(child: CircularProgressIndicator()),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Please circle the object you are referring to in the image.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: _showColorPicker,
+                  child: Text('Pen Color'),
                 ),
-              )
-            : Center(child: CircularProgressIndicator()),
+                ElevatedButton(
+                  onPressed: _undo,
+                  child: Text('Undo'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      strokes.clear();
+                    });
+                  },
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _isImageLoaded
+                      ? () async {
+                          final editedImage = await _exportImage();
+                          Navigator.pop(context, editedImage);
+                        }
+                      : null,
+                  child: Text('Save'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  void _showColorPicker() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Pen Color'),
+          content: SingleChildScrollView(
+            child: BlockPicker(
+              pickerColor: penColor,
+              onColorChanged: _changePenColor,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class DrawingPainter extends CustomPainter {
-  final List<Offset?> points;
+  final List<List<Offset?>> strokes;
   final ui.Image? image;
   final double scaleFactor;
+  final Offset imageOffset;
+  final Color penColor;
 
-  DrawingPainter(this.points, this.image, this.scaleFactor);
+  DrawingPainter(this.strokes, this.image, this.scaleFactor, this.imageOffset,
+      this.penColor);
 
   @override
   void paint(Canvas canvas, Size size) {
     if (image != null) {
-      // Scale the canvas
+      // Translate and scale the canvas to fit the image within the screen
+      canvas.translate(imageOffset.dx, imageOffset.dy);
       canvas.scale(scaleFactor, scaleFactor);
 
       // Draw the image
       final paint = Paint();
       canvas.drawImage(image!, Offset.zero, paint);
 
-      // Draw the points
+      // Draw the strokes
       final drawPaint = Paint()
-        ..color = Colors.red
+        ..color = penColor
         ..strokeWidth = 2.0 / scaleFactor
         ..strokeCap = StrokeCap.round;
 
-      for (int i = 0; i < points.length - 1; i++) {
-        if (points[i] != null && points[i + 1] != null) {
-          canvas.drawLine(points[i]!, points[i + 1]!, drawPaint);
+      for (var stroke in strokes) {
+        for (int i = 0; i < stroke.length - 1; i++) {
+          if (stroke[i] != null && stroke[i + 1] != null) {
+            canvas.drawLine(stroke[i]!, stroke[i + 1]!, drawPaint);
+          }
         }
       }
     }
