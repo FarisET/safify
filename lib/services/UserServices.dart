@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../constants.dart';
+import '../constants.dart';
 
 class UserServices {
   String? jwtToken;
@@ -63,7 +62,7 @@ class UserServices {
     }
   }
 
-  Future<bool> login(String id, String password) async {
+  Future<Map<String, dynamic>> login(String id, String password) async {
     Uri url = Uri.parse('$IP_URL/user/login');
     try {
       String? deviceToken = await notifications.updateTokenToServer();
@@ -71,11 +70,7 @@ class UserServices {
       prefs.setInt('loginTime', DateTime.now().millisecondsSinceEpoch);
 
       if (deviceToken == null) {
-        Fluttertoast.showToast(
-          msg: "Failed to get device token",
-          toastLength: Toast.LENGTH_SHORT,
-        );
-        return false;
+        return {'success': false, 'message': 'Failed to get device token'};
       }
 
       final http.Response response = await http.post(
@@ -89,65 +84,45 @@ class UserServices {
           },
         ),
       );
-      final status = json.decode(response.body)['status'];
-      final token = json.decode(response.body)['token'];
-      final error = json.decode(response.body)['error'];
+
+      final responseJson = json.decode(response.body);
+      final status = responseJson['status'];
+      final token = responseJson['token'];
+      final error = responseJson['error'];
 
       if (response.statusCode == 200) {
         if (token != null) {
           final decodedToken = parseJwt(token);
-
-          // Check if 'role' is not null before using it
           String? role = decodedToken['role_name'];
           String? userName = decodedToken['user_name'];
 
           if (role != null) {
             await storeJwtAndRoleAndDevToken(
                 token, role, userName!, deviceToken);
-            return true;
+            return {'success': true};
           }
         }
       } else if (response.statusCode == 401) {
-        Fluttertoast.showToast(
-          msg: status,
-          toastLength: Toast.LENGTH_SHORT,
-        );
-
-        return false;
-      } else if (response.statusCode == 500 &&
-          error == "This Account is Already Logged in From Another Device") {
-        Fluttertoast.showToast(
-          msg: "Already logged in from another device",
-          toastLength: Toast.LENGTH_SHORT,
-        );
-
-        return false;
-      } else if (response.statusCode == 500 &&
-          error == "Authentication failed") {
-        Fluttertoast.showToast(
-          msg: "Authentication failed",
-          toastLength: Toast.LENGTH_SHORT,
-        );
-
-        return false;
-      } else if (response.statusCode == 500 && error == "Wrong Password") {
-        Fluttertoast.showToast(
-          msg: "Authentication failed",
-          toastLength: Toast.LENGTH_SHORT,
-        );
-
-        return false;
+        return {'success': false, 'message': status};
+      } else if (response.statusCode == 500) {
+        if (error.contains(
+            "This Account is Already Logged in From Another Device")) {
+          return {
+            'success': false,
+            'message': "Already logged in from another device"
+          };
+        } else if (error.contains("Authentication failed")) {
+          return {'success': false, 'message': "Authentication failed"};
+        } else if (error.contains("Wrong Password")) {
+          return {'success': false, 'message': "Wrong password"};
+        }
       }
     } catch (e) {
       print('exception:$e');
-      Fluttertoast.showToast(
-        msg: '$e',
-        toastLength: Toast.LENGTH_SHORT,
-      );
-      return false;
+      return {'success': false, 'message': '$e'};
     }
 
-    return false;
+    return {'success': false, 'message': 'Unknown error occurred'};
   }
 
   Future<int> createUser(

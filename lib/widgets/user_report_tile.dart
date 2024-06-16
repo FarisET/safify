@@ -3,6 +3,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/services/UserServices.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/string_utils.dart';
 
 import '../User Module/providers/fetch_user_report_provider.dart';
@@ -22,10 +25,39 @@ class _UserReportTileState extends State<UserReportTile> {
         .fetchReports(context);
   }
 
+  void _handleSessionExpired(BuildContext context) async {
+    UserServices userServices = UserServices();
+    bool res = await userServices.logout();
+    if (res) {
+      // Logout successful, show alert and wait for user interaction
+      Alerts.customAlertTokenWidget(
+        context,
+        "Your session expired or timed-out, please log in to continue.",
+        () {
+          // Navigator to login page only when user clicks "Close"
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        },
+      );
+    } else {
+      // Handle logout failure if needed
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(child:
         Consumer<UserReportsProvider>(builder: (context, reportProvider, _) {
+      if (reportProvider.error != null) {
+        if (reportProvider.error!.contains('TokenExpiredException')) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _handleSessionExpired(context));
+        }
+        // return
+        // Center(child: Text('Error: ${reportProvider.error}'));
+      }
       if (reportProvider.reports.isNotEmpty) {
         return ListView.builder(
           itemCount: reportProvider.reports.length,
@@ -65,13 +97,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  //   Text('ID: ${item.id}'
-                                  //   ,                                      style: TextStyle(
-                                  //     color: Colors.blue[800],
-                                  //  //   fontSize: 18,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  //   ),
                                   Text(
                                       '${capitalizeFirstLetter(item.incidentCriticalityLevel)}',
                                       style: TextStyle(
@@ -86,7 +111,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                 ],
                               ),
                             ),
-
                             Row(
                               children: [
                                 Icon(Icons.location_city,
@@ -115,12 +139,6 @@ class _UserReportTileState extends State<UserReportTile> {
                                 )
                               ],
                             ),
-                            //TODO: try image
-                            // Padding(
-                            //   padding: const EdgeInsets.only(bottom:4.0),
-                            //   child: Text('By: Faris Ejaz'),
-                            // ),
-                            //TODO: get user name dynamically
                             SizedBox(
                               height: 30,
                             ),
@@ -228,16 +246,4 @@ class _UserReportTileState extends State<UserReportTile> {
       return Text('No Reports');
     }));
   }
-  // padding: const EdgeInsets.only(bottom:8.0),
-  //child: Container(
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(12),
-  // //       border: Border(
-  // //       left: BorderSide(
-  // //     color: status!=null && status ? Colors.green : Colors.red,
-  // //     width: 1.0, // Adjust the width as needed
-  // //   ),
-  // // ),
-  //     ),
 }

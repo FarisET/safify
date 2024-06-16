@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/models/location.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
 
@@ -23,7 +24,7 @@ import '../providers/incident_subtype_provider.dart';
 import '../providers/incident_type_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
-import '../services/ReportServices.dart';
+import '../../services/ReportServices.dart';
 import 'home.dart';
 
 class UserForm extends StatefulWidget {
@@ -1141,7 +1142,15 @@ class _UserFormState extends State<UserForm> {
 
   Future<void> _pickImageGallery(BuildContext context) async {
     ImageUtils imageUtils = ImageUtils();
+
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
     File? image = await imageUtils.pickImageFromGallery();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
     if (image != null) {
       // Show alert dialog
       bool shouldNavigate = await showDialog(
@@ -1164,7 +1173,7 @@ class _UserFormState extends State<UserForm> {
                   Navigator.of(context)
                       .pop(true); // Return true if 'Yes' is pressed
                 },
-              ),
+              )
             ],
           );
         },
@@ -1178,16 +1187,23 @@ class _UserFormState extends State<UserForm> {
         final editedImage = await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => DrawingCanvas(imageStream: imageStream)),
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
         );
 
         if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
           File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
 
           setState(() {
             returnedImage = finalImg;
           });
-          Fluttertoast.showToast(msg: 'Image edited and saved');
+          //  Fluttertoast.showToast(msg: 'Image edited and saved');
         } else {
           setState(() {
             returnedImage = image;
@@ -1195,7 +1211,7 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        Fluttertoast.showToast(msg: 'Image editing cancelled');
+        //Fluttertoast.showToast(msg: 'Image editing cancelled');
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
@@ -1204,7 +1220,15 @@ class _UserFormState extends State<UserForm> {
 
   Future<void> _pickImageCamera(BuildContext context) async {
     ImageUtils imageUtils = ImageUtils();
+
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
     File? image = await imageUtils.pickImageFromCamera();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
     if (image != null) {
       // Show alert dialog
       bool shouldNavigate = await showDialog(
@@ -1227,7 +1251,7 @@ class _UserFormState extends State<UserForm> {
                   Navigator.of(context)
                       .pop(true); // Return true if 'Yes' is pressed
                 },
-              ),
+              )
             ],
           );
         },
@@ -1241,16 +1265,23 @@ class _UserFormState extends State<UserForm> {
         final editedImage = await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => DrawingCanvas(imageStream: imageStream)),
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
         );
 
         if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
           File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
 
           setState(() {
             returnedImage = finalImg;
           });
-          Fluttertoast.showToast(msg: 'Image edited and saved');
+          // Fluttertoast.showToast(msg: 'Image edited and saved');
         } else {
           setState(() {
             returnedImage = image;
@@ -1258,7 +1289,7 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        Fluttertoast.showToast(msg: 'Image editing cancelled');
+        //   Fluttertoast.showToast(msg: 'Image editing cancelled');
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');

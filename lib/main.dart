@@ -12,7 +12,7 @@ import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/pages/splash_screen.dart';
-import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -104,9 +104,6 @@ void main() async {
 
     notifications.sendNotification(flutterLocalNotificationsPlugin,
         notification.title as String, notification.body as String);
-    if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
-    }
   });
 
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
@@ -123,7 +120,7 @@ void main() async {
   // String? userRole = prefs.getString("role");
   String? userRole = await userServices.getRole();
   Widget initialScreen;
-
+//user time parameter or token
   if (userId != null && userRole != null) {
     if (userRole == "admin") {
       initialScreen = const AdminHomePage();
@@ -151,7 +148,7 @@ void main() async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
+  // print("Handling a background message: ${message.messageId}");
 }
 
 void handleNotificationMessage(RemoteMessage message) {

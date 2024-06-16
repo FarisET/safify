@@ -91,26 +91,26 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
     final img = await picture.toImage(_image!.width, _image!.height);
 
     // Convert the image to byte data
-    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-    final Uint8List imgBytes = byteData!.buffer.asUint8List();
+    //final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+    //final Uint8List imgBytes = byteData!.buffer.asUint8List();
 
     // Show the dialog
-    await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Image Preview'),
-            content: Image.memory(imgBytes),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+    // await showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         title: Text('Image Preview'),
+    //         content: Image.memory(imgBytes),
+    //         actions: <Widget>[
+    //           TextButton(
+    //             child: Text('OK'),
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //           ),
+    //         ],
+    //       );
+    //     });
 
     return img;
   }

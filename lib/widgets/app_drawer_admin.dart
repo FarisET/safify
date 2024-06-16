@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
-import 'package:safify/User%20Module/services/pdf_download_service.dart';
+import 'package:safify/services/pdf_download_service.dart';
 import 'package:safify/utils/date_utils.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -99,7 +99,7 @@ class AppDrawer extends StatelessWidget {
                   leading: Icon(Icons.download,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
-                    'Download PDF',
+                    'Download Report',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: mainHeaderSize,

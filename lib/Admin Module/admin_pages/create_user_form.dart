@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-import '../../User Module/services/ReportServices.dart';
+import '../../services/ReportServices.dart';
 import '../../models/action_team.dart';
 import '../../models/department.dart';
 import '../../widgets/build_dropdown_menu_util.dart';

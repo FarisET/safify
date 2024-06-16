@@ -5,7 +5,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../User Module/pages/login_page.dart';
-import '../../User Module/services/UserServices.dart';
+import '../../services/UserServices.dart';
 import '../../widgets/assigned_task_tile.dart';
 
 // ignore_for_file: prefer_const_constructors
