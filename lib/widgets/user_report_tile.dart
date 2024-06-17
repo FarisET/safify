@@ -50,7 +50,8 @@ class _UserReportTileState extends State<UserReportTile> {
   Widget build(BuildContext context) {
     return Center(child:
         Consumer<UserReportsProvider>(builder: (context, reportProvider, _) {
-      if (reportProvider.error != null) {
+      if (reportProvider.error != null &&
+          reportProvider.error!.contains('TokenExpiredException')) {
         if (reportProvider.error!.contains('TokenExpiredException')) {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => _handleSessionExpired(context));

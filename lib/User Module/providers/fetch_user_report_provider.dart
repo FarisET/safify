@@ -16,8 +16,8 @@ class UserReportsProvider with ChangeNotifier {
 
   Future<void> fetchReports(BuildContext context) async {
     try {
+      _error = null;
       isLoading = true;
-      _error = null; // Reset error state before fetching
       _reports = await ReportServices(context).fetchReports();
       isLoading = false;
       notifyListeners();
