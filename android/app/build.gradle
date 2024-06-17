@@ -45,7 +45,7 @@ android {
     defaultConfig {
         applicationId "com.example.safify"
         minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
