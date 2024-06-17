@@ -7,11 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Action Team Module/pages/action_team_home_page.dart';
 import '../../Admin Module/admin_pages/admin_home_page.dart';
-import '../services/UserServices.dart';
+import '../../services/UserServices.dart';
 import 'home.dart';
 
 class LoginPage extends StatefulWidget {
@@ -201,25 +202,23 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     UserServices userServices = UserServices();
-    final loginSuccessful = await userServices.login(
-        cuserid.text.toString(), cpassword.text.toString());
-    if (loginSuccessful) {
+    final result = await userServices.login(
+      cuserid.text.toString(),
+      cpassword.text.toString(),
+    );
+
+    if (result['success']) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString("user_id", (cuserid.text));
-      //  await prefs.setString("user_name", user_name);
-      //  String? userRole = prefs.getString("role");
+      await prefs.setString("user_id", cuserid.text);
 
       final role = await userServices.getRole();
       if (role != null) {
         if (role.trim() == 'admin') {
-          // Navigation logic for admin
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => AdminHomePage()),
           );
         } else if (role.trim() == 'user') {
-          //student for azure cloud version
-          // Debug log to confirm this block is entered
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage2()),
@@ -230,12 +229,13 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
           );
         } else {
-          Fluttertoast.showToast(msg: 'Unknown role');
-          // Handle unknown roles or show an error
-          // Navigate to an error page or handle the unknown role scenario
+          Alerts.customAlertWidget(context, 'Unknown role', () {});
         }
       }
+    } else {
+      Alerts.customAlertWidget(context, result['message'], () {});
     }
+
     setState(() {
       isSubmitting = false;
     });

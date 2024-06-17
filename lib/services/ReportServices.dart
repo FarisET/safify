@@ -11,6 +11,8 @@ import 'package:safify/constants.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/report.dart';
+import 'package:safify/models/token_expired.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -33,16 +35,20 @@ class ReportServices {
   Future<List<Reports>> fetchReports() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      current_user_id = prefs.getString("user_id");
-      jwtToken = await storage.read(key: 'jwt');
+      String? currentUserId = prefs.getString("user_id");
+      String? jwtToken = await storage.read(key: 'jwt');
+
+      if (currentUserId == null || jwtToken == null) {
+        throw Exception('User ID or JWT token not found.');
+      }
 
       Uri url =
-          Uri.parse('$IP_URL/userReport/dashboard/$current_user_id/reports');
+          Uri.parse('$IP_URL/userReport/dashboard/$currentUserId/reports');
 
       final response = await http.get(
         url,
         headers: {
-          'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+          'Authorization': 'Bearer $jwtToken',
         },
       );
 
@@ -56,24 +62,23 @@ class ReportServices {
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];
-        if (status == 'Invalid token.' ||
-            status == 'Access denied. User role is not authorized.' ||
-            status == 'Access denied, no token provided.') {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => LoginPage()),
-          // );
-          throw Exception('Error: $status');
+
+        if (status.contains('Invalid token.') ||
+            status.contains('Access denied')) {
+          throw TokenExpiredException('Error: $status');
         } else {
           throw Exception('Error: $status');
         }
       }
     } catch (e) {
-      print('Error fetching reports: $e');
-      throw Exception('Failed to load Reports');
+      if (e is TokenExpiredException) {
+        // Preserve the TokenExpiredException and rethrow it
+        throw e;
+      } else {
+        // Catch-all for other exceptions
+        throw Exception('Failed to load Reports');
+      }
     }
-
-    throw Exception('Unexpected error occurred while fetching reports.');
   }
 
   Future<List<AssignTask>> fetchAssignedReports() async {
@@ -81,7 +86,7 @@ class ReportServices {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       current_user_id = prefs.getString('user_id');
       jwtToken = await storage.read(key: 'jwt');
-      print('USER-ID: $current_user_id');
+      //jwtToken = 'd-uyhhfg';
       Uri url = Uri.parse(
           '$IP_URL/actionTeam/dashboard/$current_user_id/fetchAssignedTasks');
 
@@ -101,27 +106,23 @@ class ReportServices {
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];
-        if (status == 'Invalid token.' ||
-            status == 'Access denied. User role is not authorized.' ||
-            status == 'Access denied, no token provided.') {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const LoginPage()),
-          // );
-          Fluttertoast.showToast(
-            msg: 'Session Timeout: Please logout & login',
-            toastLength: Toast.LENGTH_SHORT,
-          );
-          throw Exception('Error: $status');
+
+        if (status.contains('Invalid token.') ||
+            status.contains('Access denied')) {
+          throw TokenExpiredException('Error: $status');
         } else {
           throw Exception('Error: $status');
         }
       }
     } catch (e) {
-      print('Error fetching assigned reports: $e');
-      throw Exception('Failed to load assigned Reports');
+      if (e is TokenExpiredException) {
+        // Preserve the TokenExpiredException and rethrow it
+        throw e;
+      } else {
+        // Catch-all for other exceptions
+        throw Exception('Failed to load Reports');
+      }
     }
-    throw Exception('Exception: Failed to load assigned Reports');
   }
 
   Future<List<Reports>> fetchAllReports() async {
@@ -147,24 +148,22 @@ class ReportServices {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];
 
-        if (status == 'Invalid token.' ||
-            status == 'Access denied. User role is not authorized.' ||
-            status == 'Access denied, no token provided.') {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => LoginPage()),
-          // );
-          throw Exception('Error: $status');
+        if (status.contains('Invalid token.') ||
+            status.contains('Access denied')) {
+          throw TokenExpiredException('Error: $status');
         } else {
           throw Exception('Error: $status');
         }
       }
     } catch (e) {
-      print('Error fetching all reports: $e');
-      throw Exception('Failed to load all Reports');
+      if (e is TokenExpiredException) {
+        // Preserve the TokenExpiredException and rethrow it
+        throw e;
+      } else {
+        // Catch-all for other exceptions
+        throw Exception('Failed to load Reports');
+      }
     }
-
-    throw Exception('Exception Error:Failed to load Reports');
   }
 
   Future<void> postapprovedActionReport(
@@ -299,7 +298,7 @@ class ReportServices {
   Future<List<ActionReport>> fetchAllActionReports() async {
     try {
       jwtToken = await storage.read(key: 'jwt');
-
+      // jwtToken = 'k-sdkjnksddsd0';
       Uri url = Uri.parse('$IP_URL/admin/dashboard/fetchAllActionReports');
       final response = await http.get(
         url,
@@ -316,11 +315,24 @@ class ReportServices {
             .toList();
         return allReportList;
       } else {
-        throw Exception('Failed to load all Reports');
+        final responseBody = jsonDecode(response.body);
+        final status = responseBody['message'];
+
+        if (status.contains('Invalid token.') ||
+            status.contains('Access denied')) {
+          throw TokenExpiredException('Error: $status');
+        } else {
+          throw Exception('Error: $status');
+        }
       }
     } catch (e) {
-      print('Error fetching all action reports: $e');
-      throw Exception('Failed to load all Action Reports');
+      if (e is TokenExpiredException) {
+        // Preserve the TokenExpiredException and rethrow it
+        throw e;
+      } else {
+        // Catch-all for other exceptions
+        throw Exception('Failed to load Reports');
+      }
     }
   }
 

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
-import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;

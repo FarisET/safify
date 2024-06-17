@@ -3,6 +3,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/services/UserServices.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,10 +27,36 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
         .fetchAssignedTasks(context);
   }
 
+  void _handleSessionExpired(BuildContext context) async {
+    UserServices userServices = UserServices();
+    bool res = await userServices.logout();
+    if (res) {
+      // Logout successful, show alert and wait for user interaction
+      Alerts.customAlertTokenWidget(
+        context,
+        "Your session expired or timed-out, please log in to continue.",
+        () {
+          // Navigator to login page only when user clicks "Close"
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        },
+      );
+    } else {
+      // Handle logout failure if needed
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(child:
         Consumer<AssignedTaskProvider>(builder: (context, assignProvider, _) {
+      if (assignProvider.error != null &&
+          assignProvider.error!.contains('TokenExpiredException')) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _handleSessionExpired(context));
+      }
       if (assignProvider.tasks.isNotEmpty) {
         return ListView.builder(
           itemCount: assignProvider.tasks.length,
@@ -291,7 +320,7 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
       } else if (assignProvider.tasks.isEmpty && assignProvider.isLoading) {
         return CircularProgressIndicator();
       }
-      return Text('Failed to load reports');
+      return Text('No active tasks!');
     }));
   }
   // padding: const EdgeInsets.only(bottom:8.0),

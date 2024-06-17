@@ -6,7 +6,7 @@ import 'package:safify/Admin%20Module/providers/analytics_incident_resolved_prov
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfSubtypes_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/User%20Module/services/UserServices.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/components/shimmer_box.dart';
 import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';

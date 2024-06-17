@@ -7,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/styles/app_theme.dart';
+import 'package:safify/utils/alerts_util.dart';
 import '../Action Team Module/providers/all_action_reports_approveal_provider.dart';
 import '../Action Team Module/providers/all_action_reports_provider.dart';
-import '../User Module/services/ReportServices.dart';
+import '../services/ReportServices.dart';
 
 class ActionReportTile extends StatefulWidget {
   const ActionReportTile({super.key});
@@ -27,6 +30,27 @@ class _ActionReportTileState extends State<ActionReportTile> {
         .fetchAllActionReports(context);
   }
 
+  void _handleSessionExpired(BuildContext context) async {
+    UserServices userServices = UserServices();
+    bool res = await userServices.logout();
+    if (res) {
+      // Logout successful, show alert and wait for user interaction
+      Alerts.customAlertTokenWidget(
+        context,
+        "Your session expired or timed-out, please log in to continue.",
+        () {
+          // Navigator to login page only when user clicks "Close"
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        },
+      );
+    } else {
+      // Handle logout failure if needed
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final approvalStatusProvider = Provider.of<ApprovalStatusProvider>(context);
@@ -34,6 +58,11 @@ class _ActionReportTileState extends State<ActionReportTile> {
         Provider.of<ActionReportsProvider>(context, listen: false);
     return Center(child:
         Consumer<ActionReportsProvider>(builder: (context, allReports, _) {
+      if (allReports.error != null &&
+          allReports.error!.contains('TokenExpiredException')) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _handleSessionExpired(context));
+      }
       if (allReports.reports.isNotEmpty) {
         return ListView.builder(
           itemCount: allReports.reports.length,
@@ -294,7 +323,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                 : 12.0,
                                             vertical: 0),
                                         child: Row(
-                                          children: [
+                                          children: const [
                                             Icon(Icons.image,
                                                 size: 16, color: Colors.blue),
                                             SizedBox(

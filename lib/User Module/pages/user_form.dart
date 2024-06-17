@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/models/location.dart';
+import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
 
@@ -23,7 +24,7 @@ import '../providers/incident_subtype_provider.dart';
 import '../providers/incident_type_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
-import '../services/ReportServices.dart';
+import '../../services/ReportServices.dart';
 import 'home.dart';
 
 class UserForm extends StatefulWidget {
@@ -1141,30 +1142,76 @@ class _UserFormState extends State<UserForm> {
 
   Future<void> _pickImageGallery(BuildContext context) async {
     ImageUtils imageUtils = ImageUtils();
-    File? image = await imageUtils.pickImageFromGallery();
-    if (image != null) {
-      // Create an ImageStream from the selected image
-      final ImageStream imageStream =
-          FileImage(image).resolve(ImageConfiguration());
 
-      final editedImage = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DrawingCanvas(imageStream: imageStream)),
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
+    File? image = await imageUtils.pickImageFromGallery();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
+    if (image != null) {
+      // Show alert dialog
+      bool shouldNavigate = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Draw on Image?'),
+            content: Text('Circle key objects in your image.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(false); // Return false if 'No' is pressed
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(true); // Return true if 'Yes' is pressed
+                },
+              )
+            ],
+          );
+        },
       );
 
-      if (editedImage != null) {
-        File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+      if (shouldNavigate == true) {
+        // Create an ImageStream from the selected image
+        final ImageStream imageStream =
+            FileImage(image).resolve(ImageConfiguration());
 
-        setState(() {
-          returnedImage = finalImg;
-        });
-        Fluttertoast.showToast(msg: 'Image edited and saved');
+        final editedImage = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
+        );
+
+        if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
+          File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
+
+          setState(() {
+            returnedImage = finalImg;
+          });
+          //  Fluttertoast.showToast(msg: 'Image edited and saved');
+        } else {
+          setState(() {
+            returnedImage = image;
+          });
+          Fluttertoast.showToast(msg: 'Image editing failed');
+        }
       } else {
-        setState(() {
-          returnedImage = image;
-        });
-        Fluttertoast.showToast(msg: 'Image editing failed');
+        //Fluttertoast.showToast(msg: 'Image editing cancelled');
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
@@ -1173,91 +1220,81 @@ class _UserFormState extends State<UserForm> {
 
   Future<void> _pickImageCamera(BuildContext context) async {
     ImageUtils imageUtils = ImageUtils();
-    File? image = await imageUtils.pickImageFromCamera();
-    if (image != null) {
-      // Create an ImageStream from the selected image
-      final ImageStream imageStream =
-          FileImage(image).resolve(ImageConfiguration());
 
-      final editedImage = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DrawingCanvas(imageStream: imageStream)),
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
+    File? image = await imageUtils.pickImageFromCamera();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
+    if (image != null) {
+      // Show alert dialog
+      bool shouldNavigate = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Draw on Image?'),
+            content: Text('Circle key objects in your image.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(false); // Return false if 'No' is pressed
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(true); // Return true if 'Yes' is pressed
+                },
+              )
+            ],
+          );
+        },
       );
 
-      if (editedImage != null) {
-        File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+      if (shouldNavigate == true) {
+        // Create an ImageStream from the selected image
+        final ImageStream imageStream =
+            FileImage(image).resolve(ImageConfiguration());
 
-        setState(() {
-          returnedImage = finalImg;
-        });
-        Fluttertoast.showToast(msg: 'Image edited and saved');
+        final editedImage = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
+        );
+
+        if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
+          File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
+
+          setState(() {
+            returnedImage = finalImg;
+          });
+          // Fluttertoast.showToast(msg: 'Image edited and saved');
+        } else {
+          setState(() {
+            returnedImage = image;
+          });
+          Fluttertoast.showToast(msg: 'Image editing failed');
+        }
       } else {
-        setState(() {
-          returnedImage = image;
-        });
-        Fluttertoast.showToast(msg: 'Image editing failed');
+        //   Fluttertoast.showToast(msg: 'Image editing cancelled');
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
     }
   }
-
-  Future _pickImageFromGallery() async {
-    XFile? returnedImage1 =
-        (await ImagePicker().pickImage(source: ImageSource.gallery));
-    //  if (returnedImage != null) {
-    //    uploadImage(returnedImage);
-
-    if (returnedImage1 != null) {
-      setState(() {
-        returnedImage = returnedImage1 as File?;
-      });
-      //  Fluttertoast.showToast(msg: 'Image captured');
-      Navigator.pop(context);
-    } else {
-      Text('No image selected');
-      Navigator.pop(context);
-    }
-  }
-
-  // Future _pickImageFromCamera() async {
-  //   XFile? returnedImage1 =
-  //       (await ImagePicker().pickImage(source: ImageSource.camera));
-  //   //  if (returnedImage != null) {
-  //   //    uploadImage(returnedImage);
-
-  //   if (returnedImage1 != null) {
-  //     setState(() {
-  //       returnedImage = returnedImage1 as File?;
-  //     });
-  //     //  Fluttertoast.showToast(msg: 'Image captured');
-  //     Navigator.pop(context);
-  //   } else {
-  //     Text('No image selected');
-  //     Navigator.pop(context);
-  //   }
-  // }
-
-  // Future _pickImageFromCamera() async {
-  //   XFile? returnedImage1 =
-  //       (await ImagePicker().pickImage(source: ImageSource.camera));
-  //   //  if (returnedImage != null) {
-  //   //    uploadImage(returnedImage);
-
-  //   if (returnedImage1 != null) {
-  //     setState(() {
-  //       returnedImage = returnedImage1;
-  //       _isEditing = false;
-  //       _imageStream = FileImage(_imageFile!).resolve(ImageConfiguration());
-  //     });
-  //     //   Fluttertoast.showToast(msg: 'Image captured');
-  //     Navigator.pop(context);
-  //   } else {
-  //     Text('No image selected');
-  //     Navigator.pop(context);
-  //   }
-  // }
 
   void _showBottomSheet() {
     showModalBottomSheet(
@@ -1324,20 +1361,8 @@ class _UserFormState extends State<UserForm> {
     setState(() {
       isSubmitting = true;
     });
-    // print(isSubmitting);
-    // await Future.delayed(Duration(seconds: 3));
-    // print("tesing submit button");
-
-    // print(isSubmitting);
-
-    // return 0;
 
     if (selectedImage != null) {
-      // Upload image first
-      //   bool imageUploaded = await uploadImage(selectedImage);
-
-      //if (imageUploaded) {
-      // If image upload is successful, proceed with report submission
       ReportServices reportServices = ReportServices(context);
       int flag = await reportServices.uploadReportWithImage(
         userFormState.returnedImage,
@@ -1356,14 +1381,11 @@ class _UserFormState extends State<UserForm> {
     } else {
       ReportServices reportServices = ReportServices(context);
       int flag = await reportServices.postReport(
-        //userFormState.returnedImage,
-        //  userFormState.id,
         userFormState.SelectedSubLocationType,
         userFormState.incidentSubType,
         userFormState.description,
         userFormState.date,
         userFormState.risklevel,
-        // userFormState.status,
       );
       setState(() {
         isSubmitting = false;

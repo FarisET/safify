@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
 import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
-import 'package:safify/User%20Module/services/notification_services.dart';
-import 'package:safify/User%20Module/services/pdf_download_service.dart';
+import 'package:safify/services/notification_services.dart';
+import 'package:safify/services/pdf_download_service.dart';
 import 'package:safify/widgets/app_drawer_admin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../User Module/pages/login_page.dart';
-import '../../User Module/services/UserServices.dart';
+import '../../services/UserServices.dart';
 import '../../widgets/action_report_tile.dart';
 import '../../widgets/admin_report_tile.dart';
 
