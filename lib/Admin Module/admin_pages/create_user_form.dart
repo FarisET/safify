@@ -29,14 +29,12 @@ class _CreatUserFormState extends State<CreatUserForm> {
   int selectedChipIndex = -1;
   List<bool> isSelected = [false, false, false];
   List<String> chipLabels = ['User', 'Action Team', 'Admin'];
-  List<String> chipLabelsid = ['user', 'actionTeam', 'admin'];
+  List<String> chipLabelsid = ['user', 'action_team', 'admin'];
   String userID = '';
-  String userName = '';
   String password = '';
   String confirmPassword = '';
 
   final TextEditingController _idFieldController = TextEditingController();
-  final TextEditingController _nameFieldController = TextEditingController();
   final TextEditingController _passFieldController = TextEditingController();
   final TextEditingController _confpassFieldController =
       TextEditingController();
@@ -169,7 +167,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4, vertical: 8.0),
                                         child: Text(
-                                          'User ID',
+                                          'User Name',
                                           style: TextStyle(
                                             color: Theme.of(context)
                                                 .secondaryHeaderColor,
@@ -180,7 +178,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                       TextFormField(
                                         controller: _idFieldController,
                                         decoration: InputDecoration(
-                                          hintText: 'Enter user ID',
+                                          hintText: 'Enter username',
                                           fillColor: Colors.blue,
                                           labelStyle: TextStyle(
                                             color: Colors.blue,
@@ -202,54 +200,6 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                         ),
                                         onChanged: (value) =>
                                             setState(() => userID = value),
-                                        maxLines: 1,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(22.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4, vertical: 8.0),
-                                        child: Text(
-                                          'User Name',
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .secondaryHeaderColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        controller: _nameFieldController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter user name',
-                                          fillColor: Colors.blue,
-                                          labelStyle: TextStyle(
-                                            color: Colors.blue,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context)
-                                                    .hintColor),
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.green),
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                        ),
-                                        onChanged: (value) =>
-                                            setState(() => userName = value),
                                         maxLines: 1,
                                       ),
                                     ],
@@ -364,7 +314,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                     return ChoiceChip(
                                       backgroundColor: isSelected[index]
                                           ? null
-                                          : Colors.grey[300],
+                                          : Colors.grey[700],
                                       label: Text(
                                         chipLabels[index],
                                         style: TextStyle(color: Colors.white),
@@ -405,7 +355,6 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                   ? null
                                   : () async {
                                       if (userID != '' &&
-                                          userName != '' &&
                                           password != '' &&
                                           confirmPassword != '' &&
                                           isRoleSelected) {
@@ -546,7 +495,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
     // if (user_id != null && user_report_id != null) {
     int flag = await userServices.createUser(
         userFormState.userID,
-        userFormState.userName,
+        userFormState.userID,
         userFormState.password,
         userFormState.selected_role_id);
     setState(() {

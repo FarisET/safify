@@ -33,6 +33,8 @@ class _AssignFormState extends State<AssignForm> {
   String? user_id;
   bool _confirmedExit = false;
   bool isRiskLevelSelected = false;
+  String? selectedRiskLevel;
+
   void _processData() {
     // Process your data and upload to the server
     _formKey.currentState?.reset();
@@ -350,39 +352,64 @@ class _AssignFormState extends State<AssignForm> {
                                 SizedBox(
                                   height: 15,
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children:
+                                DropdownButtonFormField<String>(
+                                  value: selectedRiskLevel,
+                                  decoration: InputDecoration(
+                                    labelText: 'Select Risk Level',
+                                    filled: true,
+                                    fillColor: Colors.grey[200],
+                                  ),
+                                  items:
                                       List.generate(chipLabels.length, (index) {
-                                    return ChoiceChip(
-                                      backgroundColor: isSelected[index]
-                                          ? null
-                                          : Colors.grey[300],
-                                      label: Text(
-                                        chipLabels[index],
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      selected: isSelected[index],
-                                      selectedColor: _getSelectedColor(index),
-                                      onSelected: (bool selected) {
-                                        setState(() {
-                                          for (int i = 0;
-                                              i < isSelected.length;
-                                              i++) {
-                                            isSelected[i] =
-                                                i == index ? selected : false;
-                                            incident_criticality_id =
-                                                chipLabelsid[index];
-                                            // print(
-                                            //     'crit level: $incident_criticality_id');
-                                          }
-                                          isRiskLevelSelected = true;
-                                        });
-                                      },
+                                    return DropdownMenuItem<String>(
+                                      value: chipLabelsid[index],
+                                      child: Text(chipLabels[index]),
                                     );
                                   }),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedRiskLevel = value;
+                                      incident_criticality_id = value!;
+                                      isRiskLevelSelected = true;
+                                    });
+                                  },
+                                  validator: (value) => value == null
+                                      ? 'Please select a risk level'
+                                      : null,
                                 ),
+                                // Row(
+                                //   mainAxisAlignment:
+                                //       MainAxisAlignment.spaceAround,
+                                //   children:
+                                //       List.generate(chipLabels.length, (index) {
+                                //     return ChoiceChip(
+                                //       backgroundColor: isSelected[index]
+                                //           ? null
+                                //           : Colors.grey[300],
+                                //       label: Text(
+                                //         chipLabels[index],
+                                //         style: TextStyle(color: Colors.white),
+                                //       ),
+                                //       selected: isSelected[index],
+                                //       selectedColor: _getSelectedColor(index),
+                                //       onSelected: (bool selected) {
+                                //         setState(() {
+                                //           for (int i = 0;
+                                //               i < isSelected.length;
+                                //               i++) {
+                                //             isSelected[i] =
+                                //                 i == index ? selected : false;
+                                //             incident_criticality_id =
+                                //                 chipLabelsid[index];
+                                //             // print(
+                                //             //     'crit level: $incident_criticality_id');
+                                //           }
+                                //           isRiskLevelSelected = true;
+                                //         });
+                                //       },
+                                //     );
+                                //   }),
+                                // ),
                               ],
                             ),
                           ),
