@@ -41,9 +41,9 @@ class _AssignFormState extends State<AssignForm> {
   Color? _getSelectedColor(int index) {
     if (isSelected[index]) {
       if (index == 0) {
-        return Colors.greenAccent;
+        return Color.fromARGB(255, 6, 209, 70);
       } else if (index == 1) {
-        return Colors.orangeAccent;
+        return Color.fromARGB(255, 255, 135, 22);
       } else if (index == 2) {
         return Colors.redAccent;
       }
@@ -348,40 +348,87 @@ class _AssignFormState extends State<AssignForm> {
                                   }
                                 }),
                                 SizedBox(
-                                  height: 15,
+                                  height: 10,
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children:
-                                      List.generate(chipLabels.length, (index) {
-                                    return ChoiceChip(
-                                      backgroundColor: isSelected[index]
-                                          ? null
-                                          : Colors.grey[300],
-                                      label: Text(
-                                        chipLabels[index],
-                                        style: TextStyle(color: Colors.white),
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.blue),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.error_outline,
+                                                color: Colors.blue, size: 30),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text("Select a criticality level",
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.w800,
+                                                  fontSize: 16,
+                                                )),
+                                          ],
+                                        ),
                                       ),
-                                      selected: isSelected[index],
-                                      selectedColor: _getSelectedColor(index),
-                                      onSelected: (bool selected) {
-                                        setState(() {
-                                          for (int i = 0;
-                                              i < isSelected.length;
-                                              i++) {
-                                            isSelected[i] =
-                                                i == index ? selected : false;
-                                            incident_criticality_id =
-                                                chipLabelsid[index];
-                                            // print(
-                                            //     'crit level: $incident_criticality_id');
-                                          }
-                                          isRiskLevelSelected = true;
-                                        });
-                                      },
-                                    );
-                                  }),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: List.generate(
+                                            chipLabels.length, (index) {
+                                          return Expanded(
+                                            child: ChoiceChip(
+                                              showCheckmark: true,
+                                              checkmarkColor: Colors.white,
+                                              elevation:
+                                                  isSelected[index] ? 3.0 : 0.0,
+                                              backgroundColor: isSelected[index]
+                                                  ? null
+                                                  : Color.fromARGB(
+                                                      255, 199, 199, 199),
+                                              label: Text(
+                                                chipLabels[index],
+                                                style: TextStyle(
+                                                    color: isSelected[index]
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              selected: isSelected[index],
+                                              selectedColor:
+                                                  _getSelectedColor(index),
+                                              onSelected: (bool selected) {
+                                                setState(() {
+                                                  for (int i = 0;
+                                                      i < isSelected.length;
+                                                      i++) {
+                                                    isSelected[i] = i == index
+                                                        ? selected
+                                                        : false;
+                                                    incident_criticality_id =
+                                                        chipLabelsid[index];
+                                                    // print(
+                                                    //     'crit level: $incident_criticality_id');
+                                                  }
+                                                  isRiskLevelSelected = true;
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
