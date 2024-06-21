@@ -146,3 +146,57 @@ class ImageButton extends AbstractButton {
           borderRadius: borderRadius,
         );
 }
+
+class ApproveButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.green; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.green; // Fixed color for the text
+
+  ApproveButton({
+    required bool isApproved,
+    // String buttonText = 'Assign',
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: isApproved ? 'Approved' : 'Approve',
+          iconData: isApproved ? Icons.done_all : Icons.done,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
+}
+
+class RejectButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.red; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.red; // Fixed color for the text
+
+  RejectButton({
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: 'Reject',
+          iconData: Icons.close_rounded,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
+}

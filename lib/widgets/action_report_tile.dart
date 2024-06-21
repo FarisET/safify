@@ -167,7 +167,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                               height: MediaQuery.sizeOf(context).height * 0.04,
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
