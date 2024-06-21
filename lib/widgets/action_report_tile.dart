@@ -106,7 +106,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 Text(
                                   'Reported By: ',
                                   style: TextStyle(
-                                    color: Colors.blue,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 Expanded(
@@ -123,7 +123,8 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.timer, color: Colors.blue, size: 20),
+                                Icon(Icons.timer,
+                                    color: Colors.black, size: 20),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8),
                                   child: Text(
@@ -134,7 +135,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.blue, size: 20),
+                                Icon(Icons.edit, color: Colors.black, size: 20),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 8),
@@ -149,14 +150,15 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.check, color: Colors.blue, size: 20),
+                                Icon(Icons.check,
+                                    color: Colors.black, size: 20),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 8),
                                     child: Text(
                                       '${item.resolution_description}',
                                       style: TextStyle(
-                                          color: Colors.blue[700],
+                                          color: Colors.black,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -259,7 +261,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                                       vertical: 0),
                                               child: Text('Reject',
                                                   style: TextStyle(
-                                                      color: Colors.red)),
+                                                      color: Colors.black)),
                                             ),
                                           )
                                         : Container(),
@@ -325,14 +327,14 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         child: Row(
                                           children: const [
                                             Icon(Icons.image,
-                                                size: 16, color: Colors.blue),
+                                                size: 16, color: Colors.black),
                                             SizedBox(
                                               width: 5,
                                             ),
                                             Text(
                                               'Image',
-                                              style:
-                                                  TextStyle(color: Colors.blue),
+                                              style: TextStyle(
+                                                  color: Colors.black),
                                             ),
                                           ],
                                         ),
@@ -374,8 +376,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         style: item.status!.contains('approved')
                                             ? TextStyle(
                                                 color: Colors.greenAccent)
-                                            : TextStyle(
-                                                color: Colors.amber.shade700),
+                                            : TextStyle(color: Colors.black),
                                       ),
                                     ),
                                   ),

@@ -124,6 +124,7 @@ class _HomePage2State extends State<HomePage2> {
             child: const Icon(
               Icons.add,
             ),
+            backgroundColor: Theme.of(context).primaryColor,
           ),
         ),
         body: SafeArea(

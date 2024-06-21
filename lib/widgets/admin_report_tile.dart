@@ -107,7 +107,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                     child: Text(
                                       item.incidentSubtypeDescription!,
                                       style: TextStyle(
-                                        color: Colors.blue[800],
+                                        color: Colors.black,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -125,11 +125,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                               color: item
                                                       .incidentCriticalityLevel!
                                                       .contains('minor')
-                                                  ? Colors.green
+                                                  ? Colors.black
                                                   : (item.incidentCriticalityLevel!
                                                           .contains('serious')
-                                                      ? Colors.orange
-                                                      : Colors.red),
+                                                      ? Colors.black
+                                                      : Colors.black),
                                               fontWeight: FontWeight.bold)),
                                     ),
                                   ),
@@ -145,14 +145,12 @@ class _AdminReportTileState extends State<AdminReportTile> {
                               children: [
                                 '${item.status}'.contains('open')
                                     ? Icon(Icons.start,
-                                        color: Colors.redAccent, size: 20)
+                                        color: Colors.black, size: 20)
                                     : '${item.status}'.contains('in progress')
                                         ? Icon(Icons.pending,
-                                            color: Colors.orangeAccent,
-                                            size: 20)
+                                            color: Colors.black, size: 20)
                                         : Icon(Icons.check,
-                                            color: Colors.greenAccent,
-                                            size: 20),
+                                            color: Colors.black, size: 20),
                                 Text(' ${capitalizeFirstLetter(item.status)}')
                               ],
                             ),
@@ -164,7 +162,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.location_city,
-                                    color: Colors.blue, size: 20),
+                                    color: Colors.black, size: 20),
                                 Text(' ${item.subLocationName}')
                               ],
                             ),
@@ -174,7 +172,8 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer, color: Colors.blue, size: 20),
+                                Icon(Icons.timer,
+                                    color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.dateTime?.split('T')[0]} | ${item.dateTime?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
                               ],
@@ -186,7 +185,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.blue, size: 20),
+                                Icon(Icons.edit, color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.description}',
