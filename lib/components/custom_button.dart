@@ -8,6 +8,11 @@ abstract class AbstractButton extends StatelessWidget {
   final Color textColor;
   final Color backgroundColor;
   final void Function() onTap;
+  final double? width;
+  final double? height;
+  final double gap;
+  final double iconSize;
+  final double borderRadius;
 
   const AbstractButton({
     required this.buttonText,
@@ -16,6 +21,11 @@ abstract class AbstractButton extends StatelessWidget {
     required this.iconColor,
     required this.textColor,
     required this.onTap,
+    this.width,
+    this.height,
+    this.gap = 10,
+    this.iconSize = 16,
+    this.borderRadius = 10,
   });
 
   @override
@@ -24,35 +34,29 @@ abstract class AbstractButton extends StatelessWidget {
       onTap: onTap,
       child: Material(
         elevation: 5,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(borderRadius),
         child: Container(
-          height: double.infinity,
+          height: height,
+          width: width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: backgroundColor,
-          ),
+              borderRadius: BorderRadius.circular(borderRadius),
+              color: backgroundColor),
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width < 390 ? 6.0 : 12.0,
-              vertical: 0,
-            ),
+                horizontal:
+                    MediaQuery.of(context).size.width < 390 ? 6.0 : 12.0,
+                vertical: 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  iconData,
-                  size: 16,
-                  color: iconColor,
-                ),
-                SizedBox(width: 10),
+                Icon(iconData, size: 16, color: iconColor),
+                SizedBox(width: gap),
                 Text(
                   buttonText,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                )
               ],
             ),
           ),
@@ -60,4 +64,85 @@ abstract class AbstractButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class AssignButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.amber; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.amber; // Fixed color for the text
+
+  AssignButton({
+    required bool isAssigned,
+    // String buttonText = 'Assign',
+    IconData iconData = Icons.person_add,
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: isAssigned ? 'Assigned' : 'Assign',
+          iconData: iconData,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
+}
+
+class DeleteButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.red; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.red; // Fixed color for the text
+
+  DeleteButton({
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: 'Delete',
+          iconData: Icons.delete,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
+}
+
+class ImageButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.blue; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.blue; // Fixed color for the text
+
+  ImageButton({
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: 'Image',
+          iconData: Icons.image,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
 }

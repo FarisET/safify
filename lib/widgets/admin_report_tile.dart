@@ -10,6 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/components/custom_button.dart';
+import 'package:safify/models/report.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/string_utils.dart';
@@ -209,144 +211,10 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   Expanded(
                                     child: Visibility(
                                       visible: (item.status == 'open'),
-                                      child: InkWell(
-                                        onTap: () {
-                                          // Show a confirmation dialog before rejecting
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: Text("Delete?"),
-                                                content: Text(
-                                                    "Are you sure you want to delete this report?"),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop(); // Close the dialog
-                                                    },
-                                                    child: Text("Cancel"),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () async {
-                                                      if (!'${item.status}'
-                                                          .contains(
-                                                              'in progress')) {
-                                                        final deleteUserReportProvider =
-                                                            Provider.of<
-                                                                    DeleteUserReportProvider>(
-                                                                context,
-                                                                listen: false);
-                                                        final success =
-                                                            await deleteUserReportProvider
-                                                                .deleteUserReport(
-                                                                    '${item.id}');
-
-                                                        if (success) {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  SnackBar(
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .greenAccent,
-                                                            content: Text(
-                                                                'Report deleted'),
-                                                            duration: Duration(
-                                                                seconds: 2),
-                                                          ));
-                                                          final allUserReportsProvider =
-                                                              Provider.of<
-                                                                      AllUserReportsProvider>(
-                                                                  context,
-                                                                  listen:
-                                                                      false);
-                                                          await allUserReportsProvider
-                                                              .fetchAllReports(
-                                                                  context);
-                                                        }
-                                                      } else {
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(
-                                                                SnackBar(
-                                                          backgroundColor:
-                                                              Colors.redAccent,
-                                                          content: Text(
-                                                              'Denied: task in progress'),
-                                                          duration: Duration(
-                                                              seconds: 2),
-                                                        ));
-                                                        Navigator.of(context)
-                                                            .pop(); // Close the dialog
-                                                      }
-                                                    },
-                                                    child: Text("Confirm"),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                        // style: ButtonStyle(
-                                        //   backgroundColor:
-                                        //       MaterialStateProperty.all<Color>(
-                                        //           Colors.white),
-                                        //   // Add elevation for a raised effect
-                                        //   elevation:
-                                        //       MaterialStateProperty.all<double>(
-                                        //           4.0), // Adjust as needed
-                                        // ),
-
-                                        child: Material(
-                                          elevation: 5,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                            height: double.infinity,
-                                            // padding: EdgeInsets.symmetric(
-                                            //     horizontal: 10, vertical: 15),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: Colors.grey.shade50,
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      MediaQuery.of(context)
-                                                                  .size
-                                                                  .width <
-                                                              390
-                                                          ? 6.0
-                                                          : 12.0,
-                                                  vertical: 0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(
-                                                    Icons.delete,
-                                                    size: 16,
-                                                    color: Colors.red,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  Text('Delete',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.red)),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      child: DeleteButton(
+                                          height: double.infinity,
+                                          onTap: () =>
+                                              handleDeleteButton(item)),
                                     ),
                                   ),
                                   SizedBox(
@@ -355,113 +223,10 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   Expanded(
                                     child: Visibility(
                                       visible: (item.status == 'open'),
-                                      child: InkWell(
-                                        onTap: () async {
-                                          //Add to Assigned form
-                                          //  Fluttertoast.showToast(msg: '${item.id}');
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          //                                        if (item != null && item.user_id != null) {
-                                          if (item.user_id != null) {
-                                            await prefs.setString(
-                                                "this_user_id",
-                                                (item.user_id!));
-                                          }
-                                          if (item.id != null) {
-                                            await prefs.setInt(
-                                                "user_report_id", (item.id!));
-                                          }
-
-                                          //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AssignForm()),
-                                          );
-                                          //                           }
-                                          // print('user_id: ${prefs.getString('this_user_id')}');
-                                          // print('id: ${item.id}');
-                                        },
-                                        // style: ButtonStyle(
-                                        //   backgroundColor:
-                                        //       WidgetStatePropertyAll(
-                                        //           Color.fromARGB(
-                                        //               255, 255, 255, 255)),
-                                        //   // Add elevation for a raised effect
-                                        //   elevation: MaterialStateProperty
-                                        //       .all<double>(
-                                        //           4.0), // Adjust as needed
-                                        // ),
-
-                                        child: Material(
-                                          elevation: 5,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                            height: double.infinity,
-
-                                            // padding: EdgeInsets.symmetric(
-                                            //     horizontal: 10, vertical: 15),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: Colors.grey.shade50,
-                                            ),
-                                            child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width <
-                                                                390
-                                                            ? 6.0
-                                                            : 12.0,
-                                                    vertical: 0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.person_add,
-                                                      size: 16,
-                                                      color:
-                                                          Colors.amber.shade700,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    '${item.status}'.contains(
-                                                            'in progress')
-                                                        ? Text('Assigned',
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .amber
-                                                                    .shade700))
-                                                        : Flexible(
-                                                            child: Text(
-                                                                'Assign',
-                                                                style: TextStyle(
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: Colors
-                                                                        .amber
-                                                                        .shade700)),
-                                                          ),
-                                                  ],
-                                                )),
-                                          ),
-                                        ),
+                                      child: AssignButton(
+                                        height: double.infinity,
+                                        isAssigned: item.status!.isEmpty,
+                                        onTap: () => handleAssignTask(item),
                                       ),
                                     ),
                                   ),
@@ -469,108 +234,9 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                     width: 20,
                                   ),
                                   Expanded(
-                                    child: InkWell(
-                                      onTap: () {
-                                        if (item.image != null) {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.7, // 70% of screen width
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.7, // 70% of screen width (square box)
-
-                                                  // Limiting the child to the box's size and maintaining aspect ratio
-                                                  child: FittedBox(
-                                                    fit: BoxFit
-                                                        .contain, // Maintain aspect ratio, fit within the box
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: '${item.image}',
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        } else {
-                                          //    Fluttertoast.showToast(msg: 'msg');
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text('No Image Added'),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      // style: ButtonStyle(
-                                      //   backgroundColor: WidgetStatePropertyAll(
-                                      //       Color.fromARGB(255, 250, 251, 255)),
-                                      //   // Add elevation for a raised effect
-                                      //   elevation: WidgetStatePropertyAll(
-                                      //       4), // Adjust as needed
-                                      // ),
-                                      child: Material(
-                                        elevation: 5,
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Container(
-                                          height: double.infinity,
-
-                                          // padding: EdgeInsets.symmetric(
-                                          //     horizontal: 10, vertical: 15),
-                                          decoration: BoxDecoration(
-                                            // border: Border.all(
-                                            //     color: Colors.blue, width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.grey.shade50,
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    MediaQuery.of(context)
-                                                                .size
-                                                                .width <
-                                                            390
-                                                        ? 6.0
-                                                        : 12.0,
-                                                vertical: 0),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons.image,
-                                                  size: 16,
-                                                  color: Colors.blue,
-                                                ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text('Image',
-                                                    style: TextStyle(
-                                                        color: Colors.blue,
-                                                        fontWeight:
-                                                            FontWeight.w600)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                    child: ImageButton(
+                                      height: double.infinity,
+                                      onTap: () => handleImageButton(item),
                                     ),
                                   )
                                 ],
@@ -595,5 +261,122 @@ class _AdminReportTileState extends State<AdminReportTile> {
       multiLine: true,
     );
     return base64Regex.hasMatch(data);
+  }
+
+  void handleDeleteButton(Reports item) {
+    // Show a confirmation dialog before rejecting
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Delete?"),
+          content: Text("Are you sure you want to delete this report?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (!'${item.status}'.contains('in progress')) {
+                  final deleteUserReportProvider =
+                      Provider.of<DeleteUserReportProvider>(context,
+                          listen: false);
+                  final success = await deleteUserReportProvider
+                      .deleteUserReport('${item.id}');
+
+                  if (success) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.greenAccent,
+                      content: Text('Report deleted'),
+                      duration: Duration(seconds: 2),
+                    ));
+                    final allUserReportsProvider =
+                        Provider.of<AllUserReportsProvider>(context,
+                            listen: false);
+                    await allUserReportsProvider.fetchAllReports(context);
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content: Text('Denied: task in progress'),
+                    duration: Duration(seconds: 2),
+                  ));
+                  Navigator.of(context).pop(); // Close the dialog
+                }
+              },
+              child: Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void handleImageButton(Reports item) {
+    if (item.image != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width *
+                  0.7, // 70% of screen width
+              height: MediaQuery.of(context).size.height *
+                  0.7, // 70% of screen width (square box)
+
+              // Limiting the child to the box's size and maintaining aspect ratio
+              child: FittedBox(
+                fit:
+                    BoxFit.contain, // Maintain aspect ratio, fit within the box
+                child: CachedNetworkImage(
+                  imageUrl: '${item.image}',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      //    Fluttertoast.showToast(msg: 'msg');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text('No Image Added'),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void handleAssignTask(Reports item) async {
+    //Add to Assigned form
+    //  Fluttertoast.showToast(msg: '${item.id}');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //                                        if (item != null && item.user_id != null) {
+    if (item.user_id != null) {
+      await prefs.setString("this_user_id", (item.user_id!));
+    }
+    if (item.id != null) {
+      await prefs.setInt("user_report_id", (item.id!));
+    }
+
+    //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AssignForm()),
+    );
+    //                           }
+    // print('user_id: ${prefs.getString('this_user_id')}');
+    // print('id: ${item.id}');
   }
 }
