@@ -227,38 +227,50 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _showColorPicker,
-                  child: Text('Pen Color'),
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-                ElevatedButton(
-                  onPressed: _undo,
-                  child: Text('Undo'),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.color_lens),
+                        onPressed: _showColorPicker,
+                        tooltip: 'Pen Color',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.undo),
+                        onPressed: _undo,
+                        tooltip: 'Undo',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            strokes.clear();
+                          });
+                        },
+                        tooltip: 'Cancel',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.save),
+                        onPressed: _isImageLoaded
+                            ? () async {
+                                final editedImage = await _exportImage();
+                                Navigator.pop(context, editedImage);
+                              }
+                            : null,
+                        tooltip: 'Save',
+                      ),
+                    ],
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      strokes.clear();
-                    });
-                  },
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: _isImageLoaded
-                      ? () async {
-                          final editedImage = await _exportImage();
-                          Navigator.pop(context, editedImage);
-                        }
-                      : null,
-                  child: Text('Save'),
-                ),
-              ],
-            ),
-          ),
+              )),
         ],
       ),
     );

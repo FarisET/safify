@@ -93,7 +93,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                   Text(
                                     item.incident_subtype_description!,
                                     style: TextStyle(
-                                      color: Colors.blue[800],
+                                      color: Colors.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
