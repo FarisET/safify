@@ -27,11 +27,11 @@ class _AssignFormState extends State<AssignForm> {
   List<bool> isSelected = [false, false, false];
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
   List<String> chipLabelsid = ['CRT1', 'CRT2', 'CRT3'];
-  List<String> dropdownMenuEntries = [];
   String? user_id;
   bool _confirmedExit = false;
   bool isRiskLevelSelected = false;
   String? incident_criticality_id = '';
+
   void _processData() {
     _formKey.currentState?.reset();
   }
