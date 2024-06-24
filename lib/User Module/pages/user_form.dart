@@ -14,7 +14,7 @@ import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
 
-import '../../models/ sub_location.dart';
+import '../../models/sub_location.dart';
 import '../../models/incident_sub_type.dart';
 import '../../models/incident_types.dart';
 import '../../widgets/build_dropdown_menu_util.dart';
@@ -735,6 +735,7 @@ class _UserFormState extends State<UserForm> {
                                                     ...selectedValue
                                                         .subLocationtPost!
                                                         .map((type) {
+                                                      print(type);
                                                       return buildSubLocationMenuItem(
                                                           type);
                                                     }).toList(),

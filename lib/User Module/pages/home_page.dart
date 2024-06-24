@@ -1,14 +1,22 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/db/database_helper.dart';
+import 'package:safify/dummy.dart';
+import 'package:safify/models/location.dart';
+import 'package:safify/models/sub_location.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:sqflite/sqflite.dart';
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -116,14 +124,54 @@ class _HomePage2State extends State<HomePage2> {
             ]),
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
-          child: FloatingActionButton(
-            //  backgroundColor: Colors.white,
-            onPressed: () {
-              _showBottomSheet();
-            },
-            child: const Icon(
-              Icons.add,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                //  backgroundColor: Colors.white,
+                onPressed: () {
+                  _showBottomSheet();
+                },
+                child: const Icon(
+                  Icons.add,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FloatingActionButton(
+                backgroundColor: Colors.blue,
+                onPressed: () async {
+                  print("hi");
+                  final dbhelper = DatabaseHelper();
+
+                  // final lists = parseLocationsAndSubLocations(locationsJson);
+                  // await dbhelper.insertLocationsAndSublocations(
+                  //     lists[0] as List<Location>,
+                  //     lists[1] as List<SubLocation>);
+                  final locations = await dbhelper.getLocations();
+                  final sublocations = await dbhelper.getAllSubLocations();
+                  print("count of locations: ${locations.length}");
+                  print("count of sublocations: ${sublocations.length}");
+
+                  print('Locations:');
+                  for (var location in locations) {
+                    print(location);
+                  }
+
+                  print('\nSub Locations:');
+                  for (var subLocation in sublocations) {
+                    print(subLocation);
+                  }
+                  final databasePath = getDatabasesPath();
+                  databasePath.then((value) => print("Database path: $value"));
+                },
+                child: const Icon(
+                  CupertinoIcons.pencil_ellipsis_rectangle,
+                  color: Colors.white,
+                ),
+              )
+            ],
           ),
         ),
         body: SafeArea(

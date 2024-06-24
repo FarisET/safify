@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/components/custom_button.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/string_utils.dart';
@@ -69,14 +70,14 @@ class _UserReportTileState extends State<UserReportTile> {
                 //color: item.status!.contains('open') ? Colors.red[50] : (item.status!.contains('in progress') ? Colors.orange[50] : Colors.green[50]),
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 // side: BorderSide(
                 //   // color: item.status!.contains('open')?Colors.redAccent:Colors.greenAccent,
                 //    width:1)),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -143,97 +144,74 @@ class _UserReportTileState extends State<UserReportTile> {
                             SizedBox(
                               height: 30,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                FilledButton(
-                                  onPressed: () {
-                                    if (item.image != null) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Dialog(
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width, // 70% of screen width
-                                              height: MediaQuery.of(context)
-                                                  .size
-                                                  .height, // 70% of screen width (square box)
-                                              child: FittedBox(
-                                                fit: BoxFit
-                                                    .contain, // Maintain aspect ratio, fit within the box
-                                                child: CachedNetworkImage(
-                                                  imageUrl: '${item.image}',
+                            SizedBox(
+                              height: 40,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ImageButton(
+                                      height: double.infinity,
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.35,
+                                      onTap: () {
+                                        if (item.image != null) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width, // 70% of screen width
+                                                  height: MediaQuery.of(context)
+                                                      .size
+                                                      .height, // 70% of screen width (square box)
+                                                  child: FittedBox(
+                                                    fit: BoxFit
+                                                        .contain, // Maintain aspect ratio, fit within the box
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: '${item.image}',
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
+                                              );
+                                            },
                                           );
-                                        },
-                                      );
-                                    } else {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Dialog(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: const [
-                                                Text('No Image Added'),
-                                              ],
-                                            ),
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: const [
+                                                    Text('No Image Added'),
+                                                  ],
+                                                ),
+                                              );
+                                            },
                                           );
-                                        },
-                                      );
-                                    }
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    elevation:
-                                        MaterialStateProperty.all<double>(
-                                            4.0), // Adjust as needed
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 8.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center, // Center-align the content
-                                      children: const [
-                                        Icon(
-                                          Icons.image,
-                                          size: 16,
-                                          color: Colors.blue,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          'Image',
-                                          style: TextStyle(color: Colors.blue),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                item.status!.contains('completed')
-                                    ? Text('Completed',
-                                        style: TextStyle(
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.bold))
-                                    : item.status!.contains('in progress')
-                                        ? Text('In progress',
-                                            style: TextStyle(
-                                                color: Colors.orange,
-                                                fontWeight: FontWeight.bold))
-                                        : Text(
-                                            '${capitalizeFirstLetter(item.status)}',
-                                            style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold))
-                              ],
+                                        }
+                                      }),
+                                  item.status!.contains('completed')
+                                      ? Text('Completed',
+                                          style: TextStyle(
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold))
+                                      : item.status!.contains('in progress')
+                                          ? Text('In progress',
+                                              style: TextStyle(
+                                                  color: Colors.orange,
+                                                  fontWeight: FontWeight.bold))
+                                          : Text(
+                                              '${capitalizeFirstLetter(item.status)}',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold))
+                                ],
+                              ),
                             ),
                           ]),
                     ],
