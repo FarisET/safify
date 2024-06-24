@@ -1,23 +1,35 @@
 // ignore_for_file: non_constant_identifier_names
 
 class IncidentSubType {
-  final String Incident_SubType_ID;
-  final String Incident_SubType_Description;
-//  final String Incident_Type_ID;
+  final String incidentSubtypeId;
+  final String incidentSubtypeDescription;
+  final String incidentTypeId;
 
   const IncidentSubType({
-    required this.Incident_SubType_ID, 
-    required this.Incident_SubType_Description,
-  //  required this.Incident_Type_ID, 
-    });
-    
-    factory IncidentSubType.fromJson(Map<String, dynamic> json) {
-      return IncidentSubType(
-       Incident_SubType_ID: json['incident_subtype_id'],
-       Incident_SubType_Description: json['incident_subtype_description'],
-  //     Incident_Type_ID: json['incident_type_id'],
- 
-     );
-        
-    }
+    required this.incidentSubtypeId,
+    required this.incidentSubtypeDescription,
+    required this.incidentTypeId,
+  });
+
+  factory IncidentSubType.fromJson(
+      Map<String, dynamic> json, String incidentTypeId) {
+    return IncidentSubType(
+      incidentSubtypeId: json['incident_subtype_id'] ?? '',
+      incidentSubtypeDescription: json['incident_subtype_description'] ?? '',
+      incidentTypeId: incidentTypeId,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'incident_subtype_id': incidentSubtypeId,
+      'incident_subtype_description': incidentSubtypeDescription,
+      'incident_type_id': incidentTypeId,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'IncidentSubType{incidentSubtypeId: $incidentSubtypeId, incidentSubtypeDescription: $incidentSubtypeDescription, incidentTypeId: $incidentTypeId}';
+  }
 }

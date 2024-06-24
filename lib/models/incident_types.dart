@@ -1,21 +1,27 @@
-// ignore_for_file: non_constant_identifier_names
-
 class IncidentType {
-  final String Incident_Type_ID;
-  final String  Incident_Type_Description;
+  final String incidentTypeId;
+  final String incidentTypeDescription;
 
   const IncidentType({
-    required this.Incident_Type_ID, 
-    required this. Incident_Type_Description,
-    });
-    
-    factory IncidentType.fromJson(Map<String, dynamic> json) {
-      return IncidentType(
-       Incident_Type_ID: json['incident_type_id'] ?? '',
-       Incident_Type_Description: json['incident_type_description'] ?? ''
-        );
-        
-    }
-}
+    required this.incidentTypeId,
+    required this.incidentTypeDescription,
+  });
 
-    
+  factory IncidentType.fromJson(Map<String, dynamic> json) {
+    return IncidentType(
+        incidentTypeId: json['incident_type_id'] ?? '',
+        incidentTypeDescription: json['incident_type_description'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'incident_type_id': incidentTypeId,
+      'incident_type_description': incidentTypeDescription,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'IncidentType{incidentTypeId: $incidentTypeId, incidentTypeDescription: $incidentTypeDescription}';
+  }
+}

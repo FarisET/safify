@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:safify/utils/json_utils.dart';
@@ -423,11 +422,24 @@ final incidentTypesJson = {
     }
   ]
 };
-
 void main(List<String> args) {
-  final locationsAndSubLocations = parseLocationsAndSubLocations(locationsJson);
-  final locations = locationsAndSubLocations[0];
-  final subLocations = locationsAndSubLocations[1];
+  // final locationsAndSubLocations = parseLocationsAndSubLocations(locationsJson);
+  // final locations = locationsAndSubLocations[0];
+  // final subLocations = locationsAndSubLocations[1];
+
+  final incidents = parseIncidentAndSubIncidentTypes(incidentTypesJson);
+  final incidentTypes = incidents[0];
+  final incidentSubTypes = incidents[1];
+
+  // Print the map
+  incidentTypes.forEach((incidentType) {
+    print('Incident Type: $incidentType');
+    incidentSubTypes.forEach((incidentSubType) {
+      if (incidentSubType.incidentTypeId == incidentType.incidentTypeId) {
+        print('   $incidentSubType');
+      }
+    });
+  });
 
   // // Print the map
   // locationToSubLocationsMap.forEach((locationId, subLocationsList) {

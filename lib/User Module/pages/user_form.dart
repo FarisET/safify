@@ -91,14 +91,14 @@ class _UserFormState extends State<UserForm> {
   ImageUtils imageUtils = ImageUtils();
   DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
-        type, type.Incident_Type_ID, type.Incident_Type_Description
+        type, type.incidentTypeId, type.incidentTypeDescription
         // Add the condition to check if it's selected based on your logic
         );
   }
 
   DropdownMenuItem<String> buildSubIncidentMenuItem(IncidentSubType type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentSubType>(
-        type, type.Incident_SubType_ID, type.Incident_SubType_Description
+        type, type.incidentSubtypeId, type.incidentSubtypeDescription
         // Add the condition to check if it's selected based on your logic
         );
   }

@@ -67,15 +67,26 @@ class LocationProviderClass extends ChangeNotifier {
   String? selectedLocation;
   final LocationRepository _locationRepository = LocationRepository();
 
-  getLocationPostData() async {
+  void getLocationPostData() async {
     // loading = true;
-    LocationPost = (await _locationRepository.fetchLocations());
+    final locations = await _locationRepository.fetchLocations();
+    updateLocations(locations);
+    // setLocation(locations);
     // loading = false;
     notifyListeners();
   }
 
-  setLocation(selectedVal) {
+  void updateLocations(List<Location> locations) {
+    LocationPost = locations;
+  }
+
+  void setLocation(selectedVal) {
     selectedLocation = selectedVal;
     notifyListeners();
+  }
+
+  void refresh() async {
+    final locations = await _locationRepository.fetchLocations();
+    setLocation(locations);
   }
 }
