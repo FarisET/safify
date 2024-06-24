@@ -130,15 +130,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                 leading: const Icon(
                   Icons.personal_injury,
-                  color: Colors.blue,
+                  color: Colors.black,
                   size: 31,
                 ),
                 title: const Text('Total Incidents Reported'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
-                  child: Text(countReportedProvider != null
-                      ? countReportedProvider!
-                      : ''),
+                  child: Text(
+                    countReportedProvider ?? '',
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Theme.of(context).cardColor,
                 ),
               ),
             ),
@@ -155,15 +158,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                 leading: const Icon(
                   Icons.check_box,
-                  color: Colors.blue,
+                  color: Colors.black,
                   size: 31,
                 ),
                 title: const Text('Total Incidents Resolved'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
-                  child: Text(countResolvedProvider != null
-                      ? countResolvedProvider!
-                      : ''),
+                  child: Text(
+                    countResolvedProvider != null ? countResolvedProvider! : '',
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Theme.of(context).cardColor,
                 ),
               ),
             ),
@@ -206,7 +212,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     children: [
                       Icon(
                         Icons.category,
-                        color: Colors.blue,
+                        color: Colors.black,
                         size: 31,
                       ),
                       Text(
@@ -273,7 +279,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: Colors.blue,
+                        color: Colors.black,
                         size: 31,
                       ),
                       Text(
@@ -341,7 +347,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     Icon(
                       Icons.group,
-                      color: Colors.blue,
+                      color: Colors.black,
                       size: 31,
                     ),
                     Text(

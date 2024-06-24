@@ -95,14 +95,14 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                   Text(
                                     item.incident_subtype_description!,
                                     style: TextStyle(
-                                      color: Colors.blue[800],
+                                      color: Colors.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   //   Text('ID: ${item.id}'
                                   //   ,                                      style: TextStyle(
-                                  //     color: Colors.blue[800],
+                                  //     color: Colors.black[800],
                                   //  //   fontSize: 18,
                                   //     fontWeight: FontWeight.bold,
                                   //   ),
@@ -126,20 +126,21 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                             Row(
                               children: [
                                 Icon(Icons.location_city,
-                                    color: Colors.blue, size: 20),
+                                    color: Colors.black, size: 20),
                                 Text(' ${item.sub_location_name}')
                               ],
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer, color: Colors.blue, size: 20),
+                                Icon(Icons.timer,
+                                    color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.date_of_assignment?.split('T')[0]} | ${item.date_of_assignment?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
                               ],
                             ),
                             Row(
                               children: [
-                                Icon(Icons.edit, color: Colors.blue, size: 20),
+                                Icon(Icons.edit, color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.report_description}',
@@ -202,14 +203,14 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                         style: ButtonStyle(
                                           backgroundColor:
                                               MaterialStateProperty.all<Color>(
-                                                  Colors.greenAccent),
+                                                  Colors.black),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 18.0, vertical: 0),
                                           child: Text('Start',
                                               style: TextStyle(
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                     ),
@@ -267,7 +268,7 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Colors.blue),
+                                                Colors.black),
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(

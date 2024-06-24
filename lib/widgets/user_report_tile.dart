@@ -94,7 +94,7 @@ class _UserReportTileState extends State<UserReportTile> {
                                   Text(
                                     item.incidentSubtypeDescription!,
                                     style: TextStyle(
-                                      color: Colors.blue[800],
+                                      color: Colors.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -116,13 +116,14 @@ class _UserReportTileState extends State<UserReportTile> {
                             Row(
                               children: [
                                 Icon(Icons.location_city,
-                                    color: Colors.blue, size: 20),
+                                    color: Colors.black, size: 20),
                                 Text(' ${item.subLocationName}')
                               ],
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer, color: Colors.blue, size: 20),
+                                Icon(Icons.timer,
+                                    color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.dateTime?.split('T')[0]} | ${item.dateTime?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
                               ],
@@ -130,7 +131,7 @@ class _UserReportTileState extends State<UserReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.blue, size: 20),
+                                Icon(Icons.edit, color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.description}',

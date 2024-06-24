@@ -67,8 +67,8 @@ abstract class AbstractButton extends StatelessWidget {
 }
 
 class AssignButton extends AbstractButton {
-  static const Color fixedIconColor = Colors.amber; // Fixed color for the icon
-  static const Color fixedTextColor = Colors.amber; // Fixed color for the text
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
 
   AssignButton({
     required bool isAssigned,
@@ -96,8 +96,8 @@ class AssignButton extends AbstractButton {
 }
 
 class DeleteButton extends AbstractButton {
-  static const Color fixedIconColor = Colors.red; // Fixed color for the icon
-  static const Color fixedTextColor = Colors.red; // Fixed color for the text
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
 
   DeleteButton({
     required void Function() onTap,
@@ -122,8 +122,8 @@ class DeleteButton extends AbstractButton {
 }
 
 class ImageButton extends AbstractButton {
-  static const Color fixedIconColor = Colors.blue; // Fixed color for the icon
-  static const Color fixedTextColor = Colors.blue; // Fixed color for the text
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
 
   ImageButton({
     required void Function() onTap,
@@ -148,8 +148,8 @@ class ImageButton extends AbstractButton {
 }
 
 class ApproveButton extends AbstractButton {
-  static const Color fixedIconColor = Colors.green; // Fixed color for the icon
-  static const Color fixedTextColor = Colors.green; // Fixed color for the text
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
 
   ApproveButton({
     required bool isApproved,
@@ -176,8 +176,8 @@ class ApproveButton extends AbstractButton {
 }
 
 class RejectButton extends AbstractButton {
-  static const Color fixedIconColor = Colors.red; // Fixed color for the icon
-  static const Color fixedTextColor = Colors.red; // Fixed color for the text
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
 
   RejectButton({
     required void Function() onTap,
