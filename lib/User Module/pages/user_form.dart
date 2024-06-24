@@ -105,14 +105,14 @@ class _UserFormState extends State<UserForm> {
 
   DropdownMenuItem<String> buildLocationMenuItem(Location type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<Location>(
-        type, type.Location_ID, type.Location_Name
+        type, type.locationId, type.locationName
         // Add the condition to check if it's selected based on your logic
         );
   }
 
   DropdownMenuItem<String> buildSubLocationMenuItem(SubLocation type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<SubLocation>(
-        type, type.Sub_Location_ID, type.Sub_Location_Name
+        type, type.sublocationId, type.sublocationName
         // Add the condition to check if it's selected based on your logic
         );
   }

@@ -12,7 +12,7 @@ List<List> parseLocationsAndSubLocations(Map<String, dynamic> locationsJson) {
     if (locationJson.containsKey('sub_locations')) {
       for (var subLocationJson in locationJson['sub_locations']) {
         SubLocation subLocation =
-            SubLocation.fromJson(subLocationJson, location.Location_ID);
+            SubLocation.fromJson(subLocationJson, location.locationId);
         subLocations.add(subLocation);
       }
     }

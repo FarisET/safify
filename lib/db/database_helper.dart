@@ -43,7 +43,7 @@ class DatabaseHelper {
         ///
         await db.insert(
           'locations',
-          Location(Location_ID: 'LT1', Location_Name: 'Main Entrance').toJson(),
+          Location(locationId: 'LT1', locationName: 'Main Entrance').toJson(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
 
@@ -51,9 +51,9 @@ class DatabaseHelper {
         await db.insert(
           'sublocations',
           const SubLocation(
-            Sub_Location_ID: 'SLT1',
+            sublocationId: 'SLT1',
             location_id: 'LT1',
-            Sub_Location_Name: 'Reception Desk',
+            sublocationName: 'Reception Desk',
           ).toJson(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
@@ -138,7 +138,7 @@ class DatabaseHelper {
       'locations',
       location.toJson(),
       where: 'location_id = ?',
-      whereArgs: [location.Location_ID],
+      whereArgs: [location.locationId],
     );
   }
 
@@ -148,7 +148,7 @@ class DatabaseHelper {
       'sublocations',
       sublocation.toJson(),
       where: 'sublocation_id = ?',
-      whereArgs: [sublocation.Sub_Location_ID],
+      whereArgs: [sublocation.sublocationId],
     );
   }
 
