@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
 import 'package:safify/widgets/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,6 +29,7 @@ class _AssignFormState extends State<AssignForm> {
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
   List<String> chipLabelsid = ['CRT1', 'CRT2', 'CRT3'];
   String? user_id;
+  bool _confirmedExit = false;
   bool isRiskLevelSelected = false;
   String? incident_criticality_id = '';
 
@@ -58,6 +60,12 @@ class _AssignFormState extends State<AssignForm> {
             selectedFilter == null || team.department_name == selectedFilter;
         return matchesQuery && matchesFilter;
       }).toList();
+    });
+  }
+
+  void _handleActionTeamSelected(String actionTeamName) {
+    setState(() {
+      actionTeam = actionTeamName;
     });
   }
 
@@ -123,44 +131,11 @@ class _AssignFormState extends State<AssignForm> {
                                 .toSet()
                                 .toList() ??
                             [],
+                        actionTeams: filteredActionTeams,
+                        onActionTeamSelected:
+                            _handleActionTeamSelected, // Handle selection
                       ),
                       SizedBox(height: 10),
-                      Expanded(
-                        child: Consumer<AllActionTeamProviderClass>(
-                          builder: (context, provider, child) {
-                            if (provider.loading) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              return ListView.builder(
-                                itemCount: filteredActionTeams.length,
-                                itemBuilder: (context, index) {
-                                  final actionTeam = filteredActionTeams[index];
-                                  final isSelected = this.actionTeam ==
-                                      actionTeam.ActionTeam_ID;
-                                  return ListTile(
-                                    title: Text(actionTeam.ActionTeam_Name),
-                                    subtitle: Text(actionTeam.department_name ??
-                                        'No Department'),
-                                    selected: isSelected,
-                                    onTap: () {
-                                      setState(() {
-                                        this.actionTeam =
-                                            actionTeam.ActionTeam_ID;
-                                      });
-                                    },
-                                    tileColor: isSelected
-                                        ? Colors.blue.withOpacity(0.1)
-                                        : null,
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 15),
                       DropdownButtonFormField<String>(
                         value: selectedRiskLevel,
                         decoration: InputDecoration(
@@ -197,43 +172,38 @@ class _AssignFormState extends State<AssignForm> {
                               : () async {
                                   if (actionTeam != '' &&
                                       selectedRiskLevel != null) {
-                                    int flag = await handleReportSubmitted(
+                                    int result = await handleReportSubmitted(
                                         context, this);
+                                    if (result == 1) {
+                                      await Provider.of<AllUserReportsProvider>(
+                                              context,
+                                              listen: false)
+                                          .fetchAllReports(context);
 
-                                    if (flag == 1) {
-                                      if (mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.blue,
-                                            content: Text('Task Assigned'),
-                                            duration: Duration(seconds: 3),
-                                          ),
-                                        );
-                                        _processData();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.blue,
+                                              content: Text(
+                                                  'Report assigned successfully!'),
+                                              duration: Duration(seconds: 3),
+                                            ),
+                                          )
+                                          .closed
+                                          .then((_) {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  AdminHomePage()),
+                                                  const AdminHomePage()),
                                         );
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.redAccent,
-                                            content:
-                                                Text('Failed: Please retry'),
-                                            duration: Duration(seconds: 3),
-                                          ),
-                                        );
-                                      }
-                                    } else {
+                                      });
+                                    } else if (result == 0) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
                                           backgroundColor: Colors.redAccent,
-                                          content: Text('Assignment Failed'),
+                                          content: Text('Failed: Please retry'),
                                           duration: Duration(seconds: 3),
                                         ),
                                       );
