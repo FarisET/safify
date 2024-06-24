@@ -28,7 +28,6 @@ class _AssignFormState extends State<AssignForm> {
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
   List<String> chipLabelsid = ['CRT1', 'CRT2', 'CRT3'];
   String? user_id;
-  bool _confirmedExit = false;
   bool isRiskLevelSelected = false;
   String? incident_criticality_id = '';
 
@@ -138,16 +137,22 @@ class _AssignFormState extends State<AssignForm> {
                                 itemCount: filteredActionTeams.length,
                                 itemBuilder: (context, index) {
                                   final actionTeam = filteredActionTeams[index];
+                                  final isSelected = this.actionTeam ==
+                                      actionTeam.ActionTeam_ID;
                                   return ListTile(
                                     title: Text(actionTeam.ActionTeam_Name),
                                     subtitle: Text(actionTeam.department_name ??
                                         'No Department'),
+                                    selected: isSelected,
                                     onTap: () {
                                       setState(() {
                                         this.actionTeam =
                                             actionTeam.ActionTeam_ID;
                                       });
                                     },
+                                    tileColor: isSelected
+                                        ? Colors.blue.withOpacity(0.1)
+                                        : null,
                                   );
                                 },
                               );
