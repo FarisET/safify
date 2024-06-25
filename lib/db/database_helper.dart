@@ -1,4 +1,6 @@
 import 'package:safify/dummy.dart';
+import 'package:safify/models/incident_sub_type.dart';
+import 'package:safify/models/incident_types.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:sqflite/sqflite.dart';
@@ -24,9 +26,9 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'locations.db');
 
-    // print("deleting database...");
-    // await deleteDatabase(path);
-    // print("database deleted...");
+    print("deleting database...");
+    await deleteDatabase(path);
+    print("database deleted...");
 
     return await openDatabase(
       path,
@@ -38,6 +40,15 @@ class DatabaseHelper {
         );
         await db.execute(
           'CREATE TABLE sublocations(sub_location_id TEXT PRIMARY KEY, location_id TEXT, sub_location_name TEXT, FOREIGN KEY (location_id) REFERENCES locations (location_id))',
+        );
+
+        // make tables for incident types and subtypes
+        await db.execute(
+          'CREATE TABLE incident_types(incident_type_id TEXT PRIMARY KEY, incident_type_description TEXT)',
+        );
+
+        await db.execute(
+          'CREATE TABLE incident_subtypes(incident_subtype_id TEXT PRIMARY KEY, incident_type_id TEXT, incident_subtype_description TEXT, FOREIGN KEY (incident_type_id) REFERENCES incident_types (incident_type_id))',
         );
 
         ///
@@ -54,6 +65,27 @@ class DatabaseHelper {
             sublocationId: 'SLT1',
             location_id: 'LT1',
             sublocationName: 'Reception Desk',
+          ).toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        // Insert incident types and subtype
+
+        await db.insert(
+          'incident_types',
+          const IncidentType(
+            incidentTypeId: 'ITY1',
+            incidentTypeDescription: 'safety',
+          ).toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        await db.insert(
+          'incident_subtypes',
+          const IncidentSubType(
+            incidentSubtypeId: 'ISTY1',
+            incidentTypeId: 'ITY1',
+            incidentSubtypeDescription: 'Physical Injury',
           ).toJson(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
@@ -129,6 +161,22 @@ class DatabaseHelper {
     );
     return List.generate(maps.length, (i) {
       return SubLocation.fromJson(maps[i], locationId);
+    });
+  }
+
+  Future<List<IncidentType>> getIncidentTypes() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('incident_types');
+    return List.generate(maps.length, (i) {
+      return IncidentType.fromJson(maps[i]);
+    });
+  }
+
+  Future<List<IncidentSubType>> getAllIncidentSubtypes() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('incident_subtypes');
+    return List.generate(maps.length, (i) {
+      return IncidentSubType.fromJson(maps[i], maps[i]['incident_type_id']);
     });
   }
 
