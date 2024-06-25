@@ -8,6 +8,7 @@ import 'package:safify/Action%20Team%20Module/providers/update_user_report_statu
 import 'package:safify/Admin%20Module/admin_pages/create_user_form.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/all_action_team_provider.dart';
+import 'package:safify/Admin%20Module/providers/announcement_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
@@ -217,7 +218,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AllActionTeamProviderClass>(
             create: (context) => AllActionTeamProviderClass()),
         ChangeNotifierProvider<AllActionTeamProviderClass>(
-            create: (context) => AllActionTeamProviderClass())
+            create: (context) => AllActionTeamProviderClass()),
+        ChangeNotifierProvider<AnnouncementProvider>(
+            create: (context) => AnnouncementProvider())
       ],
       child: MaterialApp(
         useInheritedMediaQuery: true,

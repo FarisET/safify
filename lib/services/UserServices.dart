@@ -114,7 +114,9 @@ class UserServices {
         } else if (error.contains("Authentication failed")) {
           return {'success': false, 'message': "Authentication failed"};
         } else if (error.contains("Wrong Password")) {
-          return {'success': false, 'message': "Wrong password"};
+          return {'success': false, 'message': "Incorrect password"};
+        } else if (error.contains("Incorrect User ID")) {
+          return {'success': false, 'message': "Incorrect Username"};
         }
       }
     } catch (e) {

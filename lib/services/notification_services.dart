@@ -1,15 +1,43 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:safify/constants.dart';
+import 'package:safify/models/announcement_notif.dart';
 
 class NotificationServices {
   //initialising firebase message plugin
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  static const storage = FlutterSecureStorage();
+
+  static Future<void> sendAlert(Announcement announcement) async {
+    try {
+      String? jwtToken = await storage.read(key: 'jwt');
+      Uri url = Uri.parse('$IP_URL/admin/dashboard/alertUsers');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(announcement.toJson()),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to send alert');
+      }
+    } catch (e) {
+      throw Exception('Failed to send alert: $e');
+    }
+  }
 
   //initialising firebase message plugin
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
