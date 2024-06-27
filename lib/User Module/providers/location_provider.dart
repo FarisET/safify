@@ -88,5 +88,6 @@ class LocationProviderClass extends ChangeNotifier {
   void refresh() async {
     final locations = await _locationRepository.fetchLocations();
     setLocation(locations);
+    notifyListeners();
   }
 }

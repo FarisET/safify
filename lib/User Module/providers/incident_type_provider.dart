@@ -29,6 +29,13 @@ class IncidentProviderClass extends ChangeNotifier {
     selectedIncident = selectedVal;
     notifyListeners();
   }
+
+  void refresh() async {
+    final incidentTypes = await _incidentTypesRepository.fetchIncidentTypes();
+    setIncidentType(incidentTypes);
+    notifyListeners();
+  }
+
   //IPs
   //stormfiber: 192.168.18.74
   //mobile data: 192.168.71.223

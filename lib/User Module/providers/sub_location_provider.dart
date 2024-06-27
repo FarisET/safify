@@ -53,6 +53,12 @@ class SubLocationProviderClass extends ChangeNotifier {
   List<SubLocation> getSubLocationsForLocation(String locationID) {
     return locationToSubLocationsMap[locationID] ?? [];
   }
+
+  void refresh() async {
+    final sublocations = await _sublocationRepository.fetchSublocations();
+    setAllSubLocations(sublocations);
+    notifyListeners();
+  }
 }
 
 //IPs

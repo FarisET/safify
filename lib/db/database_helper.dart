@@ -3,6 +3,8 @@ import 'package:safify/models/incident_sub_type.dart';
 import 'package:safify/models/incident_types.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
+import 'package:safify/models/user_form_report.dart';
+import 'package:safify/services/ReportServices.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -26,9 +28,9 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'locations.db');
 
-    print("deleting database...");
-    await deleteDatabase(path);
-    print("database deleted...");
+    // print("deleting database...");
+    // await deleteDatabase(path);
+    // print("database deleted...");
 
     return await openDatabase(
       path,
@@ -50,6 +52,17 @@ class DatabaseHelper {
         await db.execute(
           'CREATE TABLE incident_subtypes(incident_subtype_id TEXT PRIMARY KEY, incident_type_id TEXT, incident_subtype_description TEXT, FOREIGN KEY (incident_type_id) REFERENCES incident_types (incident_type_id))',
         );
+        await db.execute('''
+          CREATE TABLE user_form_reports (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sublocationId TEXT NOT NULL,
+            incidentSubtypeId TEXT NOT NULL,
+            description TEXT NOT NULL,
+            date TEXT NOT NULL,
+            criticalityId TEXT NOT NULL,
+            imagePath TEXT
+          ) 
+          ''');
 
         ///
         await db.insert(
@@ -90,6 +103,30 @@ class DatabaseHelper {
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       },
+    );
+  }
+
+  Future<void> insertUserFormReport(UserFormReport) async {
+    final db = await database;
+    await db.insert(
+      'user_form_reports',
+      UserFormReport.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Map<int, UserFormReport>> getUserFormReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('user_form_reports');
+    return {for (var item in maps) item['id']: UserFormReport.fromJson(item)};
+  }
+
+  Future<void> deleteUserFormReport(int id) async {
+    final db = await database;
+    await db.delete(
+      'user_form_reports',
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 
