@@ -14,6 +14,7 @@ import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/pages/splash_screen.dart';
+import 'package:safify/db/background_service.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,6 +49,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the notifications plugin
   Notifications notifications = Notifications();
+  // await initiazizeService();
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
