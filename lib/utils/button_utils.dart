@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/pages/action_report_form.dart';
 import 'package:safify/Action%20Team%20Module/providers/all_action_reports_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/models/action_report.dart';
+import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/report.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void handleImageButton(String? imageUrl, BuildContext context) {
   if (imageUrl != null) {
@@ -103,4 +106,27 @@ void showRejectActionReportDialogue(BuildContext context, ActionReport item) {
       );
     },
   );
+}
+
+void startResolution(AssignTask item, BuildContext context) async {
+  //Add to Assigned form
+  //  Fluttertoast.showToast(msg: '${item.id}');
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // //                                        if (item != null && item.user_id != null) {
+  //                                           if(item.user_id != null)  {
+  //                                            await prefs.setString("this_user_id", (item.user_id!));
+  //                                           }
+  if (item.user_report_id != null) {
+    await prefs.setInt("user_report_id", (item.user_report_id!));
+    print('user_report_id: ${prefs.getInt("user_report_id")}');
+  }
+
+  //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => ActionReportForm()),
+  );
+  //                           }
+  // print('user_id: ${prefs.getString('this_user_id')}');
+  // print('id: ${item.id}');
 }

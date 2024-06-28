@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/components/custom_button.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
+import 'package:safify/utils/button_utils.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,11 +115,11 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                           color: item
                                                   .incident_criticality_level!
                                                   .contains('minor')
-                                              ? Colors.green
+                                              ? Colors.black
                                               : (item.incident_criticality_level!
                                                       .contains('serious')
-                                                  ? Colors.orange
-                                                  : Colors.red),
+                                                  ? Colors.black
+                                                  : Colors.black),
                                           fontWeight: FontWeight.bold))
                                 ],
                               ),
@@ -125,14 +127,14 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
 
                             Row(
                               children: [
-                                Icon(Icons.location_city,
+                                Icon(Icons.location_on_outlined,
                                     color: Colors.black, size: 20),
                                 Text(' ${item.sub_location_name}')
                               ],
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer,
+                                Icon(Icons.timer_outlined,
                                     color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.date_of_assignment?.split('T')[0]} | ${item.date_of_assignment?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
@@ -140,7 +142,8 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                             ),
                             Row(
                               children: [
-                                Icon(Icons.edit, color: Colors.black, size: 20),
+                                Icon(Icons.textsms_outlined,
+                                    color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.report_description}',
@@ -171,143 +174,34 @@ class _AssignedTaskTileState extends State<AssignedTaskTile> {
                                           !item.status!.contains('approved') ||
                                               !item.status!
                                                   .contains('Approval pending'),
-                                      child: FilledButton(
-                                        onPressed: () async {
-                                          //Add to Assigned form
-                                          //  Fluttertoast.showToast(msg: '${item.id}');
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          // //                                        if (item != null && item.user_id != null) {
-                                          //                                           if(item.user_id != null)  {
-                                          //                                            await prefs.setString("this_user_id", (item.user_id!));
-                                          //                                           }
-                                          if (item.user_report_id != null) {
-                                            await prefs.setInt("user_report_id",
-                                                (item.user_report_id!));
-                                            print(
-                                                'user_report_id: ${prefs.getInt("user_report_id")}');
-                                          }
-
-                                          //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ActionReportForm()),
-                                          );
-                                          //                           }
-                                          // print('user_id: ${prefs.getString('this_user_id')}');
-                                          // print('id: ${item.id}');
-                                        },
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.black),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 18.0, vertical: 0),
-                                          child: Text('Start',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ),
-                                      ),
+                                      child: StartButton(
+                                          onTap: () =>
+                                              startResolution(item, context)),
                                     ),
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.02,
                                     ),
-                                    FilledButton(
-                                      onPressed: () {
-                                        if (item.image != null) {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.7, // 70% of screen width
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.7, // 70% of screen width (square box)
-
-                                                  // Limiting the child to the box's size and maintaining aspect ratio
-                                                  child: FittedBox(
-                                                    fit: BoxFit
-                                                        .contain, // Maintain aspect ratio, fit within the box
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: '${item.image}',
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        } else {
-                                          //    Fluttertoast.showToast(msg: 'msg');
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: const [
-                                                    Text('No image available'),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.black),
-                                      ),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: MediaQuery.of(context)
-                                                        .size
-                                                        .width <
-                                                    390
-                                                ? 6.0
-                                                : 12.0,
-                                            vertical: 0),
-                                        child: Row(
-                                          children: const [
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text('Image',
-                                                style: TextStyle(
-                                                    color: Colors.white)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                    ImageButton(
+                                        onTap: () => handleImageButton(
+                                            item.image, context)),
                                   ],
                                 ),
 
                                 item.status!.contains('assigned')
                                     ? Text('Assigned',
                                         style: TextStyle(
-                                            color: Colors.red,
+                                            color: Colors.black,
                                             fontWeight: FontWeight.bold))
                                     : item.status!.contains('approval pending')
                                         ? Text('Approval pending',
                                             style: TextStyle(
-                                                color: Colors.orange,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.bold))
                                         : Text(
                                             '${capitalizeFirstLetter(item.status)}',
                                             style: TextStyle(
-                                                color: Colors.green,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.bold)),
                                 //TODO: change status color dynamically
                               ],

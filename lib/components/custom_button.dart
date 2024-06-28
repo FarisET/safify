@@ -207,3 +207,29 @@ class RejectButton extends AbstractButton {
           borderRadius: borderRadius,
         );
 }
+
+class StartButton extends AbstractButton {
+  static const Color fixedIconColor = Colors.black; // Fixed color for the icon
+  static const Color fixedTextColor = Colors.black; // Fixed color for the text
+
+  StartButton({
+    required void Function() onTap,
+    double? width,
+    double? height,
+    double gap = 10,
+    // double iconSize = 16,
+    double borderRadius = 10,
+  }) : super(
+          buttonText: 'Take Action',
+          iconData: Icons.content_paste_go_sharp,
+          iconColor: fixedIconColor,
+          textColor: fixedTextColor,
+          backgroundColor: Colors.grey.shade50,
+          onTap: onTap,
+          width: width,
+          height: height,
+          gap: gap,
+          //    iconSize: iconSize,
+          borderRadius: borderRadius,
+        );
+}
