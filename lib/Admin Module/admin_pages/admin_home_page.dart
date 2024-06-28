@@ -246,7 +246,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                                   child: Row(
                                     children: [
                                       Icon(
-                                        Icons.analytics,
+                                        Icons.analytics_outlined,
                                         color: Colors.white,
                                       ),
                                       Text(

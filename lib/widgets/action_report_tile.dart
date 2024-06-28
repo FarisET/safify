@@ -103,29 +103,31 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 ],
                               ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  'Reported By: ',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    ' ${item.reported_by}',
-                                    style: TextStyle(),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
+                            Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all()),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.person_outline,
+                                      color: Colors.black, size: 20),
+                                  Flexible(
+                                    child: Text(
+                                      ' ${item.reported_by}',
+                                      style: TextStyle(),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.timer,
+                                Icon(Icons.timer_outlined,
                                     color: Colors.black, size: 20),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8),
@@ -137,12 +139,16 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.black, size: 20),
+                                Icon(Icons.textsms_outlined,
+                                    color: Colors.black, size: 20),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 8),
                                     child: Text(
-                                      '${item.report_description}',
+                                      //    item.report_description!.isNotEmpty ?
+                                      item.report_description!.isNotEmpty
+                                          ? item.report_description!
+                                          : '-',
                                       style: TextStyle(),
                                     ),
                                   ),
@@ -152,7 +158,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.check,
+                                Icon(Icons.note_alt_outlined,
                                     color: Colors.black, size: 20),
                                 Expanded(
                                   child: Padding(
@@ -161,7 +167,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                       '${item.resolution_description}',
                                       style: TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.normal),
                                     ),
                                   ),
                                 )
@@ -176,103 +182,93 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Expanded(
-                                    child: ImageButton(
-                                        height: double.infinity,
-                                        onTap: () {
-                                          handleImageButton(
-                                              item.proof_image, context);
-                                        }),
-                                  ),
-                                  Expanded(
-                                    child: ApproveButton(
-                                        height: double.infinity,
-                                        isApproved:
-                                            item.status!.contains('approved'),
-                                        onTap: () async {
-                                          if (item.action_report_id != null &&
-                                              item.user_report_id != null) {
-                                            ReportServices()
-                                                .postapprovedActionReport(
-                                                    item.user_report_id,
-                                                    item.action_report_id);
-                                            approvalStatusProvider
-                                                .updateStatus(item.status!);
-                                            fetchAllRepsProvider
-                                                .fetchAllActionReports(context);
-                                          }
-                                        }),
-                                  ),
-                                  Expanded(
-                                      child: Visibility(
-                                          visible: item.status != 'approveds',
-                                          child: RejectButton(onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: Text("Reject?"),
-                                                  content: Text(
-                                                      "Are you sure you want to reject this report?"),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () {
+                                  ImageButton(
+                                      height: double.infinity,
+                                      onTap: () {
+                                        handleImageButton(
+                                            item.proof_image, context);
+                                      }),
+                                  ApproveButton(
+                                      height: double.infinity,
+                                      isApproved:
+                                          item.status!.contains('approved'),
+                                      onTap: () async {
+                                        if (item.action_report_id != null &&
+                                            item.user_report_id != null) {
+                                          ReportServices()
+                                              .postapprovedActionReport(
+                                                  item.user_report_id,
+                                                  item.action_report_id);
+                                          approvalStatusProvider
+                                              .updateStatus(item.status!);
+                                          fetchAllRepsProvider
+                                              .fetchAllActionReports(context);
+                                        }
+                                      }),
+                                  Visibility(
+                                      visible: item.status != 'approveds',
+                                      child: RejectButton(onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text("Reject?"),
+                                              content: Text(
+                                                  "Are you sure you want to reject this report?"),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the dialog
+                                                  },
+                                                  child: Text("Cancel"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    DeleteActionReportProvider
+                                                        deleteActionReportProvider =
+                                                        Provider.of<
+                                                                DeleteActionReportProvider>(
+                                                            context,
+                                                            listen: false);
+
+                                                    deleteActionReportProvider
+                                                        .deleteActionReport(
+                                                            '${item.action_report_id}')
+                                                        .then((success) async {
+                                                      if (success) {
                                                         Navigator.of(context)
                                                             .pop(); // Close the dialog
-                                                      },
-                                                      child: Text("Cancel"),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        DeleteActionReportProvider
-                                                            deleteActionReportProvider =
-                                                            Provider.of<
-                                                                    DeleteActionReportProvider>(
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                SnackBar(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .greenAccent,
+                                                          content: Text(
+                                                              'Report deleted'),
+                                                          duration: Duration(
+                                                              seconds: 2),
+                                                        ));
+                                                        await Provider.of<
+                                                                    ActionReportsProvider>(
                                                                 context,
-                                                                listen: false);
+                                                                listen: false)
+                                                            .fetchAllActionReports(
+                                                                context);
 
-                                                        deleteActionReportProvider
-                                                            .deleteActionReport(
-                                                                '${item.action_report_id}')
-                                                            .then(
-                                                                (success) async {
-                                                          if (success) {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // Close the dialog
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                                    SnackBar(
-                                                              backgroundColor:
-                                                                  Colors
-                                                                      .greenAccent,
-                                                              content: Text(
-                                                                  'Report deleted'),
-                                                              duration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          2),
-                                                            ));
-                                                            await Provider.of<
-                                                                        ActionReportsProvider>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .fetchAllActionReports(
-                                                                    context);
-
-                                                            //PUSH NOTIFICATION
-                                                          }
-                                                        });
-                                                      },
-                                                      child: Text("Confirm"),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
+                                                        //PUSH NOTIFICATION
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Text("Confirm"),
+                                                ),
+                                              ],
                                             );
-                                          })))
+                                          },
+                                        );
+                                      }))
                                 ],
                               ),
                             ),
