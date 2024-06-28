@@ -104,25 +104,25 @@ class _UserReportTileState extends State<UserReportTile> {
                                       style: TextStyle(
                                           color: item.incidentCriticalityLevel!
                                                   .contains('minor')
-                                              ? Colors.green
+                                              ? Colors.black
                                               : (item.incidentCriticalityLevel!
                                                       .contains('serious')
-                                                  ? Colors.orange
-                                                  : Colors.red),
+                                                  ? Colors.black
+                                                  : Colors.black),
                                           fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
                             Row(
                               children: [
-                                Icon(Icons.location_city,
+                                Icon(Icons.location_on_outlined,
                                     color: Colors.black, size: 20),
                                 Text(' ${item.subLocationName}')
                               ],
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer,
+                                Icon(Icons.timer_outlined,
                                     color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.dateTime?.split('T')[0]} | ${item.dateTime?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
@@ -131,7 +131,8 @@ class _UserReportTileState extends State<UserReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.black, size: 20),
+                                Icon(Icons.textsms_outlined,
+                                    color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.description}',
@@ -153,8 +154,8 @@ class _UserReportTileState extends State<UserReportTile> {
                                 children: [
                                   ImageButton(
                                       height: double.infinity,
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.35,
+                                      //   width: MediaQuery.sizeOf(context).width *
+                                      //      0.35,
                                       onTap: () {
                                         if (item.image != null) {
                                           showDialog(
@@ -199,17 +200,17 @@ class _UserReportTileState extends State<UserReportTile> {
                                   item.status!.contains('completed')
                                       ? Text('Completed',
                                           style: TextStyle(
-                                              color: Colors.green,
+                                              color: Colors.black,
                                               fontWeight: FontWeight.bold))
                                       : item.status!.contains('in progress')
                                           ? Text('In progress',
                                               style: TextStyle(
-                                                  color: Colors.orange,
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.bold))
                                           : Text(
                                               '${capitalizeFirstLetter(item.status)}',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.bold))
                                 ],
                               ),

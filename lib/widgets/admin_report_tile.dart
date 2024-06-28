@@ -137,20 +137,18 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.005,
-                            ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 '${item.status}'.contains('open')
-                                    ? Icon(Icons.start,
-                                        color: Colors.black, size: 20)
+                                    ? Icon(
+                                        Icons.check_box_outline_blank_rounded,
+                                        color: Colors.black,
+                                        size: 20)
                                     : '${item.status}'.contains('in progress')
-                                        ? Icon(Icons.pending,
+                                        ? Icon(Icons.autorenew_outlined,
                                             color: Colors.black, size: 20)
-                                        : Icon(Icons.check,
+                                        : Icon(Icons.check_box_outlined,
                                             color: Colors.black, size: 20),
                                 Text(' ${capitalizeFirstLetter(item.status)}')
                               ],
@@ -162,7 +160,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.location_city,
+                                Icon(Icons.location_on_outlined,
                                     color: Colors.black, size: 20),
                                 Text(' ${item.subLocationName}')
                               ],
@@ -173,7 +171,7 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             ),
                             Row(
                               children: [
-                                Icon(Icons.timer,
+                                Icon(Icons.timer_outlined,
                                     color: Colors.black, size: 20),
                                 Text(
                                     ' ${item.dateTime?.split('T')[0]} | ${item.dateTime?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}')
@@ -186,7 +184,8 @@ class _AdminReportTileState extends State<AdminReportTile> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.edit, color: Colors.black, size: 20),
+                                Icon(Icons.textsms_outlined,
+                                    color: Colors.black, size: 20),
                                 Expanded(
                                   child: Text(
                                     ' ${item.description}',
@@ -208,40 +207,27 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                         ? MainAxisAlignment.spaceEvenly
                                         : MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    child: Visibility(
-                                      visible: (item.status == 'open'),
-                                      child: DeleteButton(
-                                          height: double.infinity,
-                                          onTap: () =>
-                                              handleDeleteButton(item)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Expanded(
-                                    child: Visibility(
-                                      visible: (item.status == 'open'),
-                                      child: AssignButton(
+                                  Visibility(
+                                    visible: (item.status == 'open'),
+                                    child: DeleteButton(
                                         height: double.infinity,
-                                        isAssigned: item.status!.isEmpty,
-                                        onTap: () => handleAssignTask(item),
-                                      ),
-                                    ),
+                                        onTap: () => handleDeleteButton(item)),
                                   ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Expanded(
-                                    child: ImageButton(
+                                  Visibility(
+                                    visible: (item.status == 'open'),
+                                    child: AssignButton(
                                       height: double.infinity,
-                                      onTap: () => handleImageButton(
-                                          // null, context),
-                                          // item.image,
-                                          null,
-                                          context),
+                                      isAssigned: item.status!.isEmpty,
+                                      onTap: () => handleAssignTask(item),
                                     ),
+                                  ),
+                                  ImageButton(
+                                    height: double.infinity,
+                                    onTap: () => handleImageButton(
+                                        // null, context),
+                                        // item.image,
+                                        null,
+                                        context),
                                   )
                                 ],
                               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 abstract class AbstractButton extends StatelessWidget {
   final String buttonText;
@@ -13,20 +14,21 @@ abstract class AbstractButton extends StatelessWidget {
   final double gap;
   final double iconSize;
   final double borderRadius;
+  final EdgeInsets padding;
 
-  const AbstractButton({
-    required this.buttonText,
-    required this.iconData,
-    required this.backgroundColor,
-    required this.iconColor,
-    required this.textColor,
-    required this.onTap,
-    this.width,
-    this.height,
-    this.gap = 10,
-    this.iconSize = 16,
-    this.borderRadius = 10,
-  });
+  const AbstractButton(
+      {required this.buttonText,
+      required this.iconData,
+      required this.backgroundColor,
+      required this.iconColor,
+      required this.textColor,
+      required this.onTap,
+      this.width,
+      this.height,
+      this.gap = 10,
+      this.iconSize = 25,
+      this.borderRadius = 10,
+      this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
@@ -35,31 +37,30 @@ abstract class AbstractButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Material(
-          elevation: 5,
-          borderRadius: BorderRadius.circular(borderRadius),
+          //  elevation: 5,
+          // borderRadius: BorderRadius.circular(borderRadius),
           child: Container(
             height: height,
             width: width,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius),
-                color: backgroundColor),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              //        borderRadius: BorderRadius.circular(borderRadius),
+              //        color: backgroundColor
+            ),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal:
-                      MediaQuery.of(context).size.width < 390 ? 6.0 : 12.0,
-                  vertical: 0),
+              padding: padding,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(iconData, size: 16, color: iconColor),
+                  Icon(iconData, size: iconSize, color: iconColor),
                   SizedBox(width: gap),
                   Flexible(
                     child: Text(
                       overflow: TextOverflow.ellipsis,
                       buttonText,
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: textColor),
+                          fontWeight: FontWeight.normal, color: textColor),
                     ),
                   )
                 ],
@@ -79,12 +80,12 @@ class AssignButton extends AbstractButton {
   AssignButton({
     required bool isAssigned,
     // String buttonText = 'Assign',
-    IconData iconData = Icons.person_add,
+    IconData iconData = Icons.assignment_ind_outlined,
     required void Function() onTap,
     double? width,
     double? height,
     double gap = 10,
-    double iconSize = 16,
+    //  double iconSize = 16,
     double borderRadius = 10,
   }) : super(
           buttonText: isAssigned ? 'Assigned' : 'Assign',
@@ -96,7 +97,7 @@ class AssignButton extends AbstractButton {
           width: width,
           height: height,
           gap: gap,
-          iconSize: iconSize,
+          //    iconSize: iconSize,
           borderRadius: borderRadius,
         );
 }
@@ -110,11 +111,11 @@ class DeleteButton extends AbstractButton {
     double? width,
     double? height,
     double gap = 10,
-    double iconSize = 16,
+    // double iconSize = 16,
     double borderRadius = 10,
   }) : super(
           buttonText: 'Delete',
-          iconData: Icons.delete,
+          iconData: Icons.delete_outline,
           iconColor: fixedIconColor,
           textColor: fixedTextColor,
           backgroundColor: Colors.grey.shade50,
@@ -122,7 +123,7 @@ class DeleteButton extends AbstractButton {
           width: width,
           height: height,
           gap: gap,
-          iconSize: iconSize,
+          //  iconSize: iconSize,
           borderRadius: borderRadius,
         );
 }
@@ -136,11 +137,11 @@ class ImageButton extends AbstractButton {
     double? width,
     double? height,
     double gap = 10,
-    double iconSize = 16,
+    // double iconSize = 16,
     double borderRadius = 10,
   }) : super(
           buttonText: 'Image',
-          iconData: Icons.image,
+          iconData: Icons.image_outlined,
           iconColor: fixedIconColor,
           textColor: fixedTextColor,
           backgroundColor: Colors.grey.shade50,
@@ -148,7 +149,7 @@ class ImageButton extends AbstractButton {
           width: width,
           height: height,
           gap: gap,
-          iconSize: iconSize,
+          // iconSize: iconSize,
           borderRadius: borderRadius,
         );
 }
@@ -164,7 +165,7 @@ class ApproveButton extends AbstractButton {
     double? width,
     double? height,
     double gap = 10,
-    double iconSize = 16,
+    //  double iconSize = 16,
     double borderRadius = 10,
   }) : super(
           buttonText: isApproved ? 'Approved' : 'Approve',
@@ -176,7 +177,7 @@ class ApproveButton extends AbstractButton {
           width: width,
           height: height,
           gap: gap,
-          iconSize: iconSize,
+          //    iconSize: iconSize,
           borderRadius: borderRadius,
         );
 }
@@ -190,7 +191,7 @@ class RejectButton extends AbstractButton {
     double? width,
     double? height,
     double gap = 10,
-    double iconSize = 16,
+    // double iconSize = 16,
     double borderRadius = 10,
   }) : super(
           buttonText: 'Reject',
@@ -202,7 +203,7 @@ class RejectButton extends AbstractButton {
           width: width,
           height: height,
           gap: gap,
-          iconSize: iconSize,
+          //    iconSize: iconSize,
           borderRadius: borderRadius,
         );
 }

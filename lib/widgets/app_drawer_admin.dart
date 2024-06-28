@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +9,12 @@ import 'package:safify/models/announcement_notif.dart';
 import 'package:safify/services/pdf_download_service.dart';
 import 'package:safify/utils/date_utils.dart';
 import 'package:safify/widgets/pdf_download_dialog.dart';
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AppDrawer extends StatelessWidget {
   final String? username;
-  final double mainHeaderSize = 18;
+  final double mainHeaderSize = 16;
 
   AppDrawer({required this.username});
 
@@ -26,19 +29,16 @@ class AppDrawer extends StatelessWidget {
             padding: EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
-                  child: Icon(
-                    Icons.person,
-                    size: 24,
-                    color: Theme.of(context).cardColor,
-                  ),
-                  backgroundColor: Theme.of(context).secondaryHeaderColor,
+                Icon(
+                  Icons.person_outline,
+                  size: 24,
+                  color: Theme.of(context).cardColor,
                 ),
                 SizedBox(width: 16),
                 Text(
                   username!,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.normal,
                     fontSize: 22,
                     color: Colors.white,
                   ),
@@ -50,12 +50,13 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               children: [
                 ListTile(
-                  leading: Icon(Icons.person_add,
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.person_add_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
                     'Add User',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                       fontSize: mainHeaderSize,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -66,12 +67,13 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.location_on,
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.location_on_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
                     'Add Location',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                       fontSize: mainHeaderSize,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -83,12 +85,13 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.category,
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.type_specimen_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
                     'Add Category',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                       fontSize: mainHeaderSize,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -100,12 +103,13 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.download,
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.download_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
                     'Download Report',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                       fontSize: mainHeaderSize,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -124,12 +128,13 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.announcement,
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.crisis_alert_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
                     'Announcement',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                       fontSize: mainHeaderSize,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -143,12 +148,13 @@ class AppDrawer extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.settings,
+            horizontalTitleGap: 0,
+            leading: Icon(Icons.settings_outlined,
                 color: Theme.of(context).secondaryHeaderColor),
             title: Text(
               'Settings',
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.normal,
                 fontSize: mainHeaderSize,
                 color: Theme.of(context).secondaryHeaderColor,
               ),
