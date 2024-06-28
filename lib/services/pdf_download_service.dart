@@ -170,13 +170,30 @@ class PDFDownloadService {
     }
   }
 
-  Future<void> getPdf(String? day, String? month, String? year) async {
+  /// Function to download the PDF report for the user.
+  ///
+  /// Downloads a PDF report based on the specified date parameters.
+  /// If only the year is provided, the report for the entire year is fetched.
+  /// If the year and month are provided, the report for the specified month is fetched.
+  /// If the day, month, and year are provided, the report for the specified day is fetched.
+  ///
+  /// @param day The day of the report (optional).
+  /// @param month The month of the report (optional).
+  /// @param year The year of the report (optional).
+  /// @param isUserReport A boolean to check if the report is for the user reports or action reports.
+  ///
+  ///
+  Future<void> getPdf(
+      String? day, String? month, String? year, bool isActionReport) async {
     const url = '$IP_URL/admin/dashboard/generateUserReportPDF';
-    final fileName = 'user_report.pdf';
+    final fileName = isActionReport ? 'action_report.pdf' : 'user_report.pdf';
     // print("date: $day, month: $month, year: $year");
 
     // Construct the request body
     Map<String, dynamic> queryParams = {};
+
+    final isActionReportFlag = isActionReport ? '1' : '0';
+    queryParams['flag'] = isActionReportFlag;
 
     if (day != null && month != null && year != null) {
       queryParams['date'] = '$year-$month-$day';

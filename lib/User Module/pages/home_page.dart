@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
@@ -12,6 +13,8 @@ import 'package:safify/db/database_helper.dart';
 import 'package:safify/dummy.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
+import 'package:safify/models/user_form_report.dart';
+import 'package:safify/services/ReportServices.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,26 +152,48 @@ class _HomePage2State extends State<HomePage2> {
                   // await dbhelper.insertLocationsAndSublocations(
                   //     lists[0] as List<Location>,
                   //     lists[1] as List<SubLocation>);
-                  final locations = await dbhelper.getLocations();
-                  final sublocations = await dbhelper.getAllSubLocations();
-                  print("count of locations: ${locations.length}");
-                  print("count of sublocations: ${sublocations.length}");
+                  // final locations = await dbhelper.getLocations();
+                  // final sublocations = await dbhelper.getAllSubLocations();
+                  // print("count of locations: ${locations.length}");
+                  // print("count of sublocations: ${sublocations.length}");
 
-                  print('Locations:');
-                  for (var location in locations) {
-                    print(location);
+                  // print('Locations:');
+                  // for (var location in locations) {
+                  //   print(location);
+                  // }
+
+                  // print('\nSub Locations:');
+                  // for (var subLocation in sublocations) {
+                  //   print(subLocation);
+                  // }
+
+                  final userFormReports = await dbhelper.getUserFormReports();
+                  print('User Form Reports:');
+                  for (var report in userFormReports.values) {
+                    print(report);
                   }
 
-                  print('\nSub Locations:');
-                  for (var subLocation in sublocations) {
-                    print(subLocation);
+                  await syncUserFormReports(context);
+
+                  final userFormReports2 = await dbhelper.getUserFormReports();
+                  print('User Form Reports:');
+                  for (var report in userFormReports2.values) {
+                    print(report);
                   }
-                  final databasePath = getDatabasesPath();
-                  databasePath.then((value) => print("Database path: $value"));
                 },
                 child: const Icon(
                   CupertinoIcons.pencil_ellipsis_rectangle,
                   color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 10),
+              FloatingActionButton(
+                //  backgroundColor: Colors.white,
+                onPressed: () {
+                  FlutterBackgroundService().invoke('setAsBackground');
+                },
+                child: const Icon(
+                  Icons.work,
                 ),
               )
             ],
@@ -250,6 +275,47 @@ class _HomePage2State extends State<HomePage2> {
         ),
       ),
     );
+  }
+
+  Future<void> syncUserFormReports(BuildContext context) async {
+    print("syncing reports...");
+    final dbHelper = await DatabaseHelper();
+    final Map<int, UserFormReport> reports =
+        await dbHelper.getUserFormReports();
+    final reportService = ReportServices(context);
+
+    for (var entry in reports.entries) {
+      int id = entry.key;
+      UserFormReport report = entry.value;
+      int uploadSuccess = -1;
+      try {
+        if (report.imagePath != null) {
+          uploadSuccess = await reportService.uploadReportWithImage(
+              report.imagePath,
+              report.sublocationId,
+              report.incidentSubtypeId,
+              report.description,
+              report.date,
+              report.criticalityId);
+        } else {
+          uploadSuccess = await reportService.postReport(
+              report.sublocationId,
+              report.incidentSubtypeId,
+              report.description,
+              report.date,
+              report.criticalityId);
+        }
+      } catch (e) {
+        rethrow;
+      }
+
+      if (uploadSuccess == 1) {
+        await dbHelper.deleteUserFormReport(id);
+        print("Report successfully sent and deleted from local database");
+      } else {
+        print("Report failed to send. Retrying later...: error:$uploadSuccess");
+      }
+    }
   }
 
   void _showBottomSheet() {

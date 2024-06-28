@@ -63,4 +63,11 @@ class SubIncidentProviderClass extends ChangeNotifier {
   List<IncidentSubType> getSubIncidentsForIncident(String incidentID) {
     return incidentToSubIncidentsMap[incidentID] ?? [];
   }
+
+  void refresh() async {
+    final incidentSubtypes =
+        await _incidentSubtypesRepository.fetchIncidentSubtypes();
+    setAllIncidentSubTypes(incidentSubtypes);
+    notifyListeners();
+  }
 }

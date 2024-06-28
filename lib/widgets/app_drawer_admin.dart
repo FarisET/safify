@@ -7,6 +7,7 @@ import 'package:safify/Admin%20Module/providers/announcement_provider.dart';
 import 'package:safify/models/announcement_notif.dart';
 import 'package:safify/services/pdf_download_service.dart';
 import 'package:safify/utils/date_utils.dart';
+import 'package:safify/widgets/pdf_download_dialog.dart';
 
 class AppDrawer extends StatelessWidget {
   final String? username;
@@ -165,140 +166,11 @@ class AppDrawer extends StatelessWidget {
 
   Future<void> _showDateInputDialog(
       BuildContext context, PDFDownloadService pdfDownloadService) async {
-    final _formKey = GlobalKey<FormState>();
-    String day = '';
-    String month = '';
-    String year = '';
-
     return showDialog<void>(
       context: context,
       // barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(
-            child: Text(
-              'Download Report',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Note: Please specify time period for the report. You can specify a day, month, or year. Press 'Get all' to get all reports so far.",
-                  style: TextStyle(
-                      fontStyle: FontStyle.italic, color: Colors.grey.shade600),
-                ),
-                Form(
-                  key: _formKey,
-                  child: ListBody(
-                    children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Year (yyyy)',
-                          labelStyle: TextStyle(color: Colors.black),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) => year = value,
-                        validator: (value) {
-                          if (double.tryParse(value!) == null) {
-                            return 'Please enter a valid year';
-                          }
-                          if (value!.isEmpty) {
-                            return 'Please enter a year';
-                          }
-                          if (value.length != 4) {
-                            return 'Please enter a valid year';
-                          }
-                          if (int.parse(value) > DateTime.now().year.toInt()) {
-                            return 'Please enter a valid year';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Month (mm)',
-                          labelStyle: TextStyle(color: Colors.black),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) => month = value,
-                        validator: (value) {
-                          if (month.isNotEmpty &&
-                              double.tryParse(value!) == null) {
-                            return 'Please enter a valid year';
-                          }
-                          if (month.isNotEmpty &&
-                              (int.parse(month) < 1 || int.parse(month) > 12)) {
-                            return 'Please enter a number between 1 and 12';
-                          }
-                          if (day.isNotEmpty && month.isEmpty) {
-                            return 'Please enter a month';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Day (dd)',
-                          labelStyle: TextStyle(color: Colors.black),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) => day = value,
-                        validator: (value) {
-                          if (day.isNotEmpty &&
-                              double.tryParse(value!) == null) {
-                            return 'Please enter a valid year';
-                          }
-                          if (day.isNotEmpty &&
-                              (int.parse(day) < 1 || int.parse(day) > 31)) {
-                            return 'Please enter a number between 1 and 31';
-                          }
-                          if (day.isNotEmpty &&
-                              !isValidDate(int.tryParse(day),
-                                  int.tryParse(month), int.tryParse(year))) {
-                            return 'Please enter a valid date';
-                          }
-                          ;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Download'),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  Navigator.of(context).pop();
-                  pdfDownloadService.getPdf(day.isEmpty ? null : day,
-                      month.isEmpty ? null : month, year.isEmpty ? null : year);
-                }
-              },
-            ),
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.blue),
-              ),
-              child: Text(
-                'Get all',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () => pdfDownloadService.getPdf(null, null, null),
-            ),
-          ],
-        );
+        return PDFdownloadDialog(pdfDownloadService: pdfDownloadService);
       },
     );
   }

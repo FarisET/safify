@@ -17,6 +17,7 @@ import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ReportServices {
@@ -250,19 +251,20 @@ class ReportServices {
   }
 
   Future<int> uploadReportWithImage(
-      File? imageFile,
-      String sublocation,
-      String incidentSubType,
+      // File? imageFile,
+      String? filePath,
+      String sublocationId,
+      String incidentSubtypeId,
       String description,
       DateTime date,
-      String risklevel) async {
+      String criticalityId) async {
     jwtToken = await storage.read(key: 'jwt');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     current_user_id = prefs.getString("user_id");
     print('current_user_id:$current_user_id');
 
-    if (imageFile != null) {
+    if (filePath != null) {
       Uri apiUri =
           Uri.parse('$IP_URL/userReport/dashboard/$current_user_id/MakeReport');
 
@@ -271,24 +273,27 @@ class ReportServices {
       request.fields['report_description'] = description;
       request.fields['date_time'] =
           date.toLocal().toIso8601String().split(".")[0];
-      request.fields['sub_location_id'] = sublocation;
-      request.fields['incident_subtype_id'] = incidentSubType;
-      request.fields['incident_criticality_id'] = risklevel;
+      request.fields['sub_location_id'] = sublocationId;
+      request.fields['incident_subtype_id'] = incidentSubtypeId;
+      request.fields['incident_criticality_id'] = criticalityId;
 
       request.files.add(await http.MultipartFile.fromPath(
         'image',
-        imageFile.path,
+        // imageFile.path,
+        filePath,
       ));
 
       try {
         var response = await request.send();
         if (response.statusCode == 200) {
+          print("response.statusCode: ${response.statusCode}");
           return 1;
         } else {
-          return 0;
+          throw Exception(
+              'Failed to upload report with image, received status code: ${response.statusCode}');
         }
       } catch (e) {
-        throw Exception('Failed to upload report with image');
+        throw Exception('Failed to upload report with image: $e');
       }
     } else {
       return 2; //no image selected

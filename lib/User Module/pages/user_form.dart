@@ -6,11 +6,15 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/location.dart';
+import 'package:safify/models/user_form_report.dart';
 import 'package:safify/utils/alerts_util.dart';
+import 'package:safify/utils/network_util.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
 
@@ -1357,16 +1361,68 @@ class _UserFormState extends State<UserForm> {
         });
   }
 
+  Future<void> _saveImageLocally(File imageFile) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final imagesDir = Directory('${directory.path}/temp_images');
+
+    if (!await imagesDir.exists()) {
+      await imagesDir.create(recursive: true);
+    }
+
+    String fileName = imageFile.path.split('/').last;
+    String savedImagePath = '${imagesDir.path}/$fileName';
+
+    int counter = 1;
+    while (await File(savedImagePath).exists()) {
+      final nameWithoutExtension =
+          fileName.replaceAll(RegExp(r'\.[^\.]+$'), '');
+      final extension = fileName.split('.').last;
+      fileName = '$nameWithoutExtension($counter).$extension';
+      savedImagePath = '${imagesDir.path}/$fileName';
+      counter++;
+    }
+
+    try {
+      await imageFile.copy(savedImagePath);
+      print('Image saved to $savedImagePath');
+    } catch (e) {
+      print('Error saving image: $e');
+    }
+  }
+
   Future<int> handleReportSubmitted(BuildContext context,
       _UserFormState userFormState, File? selectedImage) async {
     setState(() {
       isSubmitting = true;
     });
 
+    final userFormReport = UserFormReport(
+        sublocationId: userFormState.SelectedSubLocationType,
+        incidentSubtypeId: userFormState.incidentSubType,
+        description: userFormState.description,
+        date: userFormState.date,
+        criticalityId: userFormState.risklevel,
+        imagePath: selectedImage?.path);
+
+    final pingSuccess = await ping_backend();
+
+    if (!pingSuccess) {
+      final dbHelper = DatabaseHelper();
+      await dbHelper.insertUserFormReport(userFormReport);
+      setState(() {
+        isSubmitting = false;
+      });
+      print("Failed to send, report saved locally");
+      return 4;
+    }
+
     if (selectedImage != null) {
+      print("image path: ${selectedImage.path}");
+      await _saveImageLocally(selectedImage);
+
       ReportServices reportServices = ReportServices(context);
       int flag = await reportServices.uploadReportWithImage(
-        userFormState.returnedImage,
+        userFormState.returnedImage?.path,
         //  userFormState.id,
         userFormState.SelectedSubLocationType,
         userFormState.incidentSubType,
