@@ -9,7 +9,7 @@ class IncidentTypesRepository {
   final storage = const FlutterSecureStorage();
 
   Future<List<IncidentType>> fetchIncidentTypes() async {
-    var pingSuccess = await ping_backend();
+    var pingSuccess = await ping_google();
 
     if (!pingSuccess) {
       return _fetchIncidentTypesFromDb();

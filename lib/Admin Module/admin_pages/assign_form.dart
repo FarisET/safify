@@ -277,7 +277,7 @@ class _AssignFormState extends State<AssignForm> {
       isSubmitting = true;
     });
 
-    ReportServices reportServices = ReportServices(context);
+    ReportServices reportServices = ReportServices();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user_id = prefs.getString("this_user_id");
     int? user_report_id = prefs.getInt("user_report_id");

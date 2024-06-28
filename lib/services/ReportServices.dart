@@ -21,9 +21,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ReportServices {
-  final BuildContext context; // Include the BuildContext in the constructor
+  // final BuildContext context; // Include the BuildContext in the constructor
 
-  ReportServices(this.context);
+  ReportServices();
   // Constructor for ReportServices
   String? current_user_id;
   String? jwtToken;

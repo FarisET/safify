@@ -30,34 +30,40 @@ abstract class AbstractButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
-              color: backgroundColor),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal:
-                    MediaQuery.of(context).size.width < 390 ? 6.0 : 12.0,
-                vertical: 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(iconData, size: 16, color: iconColor),
-                SizedBox(width: gap),
-                Text(
-                  buttonText,
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, color: textColor),
-                )
-              ],
+    return Tooltip(
+      message: buttonText,
+      child: InkWell(
+        onTap: onTap,
+        child: Material(
+          elevation: 5,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: Container(
+            height: height,
+            width: width,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(borderRadius),
+                color: backgroundColor),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal:
+                      MediaQuery.of(context).size.width < 390 ? 6.0 : 12.0,
+                  vertical: 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(iconData, size: 16, color: iconColor),
+                  SizedBox(width: gap),
+                  Flexible(
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      buttonText,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: textColor),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

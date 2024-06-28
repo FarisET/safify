@@ -1404,7 +1404,7 @@ class _UserFormState extends State<UserForm> {
         criticalityId: userFormState.risklevel,
         imagePath: selectedImage?.path);
 
-    final pingSuccess = await ping_backend();
+    final pingSuccess = await ping_google();
 
     if (!pingSuccess) {
       final dbHelper = DatabaseHelper();
@@ -1420,7 +1420,7 @@ class _UserFormState extends State<UserForm> {
       print("image path: ${selectedImage.path}");
       await _saveImageLocally(selectedImage);
 
-      ReportServices reportServices = ReportServices(context);
+      ReportServices reportServices = ReportServices();
       int flag = await reportServices.uploadReportWithImage(
         userFormState.returnedImage?.path,
         //  userFormState.id,
@@ -1436,7 +1436,7 @@ class _UserFormState extends State<UserForm> {
 
       return flag;
     } else {
-      ReportServices reportServices = ReportServices(context);
+      ReportServices reportServices = ReportServices();
       int flag = await reportServices.postReport(
         userFormState.SelectedSubLocationType,
         userFormState.incidentSubType,

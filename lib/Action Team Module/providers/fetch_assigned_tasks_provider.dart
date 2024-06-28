@@ -14,7 +14,7 @@ class AssignedTaskProvider with ChangeNotifier {
     try {
       _error = null;
       isLoading = true;
-      _tasks = await ReportServices(context).fetchAssignedReports();
+      _tasks = await ReportServices().fetchAssignedReports();
 
       isLoading = false;
       notifyListeners();

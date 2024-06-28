@@ -929,7 +929,7 @@ class _ActionReportState extends State<ActionReportForm>
 
     // return -1;
 
-    ReportServices reportServices = ReportServices(context);
+    ReportServices reportServices = ReportServices();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //    String? user_id = prefs.getString("this_user_id");
     int? userReportId = prefs.getInt("user_report_id");

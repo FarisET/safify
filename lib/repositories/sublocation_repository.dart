@@ -13,7 +13,7 @@ class SublocationRepository {
   final storage = const FlutterSecureStorage();
 
   Future<List<SubLocation>> fetchSublocations() async {
-    var pingSuccess = await ping_backend();
+    var pingSuccess = await ping_google();
 
     if (!pingSuccess) {
       print("Could not ping backend, fetching sublocations from local db");

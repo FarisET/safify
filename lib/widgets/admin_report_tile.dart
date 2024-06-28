@@ -14,6 +14,7 @@ import 'package:safify/components/custom_button.dart';
 import 'package:safify/models/report.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
+import 'package:safify/utils/button_utils.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -235,7 +236,11 @@ class _AdminReportTileState extends State<AdminReportTile> {
                                   Expanded(
                                     child: ImageButton(
                                       height: double.infinity,
-                                      onTap: () => handleImageButton(item),
+                                      onTap: () => handleImageButton(
+                                          // null, context),
+                                          // item.image,
+                                          null,
+                                          context),
                                     ),
                                   )
                                 ],
@@ -313,48 +318,6 @@ class _AdminReportTileState extends State<AdminReportTile> {
         );
       },
     );
-  }
-
-  void handleImageButton(Reports item) {
-    if (item.image != null) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width *
-                  0.7, // 70% of screen width
-              height: MediaQuery.of(context).size.height *
-                  0.7, // 70% of screen width (square box)
-
-              // Limiting the child to the box's size and maintaining aspect ratio
-              child: FittedBox(
-                fit:
-                    BoxFit.contain, // Maintain aspect ratio, fit within the box
-                child: CachedNetworkImage(
-                  imageUrl: '${item.image}',
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    } else {
-      //    Fluttertoast.showToast(msg: 'msg');
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text('No Image Added'),
-              ],
-            ),
-          );
-        },
-      );
-    }
   }
 
   void handleAssignTask(Reports item) async {

@@ -558,7 +558,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
 
     // return -1;
 
-    ReportServices reportServices = ReportServices(context);
+    ReportServices reportServices = ReportServices();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user_id = prefs.getString("this_user_id");
     int? user_report_id = prefs.getInt("user_report_id");

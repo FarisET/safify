@@ -15,9 +15,11 @@ import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/pages/splash_screen.dart';
 import 'package:safify/db/background_service.dart';
+import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'Action Team Module/pages/action_team_home_page.dart';
 import 'Action Team Module/providers/all_action_reports_approveal_provider.dart';
@@ -49,7 +51,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the notifications plugin
   Notifications notifications = Notifications();
+
+  /// background service tasks
   // await initiazizeService();
+
+  // Initialize and register periodic tasks
+  await BackgroundTaskManager().initializeWorkManager();
+  BackgroundTaskManager().registerPeriodicTasks();
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();

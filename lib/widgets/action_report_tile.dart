@@ -8,9 +8,11 @@ import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/components/custom_button.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/styles/app_theme.dart';
 import 'package:safify/utils/alerts_util.dart';
+import 'package:safify/utils/button_utils.dart';
 import '../Action Team Module/providers/all_action_reports_approveal_provider.dart';
 import '../Action Team Module/providers/all_action_reports_provider.dart';
 import '../services/ReportServices.dart';
@@ -168,220 +170,111 @@ class _ActionReportTileState extends State<ActionReportTile> {
                             SizedBox(
                               height: MediaQuery.sizeOf(context).height * 0.04,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    item.status != 'approved'
-                                        ? FilledButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text("Reject?"),
-                                                    content: Text(
-                                                        "Are you sure you want to reject this report?"),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop(); // Close the dialog
-                                                        },
-                                                        child: Text("Cancel"),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          DeleteActionReportProvider
-                                                              deleteActionReportProvider =
-                                                              Provider.of<
-                                                                      DeleteActionReportProvider>(
-                                                                  context,
-                                                                  listen:
-                                                                      false);
-
-                                                          deleteActionReportProvider
-                                                              .deleteActionReport(
-                                                                  '${item.action_report_id}')
-                                                              .then(
-                                                                  (success) async {
-                                                            if (success) {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop(); // Close the dialog
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      SnackBar(
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .greenAccent,
-                                                                content: Text(
-                                                                    'Report deleted'),
-                                                                duration:
-                                                                    Duration(
-                                                                        seconds:
-                                                                            2),
-                                                              ));
-                                                              await Provider.of<
-                                                                          ActionReportsProvider>(
-                                                                      context,
-                                                                      listen:
-                                                                          false)
-                                                                  .fetchAllActionReports(
-                                                                      context);
-
-                                                              //PUSH NOTIFICATION
-                                                            }
-                                                          });
-                                                        },
-                                                        child: Text("Confirm"),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.white),
-                                              // Add elevation for a raised effect
-                                              elevation: MaterialStateProperty
-                                                  .all<double>(
-                                                      4.0), // Adjust as needed
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12.0,
-                                                      vertical: 0),
-                                              child: Text('Reject',
-                                                  style: TextStyle(
-                                                      color: Colors.black)),
-                                            ),
-                                          )
-                                        : Container(),
-                                    SizedBox(width: 4),
-                                    FilledButton(
-                                      onPressed: () {
-                                        if (item.proof_image != null) {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.7, // 70% of screen width
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.7, // 70% of screen width (square box)
-
-                                                  // Limiting the child to the box's size and maintaining aspect ratio
-                                                  child: FittedBox(
-                                                    fit: BoxFit
-                                                        .contain, // Maintain aspect ratio, fit within the box
-                                                    child: CachedNetworkImage(
-                                                      imageUrl:
-                                                          '${item.proof_image}',
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        } else {
-                                          //    Fluttertoast.showToast(msg: 'msg');
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: const [
-                                                    Text('No Image Added'),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      style: imgButtonStyle,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: MediaQuery.of(context)
-                                                        .size
-                                                        .width <
-                                                    390
-                                                ? 6.0
-                                                : 12.0,
-                                            vertical: 0),
-                                        child: Row(
-                                          children: const [
-                                            Icon(Icons.image,
-                                                size: 16, color: Colors.black),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              'Image',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: FilledButton(
-                                    onPressed: () async {
-                                      if (item.action_report_id != null &&
-                                          item.user_report_id != null) {
-                                        ReportServices(context)
-                                            .postapprovedActionReport(
-                                                item.user_report_id,
-                                                item.action_report_id);
-                                        approvalStatusProvider
-                                            .updateStatus(item.status!);
-                                        fetchAllRepsProvider
-                                            .fetchAllActionReports(context);
-                                      }
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(
-                                          Color.fromARGB(255, 255, 255, 255)),
-                                      // Add elevation for a raised effect
-                                      elevation:
-                                          MaterialStateProperty.all<double>(
-                                              4.0), // Adjust as needed
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0, vertical: 0),
-                                      child: Text(
-                                        item.status!.contains('approved')
-                                            ? 'Approved'
-                                            : 'Approve',
-                                        style: item.status!.contains('approved')
-                                            ? TextStyle(
-                                                color: Colors.greenAccent)
-                                            : TextStyle(color: Colors.black),
-                                      ),
-                                    ),
+                            SizedBox(
+                              height: 40,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Expanded(
+                                    child: ImageButton(
+                                        height: double.infinity,
+                                        onTap: () {
+                                          handleImageButton(
+                                              item.proof_image, context);
+                                        }),
                                   ),
-                                )
-                              ],
+                                  Expanded(
+                                    child: ApproveButton(
+                                        height: double.infinity,
+                                        isApproved:
+                                            item.status!.contains('approved'),
+                                        onTap: () async {
+                                          if (item.action_report_id != null &&
+                                              item.user_report_id != null) {
+                                            ReportServices()
+                                                .postapprovedActionReport(
+                                                    item.user_report_id,
+                                                    item.action_report_id);
+                                            approvalStatusProvider
+                                                .updateStatus(item.status!);
+                                            fetchAllRepsProvider
+                                                .fetchAllActionReports(context);
+                                          }
+                                        }),
+                                  ),
+                                  Expanded(
+                                      child: Visibility(
+                                          visible: item.status != 'approveds',
+                                          child: RejectButton(onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text("Reject?"),
+                                                  content: Text(
+                                                      "Are you sure you want to reject this report?"),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                      },
+                                                      child: Text("Cancel"),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        DeleteActionReportProvider
+                                                            deleteActionReportProvider =
+                                                            Provider.of<
+                                                                    DeleteActionReportProvider>(
+                                                                context,
+                                                                listen: false);
+
+                                                        deleteActionReportProvider
+                                                            .deleteActionReport(
+                                                                '${item.action_report_id}')
+                                                            .then(
+                                                                (success) async {
+                                                          if (success) {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Close the dialog
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    SnackBar(
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .greenAccent,
+                                                              content: Text(
+                                                                  'Report deleted'),
+                                                              duration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          2),
+                                                            ));
+                                                            await Provider.of<
+                                                                        ActionReportsProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .fetchAllActionReports(
+                                                                    context);
+
+                                                            //PUSH NOTIFICATION
+                                                          }
+                                                        });
+                                                      },
+                                                      child: Text("Confirm"),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          })))
+                                ],
+                              ),
                             ),
                           ]),
                     ],

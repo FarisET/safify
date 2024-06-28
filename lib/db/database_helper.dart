@@ -64,6 +64,13 @@ class DatabaseHelper {
           ) 
           ''');
 
+        await db.execute('''
+            CREATE TABLE times (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              time TEXT
+            )
+        ''');
+
         ///
         await db.insert(
           'locations',
@@ -104,6 +111,16 @@ class DatabaseHelper {
         );
       },
     );
+  }
+
+  Future<int> insertTime(String time) async {
+    final db = await database;
+    return await db.insert('times', {'time': time});
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllTimes() async {
+    final db = await database;
+    return await db.query('times');
   }
 
   Future<void> insertUserFormReport(UserFormReport) async {

@@ -12,7 +12,7 @@ class LocationRepository {
   final storage = const FlutterSecureStorage();
 
   Future<List<Location>> fetchLocations() async {
-    var pingSuccess = await ping_backend();
+    var pingSuccess = await ping_google();
 
     if (!pingSuccess) {
       return _fetchLocationsFromDb();

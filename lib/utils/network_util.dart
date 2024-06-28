@@ -1,10 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'package:safify/constants.dart';
 
-Future<bool> ping_backend() async {
+Future<bool> ping_google() async {
   try {
     print('Pinging server...');
-    final response = await http.get(Uri.parse(IP_URL));
+    final response = await http.get(Uri.parse('https://www.google.com/'));
     // print("response: ${response.statusCode}");
 
     if (response.statusCode == 200) {

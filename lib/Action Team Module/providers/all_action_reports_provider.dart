@@ -14,7 +14,7 @@ class ActionReportsProvider with ChangeNotifier {
     try {
       _error = null;
       isLoading = true;
-      _reports = await ReportServices(context).fetchAllActionReports();
+      _reports = await ReportServices().fetchAllActionReports();
       isLoading = false;
       notifyListeners();
     } catch (e) {

@@ -14,7 +14,7 @@ class AllUserReportsProvider with ChangeNotifier {
     try {
       _error = null; // Reset error here
       isLoading = true;
-      _reports = await ReportServices(context).fetchAllReports();
+      _reports = await ReportServices().fetchAllReports();
       isLoading = false;
       notifyListeners();
     } catch (e) {

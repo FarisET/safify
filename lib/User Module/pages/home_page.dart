@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/dummy.dart';
 import 'package:safify/models/location.dart';
@@ -16,10 +17,12 @@ import 'package:safify/models/sub_location.dart';
 import 'package:safify/models/user_form_report.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:safify/services/UserServices.dart';
+import 'package:safify/utils/network_util.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:sqflite/sqflite.dart';
+import 'package:workmanager/workmanager.dart';
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -173,7 +176,7 @@ class _HomePage2State extends State<HomePage2> {
                     print(report);
                   }
 
-                  await syncUserFormReports(context);
+                  // await uploadUserFormReports(context);
 
                   final userFormReports2 = await dbhelper.getUserFormReports();
                   print('User Form Reports:');
@@ -190,7 +193,13 @@ class _HomePage2State extends State<HomePage2> {
               FloatingActionButton(
                 //  backgroundColor: Colors.white,
                 onPressed: () {
-                  FlutterBackgroundService().invoke('setAsBackground');
+                  // FlutterBackgroundService().startService();
+                  // FlutterBackgroundService().invoke('stopService');
+                  "pressed suitcase button";
+                  // BackgroundTaskManager().registerAnotherTask();
+                  // BackgroundTaskManager().cancelTask("1");
+                  // BackgroundTaskManager().registerPeriodicTasks();
+                  // ping_google();
                 },
                 child: const Icon(
                   Icons.work,
@@ -277,12 +286,17 @@ class _HomePage2State extends State<HomePage2> {
     );
   }
 
-  Future<void> syncUserFormReports(BuildContext context) async {
-    print("syncing reports...");
+  Future<void> uploadUserFormReports(BuildContext context) async {
+    print("uploading reports...");
+    final pingSuccess = await ping_google();
+    if (!pingSuccess) {
+      print("Connection error. Retrying later...");
+      return;
+    }
     final dbHelper = await DatabaseHelper();
     final Map<int, UserFormReport> reports =
         await dbHelper.getUserFormReports();
-    final reportService = ReportServices(context);
+    final reportService = ReportServices();
 
     for (var entry in reports.entries) {
       int id = entry.key;
