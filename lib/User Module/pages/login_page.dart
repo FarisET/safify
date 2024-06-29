@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ? null
                                 : () {
                                     if (_formKey.currentState!.validate()) {
-                                      handleSubmitted(context);
+                                      handleLoginButton(context);
                                     }
                                   },
                             child: isSubmitting
@@ -196,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
         );
   }
 
-  void handleSubmitted(BuildContext context) async {
+  void handleLoginButton(BuildContext context) async {
     setState(() {
       isSubmitting = true;
     });

@@ -90,6 +90,9 @@ class UserServices {
       final token = responseJson['token'];
       final error = responseJson['error'];
 
+      // print('error: $error');
+      // print('status: $status');
+
       if (response.statusCode == 200) {
         if (token != null) {
           final decodedToken = parseJwt(token);
@@ -117,6 +120,8 @@ class UserServices {
           return {'success': false, 'message': "Incorrect password"};
         } else if (error.contains("Incorrect User ID")) {
           return {'success': false, 'message': "Incorrect Username"};
+        } else if (error.contains("Wait for")) {
+          return {'success': false, 'message': error};
         }
       }
     } catch (e) {
