@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safify/components/custom_button.dart';
 import 'package:safify/services/pdf_download_service.dart';
 
 class PDFdownloadDialog extends StatefulWidget {
@@ -150,96 +151,52 @@ class _PDFdownloadDialogState extends State<PDFdownloadDialog> {
                 ],
               ),
             ),
+            SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
+            SizedBox(
+              width: double.infinity,
+              height: MediaQuery.sizeOf(context).height * 0.04,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SimpleButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      buttonText: "Download",
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          Navigator.of(context).pop();
+                          widget.pdfDownloadService.getPdf(
+                            day.isEmpty ? null : day,
+                            month.isEmpty ? null : month,
+                            year.isEmpty ? null : year,
+                            isUserReport,
+                          );
+                        }
+                      }),
+                  SimpleButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      buttonText: "Get All",
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        widget.pdfDownloadService
+                            .getPdf(null, null, null, isUserReport);
+                      }),
+                  SimpleButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    buttonText: 'Cancel',
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    backgroundColor: Colors.white,
+                    border: Border.all(color: Colors.blue),
+                    textColor: Colors.blue,
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
-      actions: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(10.0),
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      Navigator.of(context).pop();
-                      widget.pdfDownloadService.getPdf(
-                        day.isEmpty ? null : day,
-                        month.isEmpty ? null : month,
-                        year.isEmpty ? null : year,
-                        isUserReport,
-                      );
-                    }
-                  },
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Download',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-
-                  widget.pdfDownloadService
-                      .getPdf(null, null, null, isUserReport);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 22.0),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Get all',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
-      ],
     );
   }
 

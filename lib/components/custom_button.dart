@@ -233,3 +233,58 @@ class StartButton extends AbstractButton {
           borderRadius: borderRadius,
         );
 }
+
+class SimpleButton extends StatelessWidget {
+  final String buttonText;
+  final Color textColor;
+  final Color backgroundColor;
+  final void Function() onTap;
+  final double? width;
+  final double? height;
+  final double borderRadius;
+  final EdgeInsets padding;
+  final Border? border;
+  final FontWeight fontWeight;
+  final EdgeInsets margin;
+
+  const SimpleButton({
+    required this.buttonText,
+    required this.onTap,
+    this.backgroundColor = Colors.blue,
+    this.textColor = Colors.white,
+    this.width,
+    this.height,
+    this.borderRadius = 10,
+    this.border,
+    this.padding = EdgeInsets.zero,
+    this.fontWeight = FontWeight.bold,
+    this.margin = EdgeInsets.zero,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: buttonText,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          margin: margin,
+          height: height,
+          width: width,
+          padding: padding,
+          decoration: BoxDecoration(
+            border: border,
+            borderRadius: BorderRadius.circular(borderRadius),
+            color: backgroundColor,
+          ),
+          child: Center(
+            child: Text(
+              buttonText,
+              style: TextStyle(color: textColor, fontWeight: fontWeight),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

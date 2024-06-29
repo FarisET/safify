@@ -206,7 +206,7 @@ class _ActionReportTileState extends State<ActionReportTile> {
                                         }
                                       }),
                                   Visibility(
-                                      visible: item.status != 'approveds',
+                                      visible: item.status != 'approved',
                                       child: RejectButton(onTap: () {
                                         showDialog(
                                           context: context,
