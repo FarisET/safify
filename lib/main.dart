@@ -18,6 +18,7 @@ import 'package:safify/db/background_service.dart';
 import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/widgets/notification_utils.dart';
+import 'package:safify/widgets/terms_and_conditions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -51,6 +52,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the notifications plugin
   Notifications notifications = Notifications();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool? acceptedTerms = prefs.getBool('acceptedTerms');
 
   /// background service tasks
   // await initiazizeService();
@@ -127,13 +130,14 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   // Ensure WidgetsBinding is initialized
-  SharedPreferences prefs = await SharedPreferences.getInstance();
   String? userId = prefs.getString("user_id");
   // String? userRole = prefs.getString("role");
   String? userRole = await userServices.getRole();
   Widget initialScreen;
 //user time parameter or token
-  if (userId != null && userRole != null) {
+  if (acceptedTerms == null || !acceptedTerms) {
+    initialScreen = TermsAndConditionsPage();
+  } else if (userId != null && userRole != null) {
     if (userRole == "admin") {
       initialScreen = const AdminHomePage();
     } else if (userRole == "user") {
