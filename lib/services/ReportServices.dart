@@ -9,6 +9,7 @@ import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/constants.dart';
 import 'package:safify/models/action_report.dart';
+import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/report.dart';
 import 'package:safify/models/token_expired.dart';
@@ -118,10 +119,10 @@ class ReportServices {
     } catch (e) {
       if (e is TokenExpiredException) {
         // Preserve the TokenExpiredException and rethrow it
-        throw e;
+        rethrow;
       } else {
         // Catch-all for other exceptions
-        throw Exception('Failed to load Reports');
+        rethrow;
       }
     }
   }
@@ -296,7 +297,8 @@ class ReportServices {
         throw Exception('Failed to upload report with image: $e');
       }
     } else {
-      return 2; //no image selected
+      // return 2; //no image selected
+      throw Exception('No image selected');
     }
   }
 
@@ -396,6 +398,61 @@ class ReportServices {
       return 0;
     }
     return 0;
+  }
+
+  Future<int> uploadActionReport(ActionReportFormDetails details) async {
+    debugPrint("uploading action report");
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? currentUserId = prefs.getString("user_id");
+    print('current_user_id:$currentUserId');
+
+    Uri apiUri = Uri.parse(
+        '$IP_URL/actionTeam/dashboard/$currentUserId/MakeActionReport');
+
+    var request = http.MultipartRequest('POST', apiUri);
+    request.headers['Authorization'] = 'Bearer $jwtToken';
+
+    request.fields['report_description'] = details.incidentDesc;
+    request.fields['question_one'] = details.rootCause1 ?? '';
+    request.fields['question_two'] = details.rootCause2 ?? '';
+    request.fields['question_three'] = details.rootCause3 ?? '';
+    request.fields['question_four'] = details.rootCause4 ?? '';
+    request.fields['question_five'] = details.rootCause5 ?? '';
+    request.fields['resolution_description'] = details.resolutionDesc;
+    request.fields['reported_by'] = details.reportedBy;
+    request.fields['user_report_id'] = details.userReportId.toString();
+
+    if (details.incidentSiteImgPath != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+          'surrounding_image', details.incidentSiteImgPath!));
+    }
+
+    request.files.add(await http.MultipartFile.fromPath(
+        'proof_image', details.workProofImgPath));
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('Report submitted successfully');
+        Fluttertoast.showToast(
+            msg: "Action Report submitted successfully",
+            toastLength: Toast.LENGTH_SHORT);
+        return 1;
+      } else {
+        debugPrint("error message: ${await response.stream.bytesToString()}");
+        Fluttertoast.showToast(
+            msg: '${response.statusCode}', toastLength: Toast.LENGTH_SHORT);
+        debugPrint(
+            "failed to upload report, status code: ${response.statusCode}");
+        throw Exception(
+            "Failed to upload report, status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint("Error occurred: $e");
+      throw Exception('Failed to upload report: $e');
+    }
   }
 
   Future<int> uploadActionReportWithImagesFuture(
@@ -512,23 +569,24 @@ class ReportServices {
         if (response.statusCode == 200) {
           print('Report submitted successfully');
           return 1;
-        } else if (response.statusCode == 500) {
+        } else {
+          debugPrint("error message: ${await response.stream.bytesToString()}");
           Fluttertoast.showToast(
             msg: '${response.statusCode}',
             toastLength: Toast.LENGTH_SHORT,
           );
-          return 0;
-        } else {
-          print('Failed to submit report');
-          return 0;
+          // return 0;
+          throw Exception('Failed to submit report, status code: 500');
         }
       } catch (e) {
-        print('Error occurred: $e');
-        return 0;
+        print('Error occurred while sending action report: $e');
+        throw Exception('Failed to submit report: $e');
+        // return 0;
       }
     } else {
-      print('One or both images are not selected');
-      return 0;
+      print('proof image is not selected');
+      throw Exception('No proof image selected');
+      // return 0;
     }
   }
 

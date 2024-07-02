@@ -14,7 +14,7 @@ import 'package:safify/db/database_helper.dart';
 import 'package:safify/dummy.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
-import 'package:safify/models/user_form_report.dart';
+import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/network_util.dart';
@@ -97,7 +97,7 @@ class _HomePage2State extends State<HomePage2> {
                               },
                             ),
                             TextButton(
-                              child: Text('Logout'),
+                              child: const Text('Logout'),
                               onPressed: () async {
                                 Navigator.of(dialogContext)
                                     .pop(); // Close the dialog
@@ -107,7 +107,8 @@ class _HomePage2State extends State<HomePage2> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => LoginPage()),
+                                        builder: (context) =>
+                                            const LoginPage()),
                                   );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -142,7 +143,7 @@ class _HomePage2State extends State<HomePage2> {
                   Icons.add,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               FloatingActionButton(
@@ -189,7 +190,7 @@ class _HomePage2State extends State<HomePage2> {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               FloatingActionButton(
                 //  backgroundColor: Colors.white,
                 onPressed: () {
@@ -231,10 +232,10 @@ class _HomePage2State extends State<HomePage2> {
                         user_name != null
                             ? Text(
                                 '$user_name',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.bold),
                               )
-                            : Text(
+                            : const Text(
                                 'User',
                                 style: TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.bold),
@@ -276,7 +277,7 @@ class _HomePage2State extends State<HomePage2> {
                 // list of reports
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.60,
-                  child: UserReportTile(),
+                  child: const UserReportTile(),
                 )
               ],
             ),
@@ -294,13 +295,13 @@ class _HomePage2State extends State<HomePage2> {
       return;
     }
     final dbHelper = await DatabaseHelper();
-    final Map<int, UserFormReport> reports =
+    final Map<int, UserReportFormDetails> reports =
         await dbHelper.getUserFormReports();
     final reportService = ReportServices();
 
     for (var entry in reports.entries) {
       int id = entry.key;
-      UserFormReport report = entry.value;
+      UserReportFormDetails report = entry.value;
       int uploadSuccess = -1;
       try {
         if (report.imagePath != null) {
@@ -409,7 +410,7 @@ class _OptionItem extends StatelessWidget {
               borderRadius:
                   BorderRadius.circular(8.0), // Adjust the radius for curvature
             ),
-            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            padding: const EdgeInsets.all(8.0), // Adjust padding as needed
             child: icon, // Your icon widget
           ),
           title: Text(

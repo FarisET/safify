@@ -1,4 +1,4 @@
-class UserFormReport {
+class UserReportFormDetails {
   final String? imagePath;
   final String sublocationId;
   final String incidentSubtypeId;
@@ -6,7 +6,7 @@ class UserFormReport {
   final DateTime date;
   final String criticalityId;
 
-  UserFormReport({
+  UserReportFormDetails({
     this.imagePath,
     required this.sublocationId,
     required this.incidentSubtypeId,
@@ -26,8 +26,8 @@ class UserFormReport {
     };
   }
 
-  factory UserFormReport.fromJson(Map<String, dynamic> json) {
-    return UserFormReport(
+  factory UserReportFormDetails.fromJson(Map<String, dynamic> json) {
+    return UserReportFormDetails(
       sublocationId: json['sublocationId'],
       incidentSubtypeId: json['incidentSubtypeId'],
       description: json['description'],

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/fetch_assigned_tasks_provider.dart';
+import 'package:safify/db/database_helper.dart';
+import 'package:safify/models/action_report_form_details.dart';
+import 'package:safify/services/snack_bar_service.dart';
+import 'package:safify/utils/file_utils.dart';
+import 'package:safify/utils/network_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/ReportServices.dart';
@@ -22,7 +27,7 @@ class ActionReportForm extends StatefulWidget {
 class _ActionReportState extends State<ActionReportForm>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final TextEditingController incidentController = TextEditingController();
+  final TextEditingController incidentDescController = TextEditingController();
   final TextEditingController rootCauseController1 = TextEditingController();
   final TextEditingController rootCauseController2 = TextEditingController();
   final TextEditingController rootCauseController3 = TextEditingController();
@@ -40,7 +45,7 @@ class _ActionReportState extends State<ActionReportForm>
 
   bool isSubmitting = false;
 
-  bool proofOfWorkError = false;
+  bool proofOfWorkImageError = false;
 
   ImageUtils imageUtils = ImageUtils();
 
@@ -53,7 +58,7 @@ class _ActionReportState extends State<ActionReportForm>
   @override
   void dispose() {
     _tabController.dispose();
-    incidentController.dispose();
+    incidentDescController.dispose();
     rootCauseController1.dispose();
     rootCauseController2.dispose();
     rootCauseController3.dispose();
@@ -81,7 +86,7 @@ class _ActionReportState extends State<ActionReportForm>
           // If the exit is confirmed, replace the current route with the home page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
+            MaterialPageRoute(builder: (context) => const ActionTeamHomePage()),
           );
           return false; // Prevent the user from going back
         } else {
@@ -89,8 +94,8 @@ class _ActionReportState extends State<ActionReportForm>
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Confirm Exit'),
-              content: Text(
+              title: const Text('Confirm Exit'),
+              content: const Text(
                   'Do you want to leave this page? Any unsaved changes will be lost.'),
               actions: [
                 TextButton(
@@ -103,17 +108,17 @@ class _ActionReportState extends State<ActionReportForm>
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ActionTeamHomePage()),
+                          builder: (context) => const ActionTeamHomePage()),
                     );
                   },
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                 ),
                 TextButton(
                   onPressed: () {
                     // If the user cancels, do nothing and pop the dialog
                     Navigator.pop(context);
                   },
-                  child: Text('No'),
+                  child: const Text('No'),
                 ),
               ],
             ),
@@ -194,27 +199,31 @@ class _ActionReportState extends State<ActionReportForm>
                                 decoration: InputDecoration(
                                   labelText: 'Reported By',
                                   hintText: 'Enter your name',
-                                  prefixIcon:
-                                      Icon(Icons.person, color: Colors.blue),
+                                  prefixIcon: const Icon(Icons.person,
+                                      color: Colors.blue),
                                   fillColor: Colors.blue,
-                                  labelStyle: TextStyle(
+                                  labelStyle: const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.normal,
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue),
+                                    borderSide:
+                                        const BorderSide(color: Colors.blue),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green),
+                                    borderSide:
+                                        const BorderSide(color: Colors.green),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   errorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                 ),
@@ -236,23 +245,25 @@ class _ActionReportState extends State<ActionReportForm>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextFormField(
-                                controller: incidentController,
+                                controller: incidentDescController,
                                 decoration: InputDecoration(
                                   labelText: 'Incident detail',
                                   hintText: 'Describe the incident in detail',
-                                  prefixIcon: Icon(Icons.description,
+                                  prefixIcon: const Icon(Icons.description,
                                       color: Colors.blue),
                                   fillColor: Colors.blue,
-                                  labelStyle: TextStyle(
+                                  labelStyle: const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.normal,
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue),
+                                    borderSide:
+                                        const BorderSide(color: Colors.blue),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green),
+                                    borderSide:
+                                        const BorderSide(color: Colors.green),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                 ),
@@ -268,7 +279,7 @@ class _ActionReportState extends State<ActionReportForm>
                             width: MediaQuery.of(context).size.width,
                             child: OutlinedButton(
                               style: ElevatedButton.styleFrom(
-                                side: BorderSide(color: Colors.blue),
+                                side: const BorderSide(color: Colors.blue),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
@@ -281,7 +292,7 @@ class _ActionReportState extends State<ActionReportForm>
                                     const EdgeInsets.symmetric(vertical: 22.0),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.image),
+                                    const Icon(Icons.image),
                                     Flexible(
                                       child: Text(
                                         incidentSiteImg != null
@@ -310,7 +321,7 @@ class _ActionReportState extends State<ActionReportForm>
                               onPressed: () {
                                 _tabController.animateTo(1);
                               },
-                              icon: Icon(Icons.arrow_forward_ios),
+                              icon: const Icon(Icons.arrow_forward_ios),
                             ),
                           ),
                         ),
@@ -341,7 +352,7 @@ class _ActionReportState extends State<ActionReportForm>
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
+                                const Text(
                                   'Answer the series of questions to find the root cause of the incident',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -383,12 +394,12 @@ class _ActionReportState extends State<ActionReportForm>
                           },
                           steps: [
                             Step(
-                              title: Text("Problem Statement"),
+                              title: const Text("Problem Statement"),
                               content: Column(
                                 children: [
                                   TextFormField(
                                     controller: rootCauseController1,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText: 'what is the problem?',
                                       hintText: 'define in one line',
                                     ),
@@ -398,12 +409,12 @@ class _ActionReportState extends State<ActionReportForm>
                               isActive: _currentStep == 0,
                             ),
                             Step(
-                              title: Text("Why is that?"),
+                              title: const Text("Why is that?"),
                               content: Column(
                                 children: [
                                   TextFormField(
                                     controller: rootCauseController2,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText:
                                           'why do you think it happened?',
                                       hintText: 'what caused it?',
@@ -414,12 +425,12 @@ class _ActionReportState extends State<ActionReportForm>
                               isActive: _currentStep == 1,
                             ),
                             Step(
-                              title: Text("Why is that?"),
+                              title: const Text("Why is that?"),
                               content: Column(
                                 children: [
                                   TextFormField(
                                     controller: rootCauseController3,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText:
                                           'why do you think that happened?',
                                       hintText: 'Cause of previous cause',
@@ -430,12 +441,12 @@ class _ActionReportState extends State<ActionReportForm>
                               isActive: _currentStep == 2,
                             ),
                             Step(
-                              title: Text("Why is that?"),
+                              title: const Text("Why is that?"),
                               content: Column(
                                 children: [
                                   TextFormField(
                                     controller: rootCauseController4,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText:
                                           'why do you think that happened?',
                                       hintText: 'Cause of previous cause',
@@ -446,12 +457,12 @@ class _ActionReportState extends State<ActionReportForm>
                               isActive: _currentStep == 3,
                             ),
                             Step(
-                              title: Text("Root Cause"),
+                              title: const Text("Root Cause"),
                               content: Column(
                                 children: [
                                   TextFormField(
                                     controller: rootCauseController5,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText: 'why is that?',
                                       hintText: 'cause of previous cause',
                                     ),
@@ -469,16 +480,16 @@ class _ActionReportState extends State<ActionReportForm>
                               onPressed: () {
                                 _tabController.animateTo(0);
                               },
-                              icon: Icon(Icons.arrow_back_ios),
+                              icon: const Icon(Icons.arrow_back_ios),
                             ),
                             IconButton(
                                 onPressed: () {
                                   _tabController.animateTo(2);
                                 },
-                                icon: Icon(Icons.arrow_forward_ios)),
+                                icon: const Icon(Icons.arrow_forward_ios)),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 18,
                         )
                       ],
@@ -498,8 +509,8 @@ class _ActionReportState extends State<ActionReportForm>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                          padding: const EdgeInsets.all(18.0),
+                      const Padding(
+                          padding: EdgeInsets.all(18.0),
                           child: Text(
                             'Give proof of your incident resolution to get approval of work.',
                             textAlign: TextAlign.left,
@@ -514,27 +525,27 @@ class _ActionReportState extends State<ActionReportForm>
                           decoration: InputDecoration(
                             labelText: 'Resolution',
                             hintText: 'Describe resolution in a few words',
-                            prefixIcon:
-                                Icon(Icons.description, color: Colors.blue),
+                            prefixIcon: const Icon(Icons.description,
+                                color: Colors.blue),
                             fillColor: Colors.blue,
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                               color: Colors.blue,
                               fontWeight: FontWeight.normal,
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
+                              borderSide: const BorderSide(color: Colors.blue),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
+                              borderSide: const BorderSide(color: Colors.green),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
+                              borderSide: const BorderSide(color: Colors.red),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
+                              borderSide: const BorderSide(color: Colors.red),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                           ),
@@ -553,7 +564,7 @@ class _ActionReportState extends State<ActionReportForm>
                               child: OutlinedButton(
                                 style: ElevatedButton.styleFrom(
                                   side: BorderSide(
-                                      color: proofOfWorkError
+                                      color: proofOfWorkImageError
                                           ? Colors.red
                                           : Colors.blue),
                                   shape: RoundedRectangleBorder(
@@ -569,7 +580,7 @@ class _ActionReportState extends State<ActionReportForm>
                                   child: Row(
                                     children: [
                                       Icon(Icons.attach_file,
-                                          color: proofOfWorkError
+                                          color: proofOfWorkImageError
                                               ? Colors.red
                                               : Colors.blue),
                                       Text(
@@ -577,7 +588,7 @@ class _ActionReportState extends State<ActionReportForm>
                                             ? 'Image Added'
                                             : 'Proof of work',
                                         style: TextStyle(
-                                            color: proofOfWorkError
+                                            color: proofOfWorkImageError
                                                 ? Colors.red
                                                 : Colors.blue),
                                       ),
@@ -587,7 +598,7 @@ class _ActionReportState extends State<ActionReportForm>
                               ),
                             ),
                             Visibility(
-                                visible: proofOfWorkError,
+                                visible: proofOfWorkImageError,
                                 child: requiredLabel(true)),
                           ],
                         ),
@@ -599,7 +610,7 @@ class _ActionReportState extends State<ActionReportForm>
                             onPressed: () {
                               _tabController.animateTo(1);
                             },
-                            icon: Icon(Icons.arrow_back_ios),
+                            icon: const Icon(Icons.arrow_back_ios),
                           ),
                           ElevatedButton(
                               onPressed: isSubmitting
@@ -613,6 +624,21 @@ class _ActionReportState extends State<ActionReportForm>
                                               .text.isNotEmpty) {
                                         int flag = await handleReportSubmitted(
                                             context, this);
+                                        setState(() {
+                                          isSubmitting = false;
+                                        });
+                                        if (flag == -1) {
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const ActionTeamHomePage()));
+                                          SnackBarService
+                                              .showLocallySavedSnackBar(
+                                                  context: context);
+
+                                          return;
+                                        }
                                         if (flag == 1) {
                                           if (mounted) {
                                             ScaffoldMessenger.of(context)
@@ -638,7 +664,7 @@ class _ActionReportState extends State<ActionReportForm>
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        ActionTeamHomePage()),
+                                                        const ActionTeamHomePage()),
                                               );
                                               _processData();
                                             });
@@ -665,12 +691,12 @@ class _ActionReportState extends State<ActionReportForm>
                                       } else {
                                         if (workPrfImg == null) {
                                           setState(() {
-                                            proofOfWorkError = true;
+                                            proofOfWorkImageError = true;
                                           });
                                         }
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
+                                          const SnackBar(
                                             backgroundColor: Colors.redAccent,
                                             content: Text(
                                                 'Please fill in all required fields'),
@@ -687,14 +713,14 @@ class _ActionReportState extends State<ActionReportForm>
                                   child: isSubmitting
                                       ? Row(
                                           children: [
-                                            Text(
+                                            const Text(
                                               'Submitting',
                                               style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.white,
                                               ),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 20,
                                             ),
                                             SizedBox(
@@ -704,18 +730,19 @@ class _ActionReportState extends State<ActionReportForm>
                                               width: MediaQuery.sizeOf(context)
                                                       .height *
                                                   0.03,
-                                              child: CircularProgressIndicator(
+                                              child:
+                                                  const CircularProgressIndicator(
                                                 color: Colors.white,
                                               ),
                                             )
                                           ],
                                         )
-                                      : Center(child: Text('Submit')),
+                                      : const Center(child: Text('Submit')),
                                 ),
                               )),
                         ],
                       ),
-                      SizedBox(height: 18)
+                      const SizedBox(height: 18)
                     ],
                   ),
                 ),
@@ -729,8 +756,8 @@ class _ActionReportState extends State<ActionReportForm>
 
   Padding requiredLabel(bool isRequired) {
     return isRequired
-        ? Padding(
-            padding: const EdgeInsets.only(top: 2, left: 8),
+        ? const Padding(
+            padding: EdgeInsets.only(top: 2, left: 8),
             child: Text("* Required",
                 style: TextStyle(
                   color: Colors.red,
@@ -751,7 +778,7 @@ class _ActionReportState extends State<ActionReportForm>
 
   void _showBottomSheet() {
     setState(() {
-      proofOfWorkError = false;
+      proofOfWorkImageError = false;
     });
 
     showModalBottomSheet(
@@ -933,47 +960,115 @@ class _ActionReportState extends State<ActionReportForm>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //    String? user_id = prefs.getString("this_user_id");
     int? userReportId = prefs.getInt("user_report_id");
+    if (userReportId == null) {
+      throw Exception('User report id not found');
+    }
+    print("hello");
 
+    final actionReportFormDetails = ActionReportFormDetails(
+      incidentDesc: userFormState.incidentDescController.text,
+      rootCause1: userFormState.rootCauseController1.text,
+      rootCause2: userFormState.rootCauseController2.text,
+      rootCause3: userFormState.rootCauseController3.text,
+      rootCause4: userFormState.rootCauseController4.text,
+      rootCause5: userFormState.rootCauseController5.text,
+      resolutionDesc: userFormState.resolutionDescController.text,
+      reportedBy: userFormState.reportedByController.text,
+      incidentSiteImgPath: userFormState.incidentSiteImg?.path,
+      workProofImgPath: userFormState.workPrfImg!.path,
+      userReportId: userReportId,
+    );
+    print(actionReportFormDetails.toString());
 //    print(userFormState.incidentSiteImg.toString());
 
-    if (userReportId != null) {
-      if (incidentSiteImg != null) {
-        int flag = await reportServices.uploadActionReportWithImagesFuture(
-            userFormState.incidentController.text, //desciption
-            userFormState.rootCauseController1.text,
-            userFormState.rootCauseController2.text,
-            userFormState.rootCauseController3.text,
-            userFormState.rootCauseController4.text,
-            userFormState.rootCauseController5.text,
-            userFormState.resolutionDescController.text,
-            userFormState.reportedByController.text,
-            userFormState.incidentSiteImg,
-            userFormState.workPrfImg,
-            userReportId);
+    final pingSuccess = await ping_google();
 
-        setState(() {
-          isSubmitting = false;
-        });
-        return flag;
-      } else {
-        int flag = await reportServices.postActionReport(
-            userFormState.incidentController.text, //desciption
-            userFormState.rootCauseController1.text,
-            userFormState.rootCauseController2.text,
-            userFormState.rootCauseController3.text,
-            userFormState.rootCauseController4.text,
-            userFormState.rootCauseController5.text,
-            userFormState.resolutionDescController.text,
-            userFormState.reportedByController.text,
-            userFormState.workPrfImg,
-            userReportId);
+    // if ping failed, store the report in the db
+    if (!pingSuccess) {
+      // store the report in the db
 
-        setState(() {
-          isSubmitting = false;
-        });
-        return flag;
-      }
+      // save the proof of work image locally
+      final tempProofWorkImagePath =
+          await saveImageTempLocally(File(userFormState.workPrfImg!.path));
+
+      // save the incident site image locally, or null if it doesn't exist
+      final tempIncidentSiteImagePath = userFormState.incidentSiteImg != null
+          ? await saveImageTempLocally(
+              File(userFormState.incidentSiteImg!.path))
+          : null;
+
+      final actionReportFormDetails = ActionReportFormDetails(
+        incidentDesc: userFormState.incidentDescController.text,
+        rootCause1: userFormState.rootCauseController1.text,
+        rootCause2: userFormState.rootCauseController2.text,
+        rootCause3: userFormState.rootCauseController3.text,
+        rootCause4: userFormState.rootCauseController4.text,
+        rootCause5: userFormState.rootCauseController5.text,
+        resolutionDesc: userFormState.resolutionDescController.text,
+        reportedBy: userFormState.reportedByController.text,
+        incidentSiteImgPath: tempIncidentSiteImagePath,
+        workProofImgPath: tempProofWorkImagePath,
+        userReportId: userReportId,
+      );
+
+      // final dbHelper = DatabaseHelper();
+      // final id = await dbHelper.insertActionFormReport(actionReportFormDetails);
+      // final report = ActionReportFormDetails.fromJson(
+      //     await dbHelper.getActionFormReport(id));
+      // print(report);
+
+      debugPrint("Report saved to local db, no connection!");
+      setState(() {
+        isSubmitting = false;
+      });
+      return -1;
     }
+    try {
+      if (userReportId != null) {
+        if (incidentSiteImg != null) {
+          int flag = await reportServices.uploadActionReportWithImagesFuture(
+              userFormState.incidentDescController.text, //desciption
+              userFormState.rootCauseController1.text,
+              userFormState.rootCauseController2.text,
+              userFormState.rootCauseController3.text,
+              userFormState.rootCauseController4.text,
+              userFormState.rootCauseController5.text,
+              userFormState.resolutionDescController.text,
+              userFormState.reportedByController.text,
+              userFormState.incidentSiteImg,
+              userFormState.workPrfImg,
+              userReportId);
+
+          setState(() {
+            isSubmitting = false;
+          });
+          return flag;
+        } else {
+          int flag = await reportServices.postActionReport(
+              userFormState.incidentDescController.text, //desciption
+              userFormState.rootCauseController1.text,
+              userFormState.rootCauseController2.text,
+              userFormState.rootCauseController3.text,
+              userFormState.rootCauseController4.text,
+              userFormState.rootCauseController5.text,
+              userFormState.resolutionDescController.text,
+              userFormState.reportedByController.text,
+              userFormState.workPrfImg,
+              userReportId);
+
+          setState(() {
+            isSubmitting = false;
+          });
+          return flag;
+        }
+      }
+    } catch (e) {
+      setState(() {
+        isSubmitting = false;
+      });
+      rethrow;
+    }
+
     return 0;
   }
 }

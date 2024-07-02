@@ -59,8 +59,11 @@ void main() async {
   // await initiazizeService();
 
   // Initialize and register periodic tasks
-  await BackgroundTaskManager().initializeWorkManager();
-  BackgroundTaskManager().registerPeriodicTasks();
+  final backgroundTaskManager = BackgroundTaskManager();
+  await backgroundTaskManager.initializeWorkManager();
+  // backgroundTaskManager.cancelTask("3");
+  backgroundTaskManager.registerSyncUserFormTask();
+  backgroundTaskManager.registerSyncActionFormTask();
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();

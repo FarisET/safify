@@ -61,6 +61,7 @@ dependencies:
   workmanager: ^0.5.2
   font_awesome_flutter: ^10.7.0
   fluent_ui: ^4.8.7
+  delightful_toast: ^1.1.0
 
 dev_dependencies:
   flutter_test:

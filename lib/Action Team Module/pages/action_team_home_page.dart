@@ -1,12 +1,22 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
+import 'dart:io';
+
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/raw_delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/fetch_assigned_tasks_provider.dart';
+import 'package:safify/db/database_helper.dart';
+import 'package:safify/services/ReportServices.dart';
+import 'package:safify/services/snack_bar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../User Module/pages/login_page.dart';
 import '../../services/UserServices.dart';
-import '../../widgets/assigned_task_tile.dart';
+import '../../widgets/assigned_task_list.dart';
 
 // ignore_for_file: prefer_const_constructors
 
@@ -45,6 +55,30 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
     double containerHeight = screenHeight * 0.6;
 
     return Scaffold(
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              debugPrint("pressed upload button");
+              // final reports = await DatabaseHelper().getActionFormReports();
+              // print(reports);
+              // for (var report in reports.values) {
+              //   print(report);
+              // // }
+              // debugPrint(reports.values.first.toString());
+              // final report = reports.values.first;
+
+              // final reportServices = ReportServices();
+
+              // final res = await reportServices.uploadActionReport(report);
+              // print("upload result: $res");
+              SnackBarService.showLocallySavedSnackBar(context: context);
+            },
+            child: Icon(Icons.upload),
+          )
+        ],
+      ),
       appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
@@ -111,101 +145,116 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                 color: Theme.of(context).secondaryHeaderColor),
           ]),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-              vertical: MediaQuery.sizeOf(context).height * 0.02),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(22.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        //Text
-                        children: [
-                          Wrap(alignment: WrapAlignment.start, children: [
-                            username != null
-                                ? Text(
-                                    '$username',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                : Text(
-                                    'Action Team',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                          ]),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.007,
-                          ),
-                          Text(
-                              intl.DateFormat('d MMMM y')
-                                  .format(DateTime.now()),
-                              style: Theme.of(context).textTheme.titleSmall),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              const Divider(
-                thickness: 1,
-                color: Color.fromARGB(255, 204, 204, 204),
-              ),
-
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-
-              //Assigned reports
-
-              Stack(
-                alignment: AlignmentDirectional.bottomCenter,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            try {
+              await Provider.of<AssignedTaskProvider>(context, listen: false)
+                  .fetchAssignedTasks(context);
+            } on SocketException {
+              SnackBarService.showNoConnectionSnackBar(context);
+            }
+          },
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.sizeOf(context).width * 0.05,
+                  vertical: MediaQuery.sizeOf(context).height * 0.02),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SizedBox(
-                      height: containerHeight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Assigned Tasks',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            //Text
+                            children: [
+                              Wrap(alignment: WrapAlignment.start, children: [
+                                username != null
+                                    ? Text(
+                                        '$username',
+                                        style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    : Text(
+                                        'Action Team',
+                                        style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                              ]),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.007,
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Expanded(
-                              child: AssignedTaskTile(),
-                            ),
-                          ],
-                        ),
+                              Text(
+                                  intl.DateFormat('d MMMM y')
+                                      .format(DateTime.now()),
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    color: Color.fromARGB(255, 204, 204, 204),
+                  ),
+
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+
+                  //Assigned reports
+
+                  Stack(
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                          height: containerHeight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(0.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Assigned Tasks',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: AssignedTaskList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
-              )
-            ],
+              ),
+            ),
           ),
         ),
       ),

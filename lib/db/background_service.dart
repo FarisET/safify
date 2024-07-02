@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:safify/db/database_helper.dart';
-import 'package:safify/models/user_form_report.dart';
+import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:safify/utils/network_util.dart';
 
@@ -101,7 +101,8 @@ Future<void> uploadUserFormReports() async {
   }
   final dbHelper = await DatabaseHelper();
 
-  final Map<int, UserFormReport> reports = await dbHelper.getUserFormReports();
+  final Map<int, UserReportFormDetails> reports =
+      await dbHelper.getUserFormReports();
 
   if (reports.isEmpty) {
     print("No reports to upload");
@@ -112,7 +113,7 @@ Future<void> uploadUserFormReports() async {
 
   for (var entry in reports.entries) {
     int id = entry.key;
-    UserFormReport report = entry.value;
+    UserReportFormDetails report = entry.value;
     int uploadSuccess = -1;
     try {
       if (report.imagePath != null) {

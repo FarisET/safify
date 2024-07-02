@@ -1,9 +1,10 @@
 import 'package:safify/dummy.dart';
+import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/incident_sub_type.dart';
 import 'package:safify/models/incident_types.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
-import 'package:safify/models/user_form_report.dart';
+import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -65,6 +66,23 @@ class DatabaseHelper {
           ''');
 
         await db.execute('''
+            CREATE TABLE action_form_reports (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              reportedBy TEXT NOT NULL,
+              incidentDesc TEXT NOT NULL,
+              rootCause1 TEXT,
+              rootCause2 TEXT,
+              rootCause3 TEXT,
+              rootCause4 TEXT,
+              rootCause5 TEXT,
+              resolutionDesc TEXT NOT NULL,
+              incidentSiteImgPath TEXT,
+              workProofImgPath TEXT NOT NULL,
+              userReportId INTEGER NOT NULL
+            )
+          ''');
+
+        await db.execute('''
             CREATE TABLE times (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               time TEXT
@@ -123,25 +141,66 @@ class DatabaseHelper {
     return await db.query('times');
   }
 
-  Future<void> insertUserFormReport(UserFormReport) async {
+  Future<void> insertUserFormReport(
+      UserReportFormDetails userReportFormDetails) async {
     final db = await database;
     await db.insert(
       'user_form_reports',
-      UserFormReport.toJson(),
+      userReportFormDetails.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<Map<int, UserFormReport>> getUserFormReports() async {
+  Future<Map<int, UserReportFormDetails>> getUserFormReports() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('user_form_reports');
-    return {for (var item in maps) item['id']: UserFormReport.fromJson(item)};
+    return {
+      for (var item in maps) item['id']: UserReportFormDetails.fromJson(item)
+    };
   }
 
   Future<void> deleteUserFormReport(int id) async {
     final db = await database;
     await db.delete(
       'user_form_reports',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> insertActionFormReport(
+      ActionReportFormDetails actionReportFormDetails) async {
+    final db = await database;
+    return await db.insert(
+      'action_form_reports',
+      actionReportFormDetails.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Map<String, dynamic>> getActionFormReport(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'action_form_reports',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return maps.first;
+  }
+
+  Future<Map<int, ActionReportFormDetails>> getActionFormReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('action_form_reports');
+    return {
+      for (var item in maps) item['id']: ActionReportFormDetails.fromJson(item)
+    };
+  }
+
+  Future<void> deleteActionFormReport(int id) async {
+    final db = await database;
+    await db.delete(
+      'action_form_reports',
       where: 'id = ?',
       whereArgs: [id],
     );
