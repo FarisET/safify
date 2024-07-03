@@ -6,7 +6,7 @@ import 'package:safify/Action%20Team%20Module/providers/all_action_reports_provi
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/assign_task.dart';
-import 'package:safify/models/report.dart';
+import 'package:safify/models/user_report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void handleImageButton(String? imageUrl, BuildContext context) {

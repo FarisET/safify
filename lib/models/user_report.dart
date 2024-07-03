@@ -1,4 +1,4 @@
-class Reports {
+class UserReport {
   final int? id;
   final String? user_id;
   final String? description;
@@ -13,7 +13,7 @@ class Reports {
   final String? image; // You may need to adjust this property's type
   final String? status;
 
-  Reports(
+  UserReport(
       {required this.user_id,
       required this.id,
       required this.description,
@@ -28,8 +28,8 @@ class Reports {
       required this.image,
       required this.status});
 
-  factory Reports.fromJson(Map<String, dynamic> json) {
-    return Reports(
+  factory UserReport.fromJson(Map<String, dynamic> json) {
+    return UserReport(
       user_id: json['user_id'] as String?,
       id: json['user_report_id'],
       description: json['report_description'] as String?,
@@ -61,5 +61,10 @@ class Reports {
       'image': image,
       'status': status,
     };
+  }
+
+  @override
+  String toString() {
+    return 'UserReport{id: $id, user_id: $user_id, description: $description, dateTime: $dateTime, subLocationName: $subLocationName, subLocationID: $subLocationID, incidentSubtypeDescription: $incidentSubtypeDescription, incidentCriticalityLevel: $incidentCriticalityLevel, incidentCriticalityID: $incidentCriticalityID, image: $image, status: $status}';
   }
 }

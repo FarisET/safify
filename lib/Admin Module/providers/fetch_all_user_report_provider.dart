@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:safify/models/token_expired.dart';
 import '../../services/ReportServices.dart';
-import '../../models/report.dart';
+import '../../models/user_report.dart';
 
 class AllUserReportsProvider with ChangeNotifier {
-  List<Reports> _reports = [];
-  List<Reports> get reports => _reports;
+  List<UserReport> _reports = [];
+  List<UserReport> get reports => _reports;
   bool isLoading = false;
   String? _error;
   String? get error => _error;

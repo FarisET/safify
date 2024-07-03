@@ -55,6 +55,7 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
   Widget build(BuildContext context) {
     return Center(child:
         Consumer<AssignedTaskProvider>(builder: (context, assignProvider, _) {
+      // return Icon(Icons.error_outline);
       if (assignProvider.isLoading) {
         return CircularProgressIndicator();
       }

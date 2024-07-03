@@ -96,6 +96,21 @@ class DatabaseHelper {
               status TEXT
             )
           ''');
+        await db.execute('''
+            CREATE TABLE user_reports (
+              user_report_id INTEGER PRIMARY KEY,
+              user_id TEXT,
+              description TEXT,
+              date_time TEXT,
+              sub_location_name TEXT,
+              sub_location_id TEXT,
+              incident_subtype_description TEXT,
+              incident_criticality_level TEXT,
+              incident_criticality_id TEXT,
+              image TEXT,
+              status TEXT
+            )
+          ''');
 
         await db.execute('''
             CREATE TABLE times (

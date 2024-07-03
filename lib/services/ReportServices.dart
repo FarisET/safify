@@ -12,7 +12,7 @@ import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
-import 'package:safify/models/report.dart';
+import 'package:safify/models/user_report.dart';
 import 'package:safify/models/token_expired.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/notification_utils.dart';
@@ -35,7 +35,7 @@ class ReportServices {
       FlutterLocalNotificationsPlugin();
   UserReportsProvider userReportsProvider = UserReportsProvider();
 
-  Future<List<Reports>> fetchReports() async {
+  Future<List<UserReport>> fetchReports() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? currentUserId = prefs.getString("user_id");
@@ -58,8 +58,9 @@ class ReportServices {
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body);
 
-        List<Reports> reportList =
-            jsonResponse.map((dynamic item) => Reports.fromJson(item)).toList();
+        List<UserReport> reportList = jsonResponse
+            .map((dynamic item) => UserReport.fromJson(item))
+            .toList();
 
         return reportList;
       } else {
@@ -128,7 +129,7 @@ class ReportServices {
     }
   }
 
-  Future<List<Reports>> fetchAllReports() async {
+  Future<List<UserReport>> fetchAllReports() async {
     try {
       jwtToken = await storage.read(key: 'jwt');
       Uri url = Uri.parse('$IP_URL/admin/dashboard/fetchAllUserReports');
@@ -142,9 +143,10 @@ class ReportServices {
 
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-        List<Reports> allReportList = jsonResponse
+        debugPrint('jsonResponse: $jsonResponse');
+        List<UserReport> allReportList = jsonResponse
             .map((dynamic item) =>
-                Reports.fromJson(item as Map<String, dynamic>))
+                UserReport.fromJson(item as Map<String, dynamic>))
             .toList();
         return allReportList;
       } else {

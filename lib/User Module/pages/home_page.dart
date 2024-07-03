@@ -18,7 +18,7 @@ import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/network_util.dart';
-import 'package:safify/widgets/user_report_tile.dart';
+import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:sqflite/sqflite.dart';
@@ -277,7 +277,7 @@ class _HomePage2State extends State<HomePage2> {
                 // list of reports
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.60,
-                  child: const UserReportTile(),
+                  child: const UserReportList(),
                 )
               ],
             ),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/all_action_reports_provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
 import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
 import 'package:safify/services/notification_services.dart';
@@ -13,7 +14,7 @@ import 'package:intl/intl.dart' as intl;
 import '../../User Module/pages/login_page.dart';
 import '../../services/UserServices.dart';
 import '../../widgets/action_report_tile.dart';
-import '../../widgets/admin_report_tile.dart';
+import '../../widgets/admin_report_list.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -184,155 +185,162 @@ class _AdminHomePageState extends State<AdminHomePage>
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.sizeOf(context).width * 0.05,
                 vertical: MediaQuery.sizeOf(context).height * 0.02),
-            child: RefreshIndicator(
-              onRefresh: () async => await Provider.of<AllUserReportsProvider>(
-                      context,
-                      listen: false)
-                  .fetchAllReports(context),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(22.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //Text
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                user_name != null
-                                    ? Text(
-                                        '$user_name',
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : Text(
-                                        'Citizen',
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.007,
-                                ),
-                                Text(
-                                    intl.DateFormat('d MMMM y')
-                                        .format(DateTime.now()),
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall),
-                              ],
-                            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(22.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //Text
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              user_name != null
+                                  ? Text(
+                                      '$user_name',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : Text(
+                                      'Citizen',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.007,
+                              ),
+                              Text(
+                                  intl.DateFormat('d MMMM y')
+                                      .format(DateTime.now()),
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            ],
+                          ),
 
-                            //dashboard
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AdminDashboard()),
-                                );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.analytics_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        ' Dashboard',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
+                          //dashboard
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AdminDashboard()),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.analytics_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      ' Dashboard',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.04,
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.04,
+                      ),
+                    ],
                   ),
+                ),
 
-                  //Reports tab
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TabBar(
-                      labelColor: Colors
-                          .white, // Color for all labels (unused in this approach)
-                      unselectedLabelColor: Colors.black,
-                      labelStyle: TextStyle(
-                        fontWeight: FontWeight
-                            .bold, // Style for the selected tab's label
-                      ),
-                      unselectedLabelStyle: TextStyle(
-                        fontWeight: FontWeight
-                            .bold, // Style for unselected tabs' labels
-                      ),
-                      indicator: BoxDecoration(
-                        // Decoration for the indicator below the selected tab
-                        color: Colors.blue[500],
-                        borderRadius: BorderRadius.circular(
-                            10), // You can adjust the shape
-                      ),
-                      controller: _tabController,
-                      tabs: const <Widget>[
-                        Tab(
-                          text: 'User Reports',
-                        ),
-                        Tab(
-                          text: 'Action Reports',
-                        ),
-                      ],
+                //Reports tab
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TabBar(
+                    labelColor: Colors
+                        .white, // Color for all labels (unused in this approach)
+                    unselectedLabelColor: Colors.black,
+                    labelStyle: TextStyle(
+                      fontWeight:
+                          FontWeight.bold, // Style for the selected tab's label
                     ),
+                    unselectedLabelStyle: TextStyle(
+                      fontWeight:
+                          FontWeight.bold, // Style for unselected tabs' labels
+                    ),
+                    indicator: BoxDecoration(
+                      // Decoration for the indicator below the selected tab
+                      color: Colors.blue[500],
+                      borderRadius:
+                          BorderRadius.circular(10), // You can adjust the shape
+                    ),
+                    controller: _tabController,
+                    tabs: const <Widget>[
+                      Tab(
+                        text: 'User Reports',
+                      ),
+                      Tab(
+                        text: 'Action Reports',
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10),
+                ),
+                SizedBox(height: 10),
 
-                  Expanded(
-                    child: Stack(
-                      alignment: AlignmentDirectional.bottomCenter,
-                      children: [
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SizedBox(
-                            height: containerHeight,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 10),
-                                Expanded(
-                                  child: TabBarView(
-                                    controller: _tabController,
-                                    children: <Widget>[
-                                      AdminReportTile(),
-                                      ActionReportTile() // Replace with Action Team Reports widget
-                                    ],
-                                  ),
+                Expanded(
+                  child: Stack(
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                          height: containerHeight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: _tabController,
+                                  children: <Widget>[
+                                    RefreshIndicator(
+                                        onRefresh: () async => await Provider
+                                                .of<AllUserReportsProvider>(
+                                                    context,
+                                                    listen: false)
+                                            .fetchAllReports(context),
+                                        child: AdminReportList()),
+                                    RefreshIndicator(
+                                        onRefresh: () async => await Provider
+                                                .of<ActionReportsProvider>(
+                                                    context,
+                                                    listen: false)
+                                            .fetchAllActionReports(context),
+                                        child:
+                                            ActionReportTile()) // Replace with Action Team Reports widget
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         ),

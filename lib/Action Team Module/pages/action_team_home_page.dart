@@ -130,106 +130,102 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
               SnackBarService.showNoConnectionSnackBar(context);
             }
           },
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.sizeOf(context).width * 0.05,
-                  vertical: MediaQuery.sizeOf(context).height * 0.02),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(22.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            //Text
-                            children: [
-                              Wrap(alignment: WrapAlignment.start, children: [
-                                username != null
-                                    ? Text(
-                                        '$username',
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                      )
-                                    : Text(
-                                        'Action Team',
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                              ]),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.007,
-                              ),
-                              Text(
-                                  intl.DateFormat('d MMMM y')
-                                      .format(DateTime.now()),
-                                  style:
-                                      Theme.of(context).textTheme.titleSmall),
-                            ],
-                          ),
-                        ],
-                      ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width * 0.05,
+                vertical: MediaQuery.sizeOf(context).height * 0.02),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(22.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          //Text
+                          children: [
+                            Wrap(alignment: WrapAlignment.start, children: [
+                              username != null
+                                  ? Text(
+                                      '$username',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  : Text(
+                                      'Action Team',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                            ]),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.007,
+                            ),
+                            Text(
+                                intl.DateFormat('d MMMM y')
+                                    .format(DateTime.now()),
+                                style: Theme.of(context).textTheme.titleSmall),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  const Divider(
-                    thickness: 1,
-                    color: Color.fromARGB(255, 204, 204, 204),
-                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                const Divider(
+                  thickness: 1,
+                  color: Color.fromARGB(255, 204, 204, 204),
+                ),
 
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
 
-                  //Assigned reports
+                //Assigned reports
 
-                  Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          height: containerHeight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(0.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Assigned Tasks',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                Stack(
+                  alignment: AlignmentDirectional.bottomCenter,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        height: containerHeight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Assigned Tasks',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: AssignedTaskList(),
-                                ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Expanded(
+                                child: AssignedTaskList(),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ),

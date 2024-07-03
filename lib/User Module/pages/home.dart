@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../widgets/user_report_tile.dart';
+import '../../widgets/user_report_list.dart';
 import '../../services/UserServices.dart';
 import 'login_page.dart';
 import 'user_form.dart';
@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                               height: 10,
                             ),
                             Expanded(
-                              child: UserReportTile(),
+                              child: UserReportList(),
                             ),
                           ],
                         ),
