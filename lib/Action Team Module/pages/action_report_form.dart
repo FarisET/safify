@@ -1011,11 +1011,11 @@ class _ActionReportState extends State<ActionReportForm>
         userReportId: userReportId,
       );
 
-      // final dbHelper = DatabaseHelper();
-      // final id = await dbHelper.insertActionFormReport(actionReportFormDetails);
-      // final report = ActionReportFormDetails.fromJson(
-      //     await dbHelper.getActionFormReport(id));
-      // print(report);
+      final dbHelper = DatabaseHelper();
+      final id = await dbHelper.insertActionFormReport(actionReportFormDetails);
+      final report = ActionReportFormDetails.fromJson(
+          await dbHelper.getActionFormReport(id));
+      print(report);
 
       debugPrint("Report saved to local db, no connection!");
       setState(() {

@@ -1,5 +1,6 @@
 import 'package:safify/dummy.dart';
 import 'package:safify/models/action_report_form_details.dart';
+import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/incident_sub_type.dart';
 import 'package:safify/models/incident_types.dart';
 import 'package:safify/models/location.dart';
@@ -83,6 +84,20 @@ class DatabaseHelper {
           ''');
 
         await db.execute('''
+            CREATE TABLE assign_tasks (
+              assigned_tasks_id INTEGER PRIMARY KEY ,
+              user_report_id INTEGER,
+              report_description TEXT,
+              date_of_assignment TEXT,
+              sub_location_name TEXT,
+              incident_subtype_description TEXT,
+              image TEXT,
+              incident_criticality_level TEXT,
+              status TEXT
+            )
+          ''');
+
+        await db.execute('''
             CREATE TABLE times (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               time TEXT
@@ -129,6 +144,46 @@ class DatabaseHelper {
         );
       },
     );
+  }
+
+  Future<void> insertAssignTasks(List<AssignTask> assignTasks) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var assignTask in assignTasks) {
+      batch.insert(
+        'assign_tasks',
+        assignTask.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> insertAssignTasksJson(
+      List<Map<String, dynamic>> assignTasks) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var assignTask in assignTasks) {
+      batch.insert(
+        'assign_tasks',
+        AssignTask.fromJson(assignTask).toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<AssignTask>> getAllAssignTasks() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('assign_tasks', orderBy: "date_of_assignment DESC");
+    return List.generate(maps.length, (i) {
+      return AssignTask.fromJson(maps[i]);
+    });
   }
 
   Future<int> insertTime(String time) async {

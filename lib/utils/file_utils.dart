@@ -9,17 +9,20 @@ Future<String> saveImageTempLocally(File imageFile) async {
     await imagesDir.create(recursive: true);
   }
 
-  String fileName = imageFile.path.split('/').last;
-  String savedImagePath = '${imagesDir.path}/$fileName';
+  String originalFileName = imageFile.path.split('/').last;
+  String nameWithoutExtension =
+      originalFileName.replaceAll(RegExp(r'\.[^\.]+$'), '');
+  String extension = originalFileName.split('.').last;
 
   int counter = 1;
-  while (await File(savedImagePath).exists()) {
-    final nameWithoutExtension = fileName.replaceAll(RegExp(r'\.[^\.]+$'), '');
-    final extension = fileName.split('.').last;
-    fileName = '$nameWithoutExtension($counter).$extension';
+  String fileName;
+  String savedImagePath;
+
+  do {
+    fileName = '($counter)$nameWithoutExtension.$extension';
     savedImagePath = '${imagesDir.path}/$fileName';
     counter++;
-  }
+  } while (await File(savedImagePath).exists());
 
   try {
     await imageFile.copy(savedImagePath);

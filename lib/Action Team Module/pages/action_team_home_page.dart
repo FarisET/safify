@@ -55,30 +55,6 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
     double containerHeight = screenHeight * 0.6;
 
     return Scaffold(
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            onPressed: () async {
-              debugPrint("pressed upload button");
-              // final reports = await DatabaseHelper().getActionFormReports();
-              // print(reports);
-              // for (var report in reports.values) {
-              //   print(report);
-              // // }
-              // debugPrint(reports.values.first.toString());
-              // final report = reports.values.first;
-
-              // final reportServices = ReportServices();
-
-              // final res = await reportServices.uploadActionReport(report);
-              // print("upload result: $res");
-              SnackBarService.showLocallySavedSnackBar(context: context);
-            },
-            child: Icon(Icons.upload),
-          )
-        ],
-      ),
       appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,

@@ -55,6 +55,9 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
   Widget build(BuildContext context) {
     return Center(child:
         Consumer<AssignedTaskProvider>(builder: (context, assignProvider, _) {
+      if (assignProvider.isLoading) {
+        return CircularProgressIndicator();
+      }
       if (assignProvider.error != null) {
         if (assignProvider.error!.contains('TokenExpiredException')) {
           WidgetsBinding.instance
@@ -80,19 +83,20 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
           );
         }
       }
-      if (assignProvider.tasks.isNotEmpty) {
-        return ListView.builder(
-          itemCount: assignProvider.tasks.length,
-          itemBuilder: (context, i) {
-            var item = assignProvider.tasks[i];
 
-            return AssignedTaskTile(task: item);
-          },
-        );
-      } else if (assignProvider.tasks.isEmpty && assignProvider.isLoading) {
-        return CircularProgressIndicator();
+      if (assignProvider.tasks != null) {
+        if (assignProvider.tasks!.isNotEmpty) {
+          return ListView.builder(
+            itemCount: assignProvider.tasks!.length,
+            itemBuilder: (context, i) {
+              var item = assignProvider.tasks![i];
+
+              return AssignedTaskTile(task: item);
+            },
+          );
+        }
       }
-      return Text('No active tasks!');
+      return Icon(Icons.error_outline);
     }));
   }
   // padding: const EdgeInsets.only(bottom:8.0),

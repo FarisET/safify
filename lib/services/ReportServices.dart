@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
 import 'package:safify/constants.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
@@ -83,7 +84,7 @@ class ReportServices {
     }
   }
 
-  Future<List<AssignTask>> fetchAssignedReports() async {
+  Future<List<Map<String, dynamic>>> fetchAssignedReports() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       current_user_id = prefs.getString('user_id');
@@ -99,12 +100,12 @@ class ReportServices {
         },
       );
       if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(response.body);
-        List<AssignTask> reportList = jsonResponse
-            .map((dynamic item) => AssignTask.fromJson(item))
-            .toList();
+        // print('Response: ${response.body}');
+        final List<dynamic> jsonResponse = jsonDecode(response.body);
+        List<AssignTask> reportList =
+            jsonResponse.map((item) => AssignTask.fromJson(item)).toList();
 
-        return reportList;
+        return jsonResponse.map((e) => e as Map<String, dynamic>).toList();
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];
