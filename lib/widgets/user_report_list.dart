@@ -10,7 +10,7 @@ import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:safify/widgets/user_report_tile.dart';
 
-import '../User Module/providers/fetch_user_report_provider.dart';
+import '../User Module/providers/user_reports_provider.dart';
 
 class UserReportList extends StatefulWidget {
   const UserReportList({super.key});
@@ -73,7 +73,18 @@ class _UserReportListState extends State<UserReportList> {
       } else if (reportProvider.reports.isEmpty && reportProvider.isLoading) {
         return CircularProgressIndicator();
       }
-      return Text('No Reports');
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('No Reports'),
+          IconButton(
+              onPressed: () {
+                Provider.of<UserReportsProvider>(context, listen: false)
+                    .fetchReports(context);
+              },
+              icon: Icon(Icons.refresh))
+        ],
+      );
     }));
   }
 }

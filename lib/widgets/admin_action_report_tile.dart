@@ -5,7 +5,7 @@ import 'package:safify/Action%20Team%20Module/providers/all_action_reports_appro
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/components/custom_button.dart';
 import 'package:safify/models/action_report.dart';
-import 'package:safify/services/ReportServices.dart';
+import 'package:safify/services/report_service.dart';
 import 'package:safify/utils/button_utils.dart';
 
 class AdminActionReportTile extends StatelessWidget {

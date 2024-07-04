@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
-import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/user_report_form_details.dart';
@@ -30,7 +30,7 @@ import '../providers/incident_subtype_provider.dart';
 import '../providers/incident_type_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
-import '../../services/ReportServices.dart';
+import '../../services/report_service.dart';
 import 'home.dart';
 
 class UserForm extends StatefulWidget {

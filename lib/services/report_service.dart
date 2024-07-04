@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/User%20Module/providers/fetch_user_report_provider.dart';
+import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/constants.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
@@ -33,9 +33,9 @@ class ReportServices {
   Notifications notifications = Notifications();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  UserReportsProvider userReportsProvider = UserReportsProvider();
 
-  Future<List<UserReport>> fetchReports() async {
+  /// Fetches current user's user-reports from the API
+  Future<List<Map<String, dynamic>>> fetchUserReports() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? currentUserId = prefs.getString("user_id");
@@ -58,11 +58,15 @@ class ReportServices {
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body);
 
-        List<UserReport> reportList = jsonResponse
-            .map((dynamic item) => UserReport.fromJson(item))
-            .toList();
+        final list =
+            jsonResponse.map((e) => e as Map<String, dynamic>).toList();
+        return list;
 
-        return reportList;
+        // List<UserReport> reportList = jsonResponse
+        //     .map((dynamic item) => UserReport.fromJson(item))
+        //     .toList();
+
+        // return reportList;
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];

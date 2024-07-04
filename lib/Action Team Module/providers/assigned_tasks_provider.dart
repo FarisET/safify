@@ -25,31 +25,14 @@ class AssignedTasksProvider with ChangeNotifier {
 
       final ping = await ping_google();
       if (ping) {
-        SnackBarService.showCustomSnackBar(
-            context: context,
-            leading: LayoutBuilder(
-              builder: (context, constraints) {
-                return SizedBox(
-                  height: constraints.maxHeight * 0.5,
-                  width: constraints.maxHeight * 0.5,
-                  child: const CircularProgressIndicator(
-                    strokeWidth: 1,
-                    color: Colors.black,
-                  ),
-                );
-              },
-            ),
-            content: const Text("Syncing local data with server..."));
+        SnackBarService.showSyncingLocalDataSnackBar(context);
         await _assignTasksRepository.syncDb();
         _tasks = await _assignTasksRepository.fetchAssignTasksFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched assigned tasks from API.");
       } else {
-        SnackBarService.showCustomSnackBar(
-            context: context,
-            leading: Icon(Icons.perm_scan_wifi_outlined),
-            content: const Text("Could not connect to server"));
+        SnackBarService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch assigned tasks from API.");
       }

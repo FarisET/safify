@@ -36,7 +36,7 @@ import 'Admin Module/providers/fetch_countOfSubtypes_provider.dart';
 import 'User Module/pages/home.dart';
 import 'User Module/pages/login_page.dart';
 import 'User Module/pages/user_form.dart';
-import 'User Module/providers/fetch_user_report_provider.dart';
+import 'User Module/providers/user_reports_provider.dart';
 import 'User Module/providers/incident_subtype_provider.dart';
 import 'User Module/pages/error_page.dart';
 import 'User Module/providers/incident_type_provider.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
-import 'package:safify/services/ReportServices.dart';
+import 'package:safify/services/report_service.dart';
 
-class AdminActionReportRepository {
+class AdminActionReportsRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final ReportServices _reportServices = ReportServices();
 

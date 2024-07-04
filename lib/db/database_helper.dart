@@ -8,7 +8,7 @@ import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:safify/models/user_report.dart';
 import 'package:safify/models/user_report_form_details.dart';
-import 'package:safify/services/ReportServices.dart';
+import 'package:safify/services/report_service.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -137,6 +137,22 @@ class DatabaseHelper {
         ''');
 
         await db.execute('''
+            CREATE TABLE user_reports (
+              user_report_id INTEGER PRIMARY KEY,
+              user_id TEXT,
+              report_description TEXT,
+              date_time TEXT,
+              sub_location_name TEXT,
+              sub_location_id TEXT,
+              incident_subtype_description TEXT,
+              incident_criticality_level TEXT,
+              incident_criticality_id TEXT,
+              image TEXT,
+              status TEXT
+            )
+          ''');
+
+        await db.execute('''
             CREATE TABLE times (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               time TEXT
@@ -185,6 +201,31 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> insertUserReportsJson(
+      List<Map<String, dynamic>> userReports) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var userReport in userReports) {
+      batch.insert(
+        'user_reports',
+        // for safety, as json can have extra fields which are not columns in table
+        UserReport.fromJson(userReport).toJson(),
+
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<Map<String, dynamic>>> getUserReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('user_reports', orderBy: "date_time DESC");
+    return maps;
+  }
+
   Future<void> insertAdminUserReportsJson(
       List<Map<String, dynamic>> reports) async {
     final db = await database;
@@ -205,7 +246,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getAdminActionReports() async {
     final db = await database;
     final List<Map<String, dynamic>> maps =
-        await db.query('admin_action_reports');
+        await db.query('admin_action_reports', orderBy: "date_time DESC");
     return maps;
   }
 

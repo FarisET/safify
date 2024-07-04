@@ -3,6 +3,8 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:lottie/lottie.dart';
+import 'package:safify/widgets/custom_toast.dart';
 
 class SnackBarService {
   static void showSimpleSnackBar({
@@ -17,7 +19,7 @@ class SnackBarService {
       autoDismiss: true,
 
       snackbarDuration: const Duration(seconds: 10),
-      builder: (context) => ToastCard(
+      builder: (context) => CustomToast(
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -56,8 +58,8 @@ class SnackBarService {
       animationDuration: const Duration(milliseconds: 450),
       autoDismiss: true,
 
-      snackbarDuration: const Duration(seconds: 5),
-      builder: (context) => const ToastCard(
+      snackbarDuration: const Duration(seconds: 3),
+      builder: (context) => const CustomToast(
         leading: Icon(
           CupertinoIcons.wifi_slash,
           size: 28,
@@ -74,9 +76,7 @@ class SnackBarService {
     ).show(context);
   }
 
-  static void showLocallySavedSnackBar({
-    required BuildContext context,
-  }) {
+  static void showLocallySavedSnackBar(BuildContext context) {
     DelightToastBar(
       // snackbarDuration: Duration(milliseconds: 500),
       // animationCurve: Curves.bounceIn,
@@ -84,7 +84,7 @@ class SnackBarService {
       autoDismiss: true,
 
       snackbarDuration: const Duration(seconds: 10),
-      builder: (context) => const ToastCard(
+      builder: (context) => const CustomToast(
         leading: Icon(
           CupertinoIcons.wifi_slash,
           size: 28,
@@ -99,6 +99,63 @@ class SnackBarService {
         ),
         title: Text(
           "No connection, report saved locally.",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            // fontSize: 14,
+          ),
+        ),
+      ),
+    ).show(context);
+  }
+
+  static void showSyncingLocalDataSnackBar(BuildContext context) {
+    DelightToastBar(
+      // snackbarDuration: Duration(milliseconds: 500),
+      // animationCurve: Curves.bounceIn,
+      animationDuration: const Duration(milliseconds: 450),
+      autoDismiss: true,
+
+      snackbarDuration: const Duration(seconds: 3),
+      builder: (context) => CustomToast(
+        leading: LayoutBuilder(
+          builder: (context, constraints) => SizedBox(
+            height: constraints.maxHeight * 0.5,
+            width: constraints.maxHeight * 0.5,
+            child: const CircularProgressIndicator(
+              strokeWidth: 1.5,
+              color: Colors.black,
+            ),
+            // child: Lottie.asset(
+            //   'assets/images/downloading_lottie.json',
+
+            //   // fit: BoxFit.cover,
+            // ),
+          ),
+        ),
+        title: const Text(
+          "Syncing local data with server...",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            // fontSize: 14,
+          ),
+        ),
+      ),
+    ).show(context);
+  }
+
+  static void showCouldNotConnectSnackBar(BuildContext context) {
+    DelightToastBar(
+      animationDuration: const Duration(milliseconds: 450),
+      autoDismiss: true,
+      snackbarDuration: const Duration(seconds: 3),
+      builder: (context) => const ToastCard(
+        leading: Icon(
+          CupertinoIcons.wifi_slash,
+          size: 28,
+          color: Colors.black,
+        ),
+        title: Text(
+          "Could not connect to server.",
           style: TextStyle(
             fontWeight: FontWeight.w700,
             // fontSize: 14,

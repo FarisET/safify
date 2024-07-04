@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safify/models/action_report.dart';
-import 'package:safify/repositories/admin_action_report_repository.dart';
+import 'package:safify/repositories/admin_action_reports_repository.dart';
 import 'package:safify/services/snack_bar_service.dart';
 import 'package:safify/utils/network_util.dart';
 
@@ -10,8 +10,8 @@ class ActionReportsProvider with ChangeNotifier {
   bool isLoading = false;
   String? _error;
   String? get error => _error;
-  final AdminActionReportRepository _actionReportRepository =
-      AdminActionReportRepository();
+  final AdminActionReportsRepository _actionReportRepository =
+      AdminActionReportsRepository();
 
   Future<void> refresh(BuildContext context) {
     return fetchAllActionReports(context);
@@ -30,21 +30,7 @@ class ActionReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        SnackBarService.showCustomSnackBar(
-            context: context,
-            leading: LayoutBuilder(
-              builder: (context, constraints) {
-                return SizedBox(
-                  height: constraints.maxHeight * 0.5,
-                  width: constraints.maxHeight * 0.5,
-                  child: const CircularProgressIndicator(
-                    strokeWidth: 1,
-                    color: Colors.black,
-                  ),
-                );
-              },
-            ),
-            content: const Text("Syncing local data with server..."));
+        SnackBarService.showLocallySavedSnackBar(context);
         await _actionReportRepository.syncDb();
         _reports =
             await _actionReportRepository.fetchAdminActionReportsFromDb();
@@ -52,10 +38,7 @@ class ActionReportsProvider with ChangeNotifier {
         notifyListeners();
         debugPrint("Fetched admin action user reports from API.");
       } else {
-        SnackBarService.showCustomSnackBar(
-            context: context,
-            leading: const Icon(Icons.perm_scan_wifi_outlined),
-            content: const Text("Could not connect to server"));
+        SnackBarService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch admin action reports from API.");
       }
