@@ -129,7 +129,7 @@ class ReportServices {
     }
   }
 
-  Future<List<UserReport>> fetchAllReports() async {
+  Future<List<Map<String, dynamic>>> fetchAdminUserReports() async {
     try {
       jwtToken = await storage.read(key: 'jwt');
       Uri url = Uri.parse('$IP_URL/admin/dashboard/fetchAllUserReports');
@@ -143,12 +143,17 @@ class ReportServices {
 
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-        debugPrint('jsonResponse: $jsonResponse');
-        List<UserReport> allReportList = jsonResponse
-            .map((dynamic item) =>
-                UserReport.fromJson(item as Map<String, dynamic>))
-            .toList();
-        return allReportList;
+        // debugPrint('jsonResponse: $jsonResponse');
+
+        // List<UserReport> allReportList = jsonResponse
+        //     .map((dynamic item) =>
+        //         UserReport.fromJson(item as Map<String, dynamic>))
+        //     .toList();
+        // return allReportList;
+
+        final list =
+            jsonResponse.map((e) => e as Map<String, dynamic>).toList();
+        return list;
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];
@@ -305,7 +310,7 @@ class ReportServices {
     }
   }
 
-  Future<List<ActionReport>> fetchAllActionReports() async {
+  Future<List<Map<String, dynamic>>> fetchAdminActionReports() async {
     try {
       jwtToken = await storage.read(key: 'jwt');
       // jwtToken = 'k-sdkjnksddsd0';
@@ -319,11 +324,15 @@ class ReportServices {
 
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-        List<ActionReport> allReportList = jsonResponse
-            .map((dynamic item) =>
-                ActionReport.fromJson(item as Map<String, dynamic>))
-            .toList();
-        return allReportList;
+        // List<ActionReport> allReportList = jsonResponse
+        //     .map((dynamic item) =>
+        //         ActionReport.fromJson(item as Map<String, dynamic>))
+        //     .toList();
+        // return allReportList;
+
+        final list =
+            jsonResponse.map((e) => e as Map<String, dynamic>).toList();
+        return list;
       } else {
         final responseBody = jsonDecode(response.body);
         final status = responseBody['message'];

@@ -24,14 +24,14 @@ import 'package:workmanager/workmanager.dart';
 
 import 'Action Team Module/pages/action_team_home_page.dart';
 import 'Action Team Module/providers/all_action_reports_approveal_provider.dart';
-import 'Action Team Module/providers/all_action_reports_provider.dart';
-import 'Action Team Module/providers/fetch_assigned_tasks_provider.dart';
+import 'Action Team Module/providers/action_reports_provider.dart';
+import 'Action Team Module/providers/assigned_tasks_provider.dart';
 import 'Admin Module/admin_pages/admin_home_page.dart';
 import 'Admin Module/providers/action_team_provider.dart';
 import 'Admin Module/providers/analytics_incident_reported_provider.dart';
 import 'Admin Module/providers/analytics_incident_resolved_provider.dart';
 import 'Admin Module/providers/department_provider.dart';
-import 'Admin Module/providers/fetch_all_user_report_provider.dart';
+import 'Admin Module/providers/admin_user_reports_provider.dart';
 import 'Admin Module/providers/fetch_countOfSubtypes_provider.dart';
 import 'User Module/pages/home.dart';
 import 'User Module/pages/login_page.dart';
@@ -210,10 +210,10 @@ class MyApp extends StatelessWidget {
             create: (context) => ActionTeamProviderClass()),
         ChangeNotifierProvider<UserReportsProvider>(
             create: (context) => UserReportsProvider()),
-        ChangeNotifierProvider<AllUserReportsProvider>(
-            create: (context) => AllUserReportsProvider()),
-        ChangeNotifierProvider<AssignedTaskProvider>(
-            create: (context) => AssignedTaskProvider()),
+        ChangeNotifierProvider<AdminUserReportsProvider>(
+            create: (context) => AdminUserReportsProvider()),
+        ChangeNotifierProvider<AssignedTasksProvider>(
+            create: (context) => AssignedTasksProvider()),
         ChangeNotifierProvider<ActionReportsProvider>(
             create: (context) => ActionReportsProvider()),
         ChangeNotifierProvider<ApprovalStatusProvider>(

@@ -1,12 +1,15 @@
 import 'package:safify/dummy.dart';
+import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/incident_sub_type.dart';
 import 'package:safify/models/incident_types.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
+import 'package:safify/models/user_report.dart';
 import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/services/ReportServices.dart';
+import 'package:safify/widgets/user_report_list.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -97,10 +100,10 @@ class DatabaseHelper {
             )
           ''');
         await db.execute('''
-            CREATE TABLE user_reports (
+            CREATE TABLE admin_user_reports (
               user_report_id INTEGER PRIMARY KEY,
               user_id TEXT,
-              description TEXT,
+              report_description TEXT,
               date_time TEXT,
               sub_location_name TEXT,
               sub_location_id TEXT,
@@ -111,6 +114,27 @@ class DatabaseHelper {
               status TEXT
             )
           ''');
+
+        await db.execute('''
+            CREATE TABLE admin_action_reports (
+              action_report_id INTEGER PRIMARY KEY,
+              action_team_name TEXT,
+              user_report_id INTEGER,
+              report_description TEXT,
+              question_one TEXT,
+              question_two TEXT,
+              question_three TEXT,
+              question_four TEXT,
+              question_five TEXT,
+              resolution_description TEXT,
+              reported_by TEXT,
+              proof_image TEXT,
+              surrounding_image TEXT,
+              date_time TEXT,
+              status TEXT,
+              incident_subtype_description TEXT
+            )
+        ''');
 
         await db.execute('''
             CREATE TABLE times (
@@ -161,6 +185,55 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> insertAdminUserReportsJson(
+      List<Map<String, dynamic>> reports) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var report in reports) {
+      batch.insert(
+        'admin_user_reports',
+        UserReport.fromJson(report).toJson(),
+        // report,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminActionReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('admin_action_reports');
+    return maps;
+  }
+
+  Future<void> insertAdminActionReportsJson(
+      List<Map<String, dynamic>> reports) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var report in reports) {
+      batch.insert(
+        'admin_action_reports',
+        // report,
+        ActionReport.fromJson(report).toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminUserReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('admin_user_reports');
+
+    return maps;
+  }
+
   Future<void> insertAssignTasks(List<AssignTask> assignTasks) async {
     final db = await database;
     Batch batch = db.batch();
@@ -184,7 +257,7 @@ class DatabaseHelper {
     for (var assignTask in assignTasks) {
       batch.insert(
         'assign_tasks',
-        AssignTask.fromJson(assignTask).toJson(),
+        AssignTask.fromJson(assignTask).toJson(), //change this
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     }

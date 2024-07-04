@@ -1,41 +1,30 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/components/custom_button.dart';
-import 'package:safify/models/user_report.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
-import 'package:safify/utils/button_utils.dart';
-import 'package:safify/utils/string_utils.dart';
 import 'package:safify/widgets/admin_report_tile.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Admin Module/admin_pages/assign_form.dart';
-import '../Admin Module/providers/fetch_all_user_report_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../Admin Module/providers/admin_user_reports_provider.dart';
 
-class AdminReportList extends StatefulWidget {
-  const AdminReportList({super.key});
+class AdminUserReportsList extends StatefulWidget {
+  const AdminUserReportsList({super.key});
 
   @override
-  State<AdminReportList> createState() => _AdminReportListState();
+  State<AdminUserReportsList> createState() => _AdminUserReportsListState();
 }
 
-class _AdminReportListState extends State<AdminReportList> {
+class _AdminUserReportsListState extends State<AdminUserReportsList> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AllUserReportsProvider>(context, listen: false)
-        .fetchAllReports(context);
+    if (Provider.of<AdminUserReportsProvider>(context, listen: false).reports ==
+        null) {
+      Provider.of<AdminUserReportsProvider>(context, listen: false)
+          .fetchAdminUserReports(context);
+    }
   }
 
   void _handleSessionExpired(BuildContext context) async {
@@ -62,23 +51,25 @@ class _AdminReportListState extends State<AdminReportList> {
   @override
   Widget build(BuildContext context) {
     return Center(child:
-        Consumer<AllUserReportsProvider>(builder: (context, allReports, _) {
+        Consumer<AdminUserReportsProvider>(builder: (context, allReports, _) {
       if (allReports.error != null &&
           allReports.error!.contains('TokenExpiredException')) {
         WidgetsBinding.instance
             .addPostFrameCallback((_) => _handleSessionExpired(context));
       }
-      if (allReports.reports.isNotEmpty) {
-        return ListView.builder(
-          itemCount: allReports.reports.length,
-          itemBuilder: (context, i) {
-            var item = allReports.reports[i];
+      if (allReports.reports != null) {
+        if (allReports.reports!.isNotEmpty) {
+          return ListView.builder(
+            itemCount: allReports.reports!.length,
+            itemBuilder: (context, i) {
+              var item = allReports.reports![i];
 
-            return AdminReportTile(userReport: item);
-          },
-        );
-      } else if (allReports.reports.isEmpty && allReports.isLoading) {
-        return CircularProgressIndicator();
+              return AdminReportTile(userReport: item);
+            },
+          );
+        } else if (allReports.reports!.isEmpty && allReports.isLoading) {
+          return CircularProgressIndicator();
+        }
       }
       return Text('Failed to load reports');
     }));

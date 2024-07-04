@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/pages/action_report_form.dart';
-import 'package:safify/Action%20Team%20Module/providers/all_action_reports_provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/action_reports_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/assign_task.dart';

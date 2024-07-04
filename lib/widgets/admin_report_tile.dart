@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/assign_form.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
-import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
+import 'package:safify/Admin%20Module/providers/admin_user_reports_provider.dart';
 import 'package:safify/components/custom_button.dart';
 import 'package:safify/models/user_report.dart';
 import 'package:safify/utils/button_utils.dart';
@@ -17,17 +17,9 @@ class AdminReportTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         color: Colors.white,
-        // color: item.status!.contains('open')
-        //     ? Colors.red[100]
-        //     : (item.status!.contains('in progress')
-        //         ? Colors.orange[100]
-        //         : Colors.[100]),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        // side: BorderSide(
-        //   // color: item.status!.contains('open')?Colors.redAccent:Colors.greenAccent,
-        //    width:1)),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -125,7 +117,7 @@ class AdminReportTile extends StatelessWidget {
                             color: Colors.black, size: 20),
                         Expanded(
                           child: Text(
-                            ' ${userReport.description}',
+                            ' ${userReport.reportDescription}',
                             style: const TextStyle(
                                 //  fontSize: 16
                                 ),
@@ -199,7 +191,7 @@ class AdminReportTile extends StatelessWidget {
                       Provider.of<DeleteUserReportProvider>(context,
                           listen: false);
                   final success = await deleteUserReportProvider
-                      .deleteUserReport('${item.id}');
+                      .deleteUserReport('${item.userReportId}');
 
                   if (success) {
                     Navigator.of(context).pop();
@@ -209,9 +201,9 @@ class AdminReportTile extends StatelessWidget {
                       duration: Duration(seconds: 2),
                     ));
                     final allUserReportsProvider =
-                        Provider.of<AllUserReportsProvider>(context,
+                        Provider.of<AdminUserReportsProvider>(context,
                             listen: false);
-                    await allUserReportsProvider.fetchAllReports(context);
+                    await allUserReportsProvider.fetchAdminUserReports(context);
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -235,11 +227,11 @@ class AdminReportTile extends StatelessWidget {
     //  Fluttertoast.showToast(msg: '${item.id}');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //                                        if (item != null && item.user_id != null) {
-    if (item.user_id != null) {
-      await prefs.setString("this_user_id", (item.user_id!));
+    if (item.userId != null) {
+      await prefs.setString("this_user_id", (item.userId!));
     }
-    if (item.id != null) {
-      await prefs.setInt("user_report_id", (item.id!));
+    if (item.userReportId != null) {
+      await prefs.setInt("user_report_id", (item.userReportId!));
     }
 
     //                          if(prefs.getString('user_id') !=null && prefs.getInt('user_report_id') !=null) {

@@ -78,7 +78,7 @@ class UserReportTile extends StatelessWidget {
                             color: Colors.black, size: 20),
                         Expanded(
                           child: Text(
-                            ' ${userReport.description}',
+                            ' ${userReport.reportDescription}',
                             style: const TextStyle(
                                 //  fontSize: 16
                                 ),

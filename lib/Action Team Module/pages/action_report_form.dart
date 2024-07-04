@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Action%20Team%20Module/providers/fetch_assigned_tasks_provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/assigned_tasks_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/services/snack_bar_service.dart';
@@ -651,7 +651,7 @@ class _ActionReportState extends State<ActionReportForm>
                                               ),
                                             );
                                             await Provider.of<
-                                                        AssignedTaskProvider>(
+                                                        AssignedTasksProvider>(
                                                     context,
                                                     listen: false)
                                                 .fetchAssignedTasks(context)

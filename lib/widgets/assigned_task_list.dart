@@ -13,7 +13,7 @@ import 'package:safify/widgets/assigned_task_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Action Team Module/pages/action_report_form.dart';
-import '../Action Team Module/providers/fetch_assigned_tasks_provider.dart';
+import '../Action Team Module/providers/assigned_tasks_provider.dart';
 
 class AssignedTaskList extends StatefulWidget {
   const AssignedTaskList({super.key});
@@ -26,7 +26,7 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AssignedTaskProvider>(context, listen: false)
+    Provider.of<AssignedTasksProvider>(context, listen: false)
         .fetchAssignedTasks(context);
   }
 
@@ -54,7 +54,7 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
   @override
   Widget build(BuildContext context) {
     return Center(child:
-        Consumer<AssignedTaskProvider>(builder: (context, assignProvider, _) {
+        Consumer<AssignedTasksProvider>(builder: (context, assignProvider, _) {
       // return Icon(Icons.error_outline);
       if (assignProvider.isLoading) {
         return CircularProgressIndicator();

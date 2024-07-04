@@ -5,7 +5,7 @@ import 'package:safify/repositories/assign_tasks_repository.dart';
 import 'package:safify/services/snack_bar_service.dart';
 import 'package:safify/utils/network_util.dart';
 
-class AssignedTaskProvider with ChangeNotifier {
+class AssignedTasksProvider with ChangeNotifier {
   final _assignTasksRepository = AssignTasksRepository();
   List<AssignTask>? _tasks;
   List<AssignTask>? get tasks => _tasks;

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:safify/db/database_helper.dart';
-import 'package:safify/models/assign_task.dart';
+import 'package:safify/models/action_report.dart';
 import 'package:safify/services/ReportServices.dart';
-import 'package:safify/utils/network_util.dart';
 
-class AssignTasksRepository {
+class AdminActionReportRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final ReportServices _reportServices = ReportServices();
-  final storage = const FlutterSecureStorage();
 
-  Future<List<AssignTask>> fetchAssignTasksFromDb() async {
-    return await _databaseHelper.getAllAssignTasks();
+  Future<List<ActionReport>> fetchAdminActionReportsFromDb() async {
+    final reportsJsonList = await _databaseHelper.getAdminActionReports();
+    return reportsJsonList
+        .map<ActionReport>((json) => ActionReport.fromJson(json))
+        .toList();
   }
 
   /// need to shift to separate isolate with workmanager
   Future<void> syncDb() async {
     try {
-      final jsonList = await _reportServices.fetchAssignedReports();
-      await _databaseHelper.insertAssignTasksJson(jsonList);
+      final jsonList = await _reportServices.fetchAdminActionReports();
+      await _databaseHelper.insertAdminActionReportsJson(jsonList);
     } catch (e) {
       debugPrint("Error syncing database: $e");
       rethrow;

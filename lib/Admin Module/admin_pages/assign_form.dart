@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
+import 'package:safify/Admin%20Module/providers/admin_user_reports_provider.dart';
 import 'package:safify/widgets/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -175,10 +175,11 @@ class _AssignFormState extends State<AssignForm> {
                                     int result = await handleReportSubmitted(
                                         context, this);
                                     if (result == 1) {
-                                      await Provider.of<AllUserReportsProvider>(
+                                      await Provider.of<
+                                                  AdminUserReportsProvider>(
                                               context,
                                               listen: false)
-                                          .fetchAllReports(context);
+                                          .fetchAdminUserReports(context);
 
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(

@@ -8,7 +8,7 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
-import 'package:safify/Action%20Team%20Module/providers/fetch_assigned_tasks_provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/assigned_tasks_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/services/ReportServices.dart';
 import 'package:safify/services/snack_bar_service.dart';
@@ -124,7 +124,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
         child: RefreshIndicator(
           onRefresh: () async {
             try {
-              await Provider.of<AssignedTaskProvider>(context, listen: false)
+              await Provider.of<AssignedTasksProvider>(context, listen: false)
                   .fetchAssignedTasks(context);
             } on SocketException {
               SnackBarService.showNoConnectionSnackBar(context);

@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Action%20Team%20Module/providers/all_action_reports_provider.dart';
+import 'package:safify/Action%20Team%20Module/providers/action_reports_provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
-import 'package:safify/Admin%20Module/providers/fetch_all_user_report_provider.dart';
+import 'package:safify/Admin%20Module/providers/admin_user_reports_provider.dart';
 import 'package:safify/services/notification_services.dart';
 import 'package:safify/services/pdf_download_service.dart';
 import 'package:safify/widgets/app_drawer_admin.dart';
@@ -13,8 +13,8 @@ import 'package:intl/intl.dart' as intl;
 
 import '../../User Module/pages/login_page.dart';
 import '../../services/UserServices.dart';
-import '../../widgets/action_report_tile.dart';
-import '../../widgets/admin_report_list.dart';
+import '../../widgets/admin_action_reports_list.dart';
+import '../../widgets/admin_user_reports_list.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -317,11 +317,11 @@ class _AdminHomePageState extends State<AdminHomePage>
                                   children: <Widget>[
                                     RefreshIndicator(
                                         onRefresh: () async => await Provider
-                                                .of<AllUserReportsProvider>(
+                                                .of<AdminUserReportsProvider>(
                                                     context,
                                                     listen: false)
-                                            .fetchAllReports(context),
-                                        child: AdminReportList()),
+                                            .fetchAdminUserReports(context),
+                                        child: AdminUserReportsList()),
                                     RefreshIndicator(
                                         onRefresh: () async => await Provider
                                                 .of<ActionReportsProvider>(
@@ -329,7 +329,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                                                     listen: false)
                                             .fetchAllActionReports(context),
                                         child:
-                                            ActionReportTile()) // Replace with Action Team Reports widget
+                                            AdminActionReportsList()) // Replace with Action Team Reports widget
                                   ],
                                 ),
                               ),

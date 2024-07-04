@@ -1,7 +1,7 @@
 class UserReport {
-  final int? id;
-  final String? user_id;
-  final String? description;
+  final int? userReportId;
+  final String? userId;
+  final String? reportDescription;
   final String? dateTime;
   // final Stream location;
   final String? subLocationName;
@@ -14,9 +14,9 @@ class UserReport {
   final String? status;
 
   UserReport(
-      {required this.user_id,
-      required this.id,
-      required this.description,
+      {required this.userId,
+      required this.userReportId,
+      required this.reportDescription,
       required this.dateTime,
       //   required this.location,
       required this.subLocationID,
@@ -30,28 +30,25 @@ class UserReport {
 
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
-      user_id: json['user_id'] as String?,
-      id: json['user_report_id'],
-      description: json['report_description'] as String?,
+      userId: json['user_id'],
+      userReportId: json['user_report_id'],
+      reportDescription: json['report_description'],
       dateTime: json['date_time'],
-      //   location: json['location_name'],
-      subLocationName: json['sub_location_name'] as String?,
-      subLocationID: json['sub_location_id'] as String?,
-      //   incidentType: json['incident_type_description'],
+      subLocationName: json['sub_location_name'],
+      subLocationID: json['sub_location_id'],
       incidentSubtypeDescription: json['incident_subtype_description'],
-      incidentCriticalityLevel: json['incident_criticality_level'] as String?,
-      incidentCriticalityID: json['incident_criticality_id'] as String?,
-      image: json['image'] as String?,
-      status: json[
-          'status'], // You may need to adjust this based on the actual data type
+      incidentCriticalityLevel: json['incident_criticality_level'],
+      incidentCriticalityID: json['incident_criticality_id'],
+      image: json['image'],
+      status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'user_id': user_id,
-      'user_report_id': id,
-      'report_description': description,
+      'user_id': userId,
+      'user_report_id': userReportId,
+      'report_description': reportDescription,
       'date_time': dateTime,
       'sub_location_name': subLocationName,
       'sub_location_id': subLocationID,
@@ -65,6 +62,6 @@ class UserReport {
 
   @override
   String toString() {
-    return 'UserReport{id: $id, user_id: $user_id, description: $description, dateTime: $dateTime, subLocationName: $subLocationName, subLocationID: $subLocationID, incidentSubtypeDescription: $incidentSubtypeDescription, incidentCriticalityLevel: $incidentCriticalityLevel, incidentCriticalityID: $incidentCriticalityID, image: $image, status: $status}';
+    return 'UserReport{id: $userReportId, user_id: $userId, description: $reportDescription, dateTime: $dateTime, subLocationName: $subLocationName, subLocationID: $subLocationID, incidentSubtypeDescription: $incidentSubtypeDescription, incidentCriticalityLevel: $incidentCriticalityLevel, incidentCriticalityID: $incidentCriticalityID, image: $image, status: $status}';
   }
 }
