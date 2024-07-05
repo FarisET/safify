@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/repositories/admin_action_reports_repository.dart';
-import 'package:safify/services/snack_bar_service.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 
 class ActionReportsProvider with ChangeNotifier {
@@ -30,7 +30,7 @@ class ActionReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        SnackBarService.showLocallySavedSnackBar(context);
+        ToastService.showSyncingLocalDataSnackBar(context);
         await _actionReportRepository.syncDb();
         _reports =
             await _actionReportRepository.fetchAdminActionReportsFromDb();
@@ -38,7 +38,7 @@ class ActionReportsProvider with ChangeNotifier {
         notifyListeners();
         debugPrint("Fetched admin action user reports from API.");
       } else {
-        SnackBarService.showCouldNotConnectSnackBar(context);
+        ToastService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch admin action reports from API.");
       }

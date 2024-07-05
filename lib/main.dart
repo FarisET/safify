@@ -17,6 +17,8 @@ import 'package:safify/User%20Module/pages/splash_screen.dart';
 import 'package:safify/db/background_service.dart';
 import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/services/UserServices.dart';
+import 'package:safify/services/notif_test_service.dart';
+import 'package:safify/services/notification_services.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:safify/widgets/terms_and_conditions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,80 +53,65 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the notifications plugin
-  Notifications notifications = Notifications();
+  // Notifications notifications = Notifications();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? acceptedTerms = prefs.getBool('acceptedTerms');
-
-  /// background service tasks
-  // await initiazizeService();
 
   // Initialize and register periodic tasks
   final backgroundTaskManager = BackgroundTaskManager();
   await backgroundTaskManager.initializeWorkManager();
-  // backgroundTaskManager.cancelTask("3");
   backgroundTaskManager.registerSyncUserFormTask();
   backgroundTaskManager.registerSyncActionFormTask();
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  await Notifications.initialize(flutterLocalNotificationsPlugin);
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
-  var androidInitSettings =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  var iosinitSettings = DarwinInitializationSettings();
+  // await Notifications.initialize(flutterLocalNotificationsPlugin);
+
+  // var androidInitSettings =
+  //     AndroidInitializationSettings('@mipmap/ic_launcher');
+  // var iosinitSettings = DarwinInitializationSettings();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  //Firebase
-  // await Firebase.initializeApp(
-  //   options: const FirebaseOptions(
-  //     apiKey: 'AIzaSyDIh4cWRgMLFfsZQaiPBStLT8kzyMt89Rg',
-  //     appId: '1:855278908118:android:b1ec327af3b35d59090f77',
-  //     messagingSenderId: '855278908118',
-  //     projectId: 'safify-7973d',
-  //     storageBucket: 'safify-7973d.appspot.com',
-  //   ),
-  // );
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  //
+  final notificationServices = NotificationServices();
+  await notificationServices.requestNotificationPermission();
+  notificationServices.firebaseMessagingInit();
+  FirebaseMessaging.onBackgroundMessage(_handleBGMessage);
+
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   // Request permission for notifications
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+  // NotificationSettings settings = await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
 
   // Update notification presentation options for foreground messages
-  await messaging.setForegroundNotificationPresentationOptions(
-    alert: true, // Display an alert notification
-    badge: true, // Update the app's badge
-    sound: true, // Play a sound for the notification
-  );
+  // await messaging.setForegroundNotificationPresentationOptions(
+  //   alert: true, // Display an alert notification
+  //   badge: true, // Update the app's badge
+  //   sound: true, // Play a sound for the notification
+  // );
 
-  print('User granted permission: ${settings.authorizationStatus}');
+  // print('User granted permission: ${settings.authorizationStatus}');
 
-  RemoteMessage? initialMessage = await messaging.getInitialMessage();
-  if (initialMessage != null) {
-    handleNotificationMessage(initialMessage);
-  }
+  // RemoteMessage? initialMessage = await messaging.getInitialMessage();
+  // if (initialMessage != null) {
+  //   handleNotificationMessage(initialMessage);
+  // }
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification notification = message.notification!;
-    // print('Message notification title: ${notification.title}');
-    // print('Message notification body: ${notification.body}');
-
-    notifications.sendNotification(flutterLocalNotificationsPlugin,
-        notification.title as String, notification.body as String);
-  });
-
-  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  // await FirebaseMessaging.instance.setAutoInitEnabled(true);
 
   //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.instance.requestPermission();
@@ -165,18 +152,18 @@ void main() async {
   // ));
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  // print("Handling a background message: ${message.messageId}");
+Future<void> _handleBGMessage(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+  print(message.toMap());
 }
 
-void handleNotificationMessage(RemoteMessage message) {
-  // Your notification handling logic here
-  // print('Message data: ${message.data}');
-  if (message.notification != null) {
-    // print('Message also contained a notification: ${message.notification}');
-  }
-}
+// void handleNotificationMessage(RemoteMessage message) {
+//   // Your notification handling logic here
+//   // print('Message data: ${message.data}');
+//   if (message.notification != null) {
+//     // print('Message also contained a notification: ${message.notification}');
+//   }
+// }
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //  Notifications notifications = Notifications();

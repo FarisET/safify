@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safify/repositories/user_reports_repository.dart';
-import 'package:safify/services/snack_bar_service.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import '../../models/user_report.dart';
 import '../../services/report_service.dart';
@@ -31,14 +31,14 @@ class UserReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        SnackBarService.showSyncingLocalDataSnackBar(context);
+        ToastService.showSyncingLocalDataSnackBar(context);
         await _userReportsRepository.syncDb();
         _reports = await _userReportsRepository.fetchUserReportsFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched user's reports from API.");
       } else {
-        SnackBarService.showNoConnectionSnackBar(context);
+        ToastService.showNoConnectionSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch user's reports from API.");
       }

@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -88,4 +87,9 @@ class Notifications {
       return null;
     }
   }
+}
+
+Future<String> getDeviceToken() async {
+  String? token = await FirebaseMessaging.instance.getToken();
+  return token!;
 }

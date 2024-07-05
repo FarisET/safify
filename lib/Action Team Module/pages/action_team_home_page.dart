@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/assigned_tasks_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/services/report_service.dart';
-import 'package:safify/services/snack_bar_service.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../User Module/pages/login_page.dart';
@@ -127,7 +127,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
               await Provider.of<AssignedTasksProvider>(context, listen: false)
                   .fetchAssignedTasks(context);
             } on SocketException {
-              SnackBarService.showNoConnectionSnackBar(context);
+              ToastService.showNoConnectionSnackBar(context);
             }
           },
           child: Padding(

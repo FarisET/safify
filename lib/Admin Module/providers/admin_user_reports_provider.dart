@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safify/models/token_expired.dart';
 import 'package:safify/repositories/admin_user_reports_repository.dart';
-import 'package:safify/services/snack_bar_service.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import '../../services/report_service.dart';
 import '../../models/user_report.dart';
@@ -21,7 +21,6 @@ class AdminUserReportsProvider with ChangeNotifier {
       isLoading = true;
       _reports =
           await _adminUserReportsRepository.fetchAdminUserReportsFromDb();
-      print("_reports: $_reports");
       isLoading = false;
 
       notifyListeners();
@@ -30,7 +29,7 @@ class AdminUserReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        SnackBarService.showSyncingLocalDataSnackBar(context);
+        ToastService.showSyncingLocalDataSnackBar(context);
         await _adminUserReportsRepository.syncDb();
         _reports =
             await _adminUserReportsRepository.fetchAdminUserReportsFromDb();
@@ -38,7 +37,7 @@ class AdminUserReportsProvider with ChangeNotifier {
         notifyListeners();
         debugPrint("Fetched admin user reports from API.");
       } else {
-        SnackBarService.showCouldNotConnectSnackBar(context);
+        ToastService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch admin user reports from API.");
       }

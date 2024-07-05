@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:safify/widgets/custom_toast.dart';
 
-class SnackBarService {
+class ToastService {
   static void showSimpleSnackBar({
     required BuildContext context,
     required String message,

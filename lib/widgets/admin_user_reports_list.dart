@@ -71,7 +71,25 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
           return CircularProgressIndicator();
         }
       }
-      return Text('Failed to load reports');
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'No reports found.',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Provider.of<AdminUserReportsProvider>(context, listen: false)
+                  .fetchAdminUserReports(context);
+            },
+            icon: Icon(Icons.refresh),
+          ),
+        ],
+      );
     }));
   }
 

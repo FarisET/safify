@@ -12,7 +12,6 @@ import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:shimmer/shimmer.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -136,12 +135,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 title: const Text('Total Incidents Reported'),
                 trailing: CircleAvatar(
                   maxRadius: 16,
+                  backgroundColor: Theme.of(context).cardColor,
                   child: Text(
                     countReportedProvider ?? '',
                     style: const TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                  backgroundColor: Theme.of(context).cardColor,
                 ),
               ),
             ),

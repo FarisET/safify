@@ -17,37 +17,15 @@ class NotificationServices {
 
   static const storage = FlutterSecureStorage();
 
-  static Future<void> sendAlert(Announcement announcement) async {
-    try {
-      String? jwtToken = await storage.read(key: 'jwt');
-      Uri url = Uri.parse('$IP_URL/admin/dashboard/alertUsers');
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $jwtToken',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(announcement.toJson()),
-      );
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to send alert');
-      }
-    } catch (e) {
-      throw Exception('Failed to send alert: $e');
-    }
-  }
-
   //initialising firebase message plugin
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   //function to initialise flutter local notification plugin to show notifications for android when app is active
-  void initLocalNotifications(
-      BuildContext context, RemoteMessage message) async {
+  void initLocalNotifications(RemoteMessage message) async {
     var androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
+
     var iosInitializationSettings = const DarwinInitializationSettings();
 
     var initializationSetting = InitializationSettings(
@@ -55,13 +33,16 @@ class NotificationServices {
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSetting,
         onDidReceiveNotificationResponse: (payload) {
-      // handle interaction when app is active for android
-      handleMessage(context, message);
+      // handle tapping on notification when app is active for android
+      print("boi");
+      handleMessage(message);
     });
   }
 
-  void firebaseInit(BuildContext context) {
+  void firebaseMessagingInit() {
     print("initializing notifs");
+
+    // handler for notifs when app is in foreground
     FirebaseMessaging.onMessage.listen((message) async {
       print("Got a message whilst in the foreground!");
 
@@ -76,12 +57,11 @@ class NotificationServices {
       }
 
       if (Platform.isIOS) {
-        forgroundMessage();
+        foregroundMessage();
       }
 
       if (Platform.isAndroid) {
-        print('android get a msg');
-        initLocalNotifications(context, message);
+        initLocalNotifications(message);
         await showNotification(message);
       }
     });
@@ -115,7 +95,7 @@ class NotificationServices {
     }
   }
 
-  // function to show visible notification when app is active
+  /// for showing foreground notification on android
   Future<void> showNotification(RemoteMessage message) async {
     AndroidNotificationChannel channel = AndroidNotificationChannel(
         message.notification!.android!.channelId.toString(),
@@ -177,28 +157,52 @@ class NotificationServices {
         await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      handleMessage(context, initialMessage);
+      handleMessage(initialMessage);
     }
 
     //when app ins background
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      handleMessage(context, event);
+      handleMessage(event);
     });
   }
 
-  void handleMessage(BuildContext context, RemoteMessage message) {
+  void handleMessage(RemoteMessage message) {
     // if(message.data['type'] =='msj'){
     //   Navigator.push(context,
     //       MaterialPageRoute(builder: (context) => MessageScreen(
     //         id: message.data['id'] ,
     //       )));
   }
-}
 
-Future forgroundMessage() async {
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+  static Future<void> sendAlert(Announcement announcement) async {
+    try {
+      String? jwtToken = await storage.read(key: 'jwt');
+      Uri url = Uri.parse('$IP_URL/admin/dashboard/alertUsers');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(announcement.toJson()),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to send alert');
+      }
+    } catch (e) {
+      throw Exception('Failed to send alert: $e');
+    }
+  }
+
+  /// for showing foreground notification on ios
+  Future foregroundMessage() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
 }

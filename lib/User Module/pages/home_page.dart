@@ -15,6 +15,7 @@ import 'package:safify/dummy.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:safify/models/user_report_form_details.dart';
+import 'package:safify/services/notif_test_service.dart';
 import 'package:safify/services/report_service.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/network_util.dart';
@@ -136,6 +137,19 @@ class _HomePage2State extends State<HomePage2> {
                 Icons.add,
               ),
             ),
+
+            const SizedBox(
+              height: 10,
+            ),
+            FloatingActionButton(
+              child: const Icon(Icons.notifications),
+              onPressed: () async {
+                Future.delayed(const Duration(seconds: 3), () {
+                  NotifTestService.testNotif();
+                });
+                // NotifTestService.testNotif();
+              },
+            )
             // const SizedBox(
             //   height: 10,
             // ),

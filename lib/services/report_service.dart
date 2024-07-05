@@ -4,22 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/constants.dart';
-import 'package:safify/db/database_helper.dart';
-import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
-import 'package:safify/models/user_report.dart';
 import 'package:safify/models/token_expired.dart';
-import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ReportServices {
@@ -30,7 +22,6 @@ class ReportServices {
   String? current_user_id;
   String? jwtToken;
   final storage = const FlutterSecureStorage();
-  Notifications notifications = Notifications();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 

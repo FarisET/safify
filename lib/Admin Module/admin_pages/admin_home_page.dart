@@ -5,16 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/action_reports_provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
 import 'package:safify/Admin%20Module/providers/admin_user_reports_provider.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/services/UserServices.dart';
+import 'package:safify/services/notif_test_service.dart';
 import 'package:safify/services/notification_services.dart';
-import 'package:safify/services/pdf_download_service.dart';
+import 'package:safify/widgets/admin_action_reports_list.dart';
+import 'package:safify/widgets/admin_user_reports_list.dart';
 import 'package:safify/widgets/app_drawer_admin.dart';
+import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
-
-import '../../User Module/pages/login_page.dart';
-import '../../services/UserServices.dart';
-import '../../widgets/admin_action_reports_list.dart';
-import '../../widgets/admin_user_reports_list.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -29,7 +29,6 @@ class _AdminHomePageState extends State<AdminHomePage>
   String? user_name;
   String? user_id;
   final double mainHeaderSize = 18;
-  NotificationServices notificationServices = NotificationServices();
 
   @override
   void initState() {
@@ -40,7 +39,7 @@ class _AdminHomePageState extends State<AdminHomePage>
     //       .getCountResolvedPostData();
     //   Provider.of<CountIncidentsReportedProvider>(context, listen: false)
     //       .getCountReportedPostData();
-    //   Provider.of<CountByIncidentSubTypesProviderClass>(context, listen: false)
+    //   Provider.of<CountByIncidentSubTypesProviderClass>(context, leisten: false)
     //       .getcountByIncidentSubTypesPostData();
     //   Provider.of<CountByLocationProviderClass>(context, listen: false)
     //       .getcountByIncidentLocationPostData();
@@ -48,9 +47,6 @@ class _AdminHomePageState extends State<AdminHomePage>
     //       .getactionTeamEfficiencyData();
     // });
     getUsername();
-    notificationServices.requestNotificationPermission();
-
-    notificationServices.firebaseInit(context);
   }
 
   @override
@@ -97,6 +93,16 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.notifications),
+          onPressed: () async {
+            debugPrint("presses notif button");
+            // debugPrint(await getDeviceToken());
+            Future.delayed(const Duration(seconds: 0), () {
+              NotifTestService.testNotif();
+            });
+          },
+        ),
         appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
