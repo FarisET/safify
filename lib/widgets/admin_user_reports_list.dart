@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
@@ -39,7 +37,7 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
           // Navigator to login page only when user clicks "Close"
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
       );
@@ -68,13 +66,13 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
             },
           );
         } else if (allReports.reports!.isEmpty && allReports.isLoading) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       }
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             'No reports found.',
             style: TextStyle(
               fontSize: 20,
@@ -86,7 +84,7 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
               Provider.of<AdminUserReportsProvider>(context, listen: false)
                   .fetchAdminUserReports(context);
             },
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
           ),
         ],
       );

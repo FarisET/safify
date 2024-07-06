@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 class ActionTeam {
   final String ActionTeam_ID;
   final String ActionTeam_Name;

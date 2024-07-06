@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
@@ -26,7 +24,7 @@ class AppDrawer extends StatelessWidget {
           Container(
             height: MediaQuery.sizeOf(context).height * 0.15,
             color: Theme.of(context).primaryColor,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Icon(
@@ -34,10 +32,10 @@ class AppDrawer extends StatelessWidget {
                   size: 24,
                   color: Theme.of(context).cardColor,
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Text(
                   username!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 22,
                     color: Colors.white,
@@ -78,7 +76,7 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
-                  subtitle: Text("Coming soon"),
+                  subtitle: const Text("Coming soon"),
                   onTap: () {
                     // Navigate to Add Location page
                     //    Navigator.pushNamed(context, '/addLocation');
@@ -96,7 +94,7 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
-                  subtitle: Text("Coming soon"),
+                  subtitle: const Text("Coming soon"),
                   onTap: () {
                     // Navigate to Add Category page
                     //  Navigator.pushNamed(context, '/addCategory');
@@ -146,7 +144,7 @@ class AppDrawer extends StatelessWidget {
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             horizontalTitleGap: 0,
             leading: Icon(Icons.settings_outlined,
@@ -159,7 +157,7 @@ class AppDrawer extends StatelessWidget {
                 color: Theme.of(context).secondaryHeaderColor,
               ),
             ),
-            subtitle: Text("Coming soon"),
+            subtitle: const Text("Coming soon"),
             onTap: () {
               // Navigate to Settings page
               //  Navigator.pushNamed(context, '/settings');
@@ -189,18 +187,18 @@ class AppDrawer extends StatelessWidget {
         String body = '';
 
         return AlertDialog(
-          title: Text('Create Announcement'),
+          title: const Text('Create Announcement'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
-                decoration: InputDecoration(labelText: 'Alert Title'),
+                decoration: const InputDecoration(labelText: 'Alert Title'),
                 onChanged: (value) {
                   title = value;
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Alert Body'),
+                decoration: const InputDecoration(labelText: 'Alert Body'),
                 onChanged: (value) {
                   body = value;
                 },
@@ -209,13 +207,13 @@ class AppDrawer extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Send'),
+              child: const Text('Send'),
               onPressed: () {
                 // Perform action to send the announcement
                 _sendAnnouncement(context, title, body);
@@ -241,7 +239,7 @@ class AppDrawer extends StatelessWidget {
     announcementProvider.sendAlert(announcement).then((_) {
       // Handle success, e.g., show a success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.blue,
           content: Text('Announcement sent successfully'),
         ),
@@ -249,7 +247,7 @@ class AppDrawer extends StatelessWidget {
     }).catchError((error) {
       // Handle error, e.g., show an error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('Failed to send announcement'),
         ),

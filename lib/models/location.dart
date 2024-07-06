@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 class Location {
   final String locationId;
   final String locationName;

@@ -1,24 +1,13 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, non_constant_identifier_names
-
 import 'dart:io';
-
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/raw_delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/assigned_tasks_provider.dart';
-import 'package:safify/db/database_helper.dart';
-import 'package:safify/services/report_service.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/services/UserServices.dart';
 import 'package:safify/services/toast_service.dart';
+import 'package:safify/widgets/assigned_task_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../User Module/pages/login_page.dart';
-import '../../services/UserServices.dart';
-import '../../widgets/assigned_task_list.dart';
-
-// ignore_for_file: prefer_const_constructors
 
 class ActionTeamHomePage extends StatefulWidget {
   const ActionTeamHomePage({super.key});
@@ -89,7 +78,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                             },
                           ),
                           TextButton(
-                            child: Text('Logout'),
+                            child: const Text('Logout'),
                             onPressed: () async {
                               Navigator.of(dialogContext)
                                   .pop(); // Close the dialog
@@ -99,7 +88,7 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
+                                      builder: (context) => const LoginPage()),
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -152,12 +141,12 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                               username != null
                                   ? Text(
                                       '$username',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold),
                                       overflow: TextOverflow.ellipsis,
                                     )
-                                  : Text(
+                                  : const Text(
                                       'Action Team',
                                       style: TextStyle(
                                           fontSize: 22,
@@ -200,8 +189,8 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
                       alignment: Alignment.bottomCenter,
                       child: SizedBox(
                         height: containerHeight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(0.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(0.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

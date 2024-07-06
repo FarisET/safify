@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_types_as_parameter_names
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/action_reports_provider.dart';
@@ -148,7 +146,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                           },
                         ),
                         TextButton(
-                          child: Text('Logout'),
+                          child: const Text('Logout'),
                           onPressed: () async {
                             Navigator.of(dialogContext)
                                 .pop(); // Close the dialog
@@ -158,7 +156,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
+                                    builder: (context) => const LoginPage()),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -207,11 +205,11 @@ class _AdminHomePageState extends State<AdminHomePage>
                               user_name != null
                                   ? Text(
                                       '$user_name',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold),
                                     )
-                                  : Text(
+                                  : const Text(
                                       'Citizen',
                                       style: TextStyle(
                                           fontSize: 22,
@@ -235,7 +233,8 @@ class _AdminHomePageState extends State<AdminHomePage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AdminDashboard()),
+                                    builder: (context) =>
+                                        const AdminDashboard()),
                               );
                             },
                             child: Container(
@@ -243,8 +242,8 @@ class _AdminHomePageState extends State<AdminHomePage>
                                 color: Colors.blue,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
+                              child: const Padding(
+                                padding: EdgeInsets.all(12.0),
                                 child: Row(
                                   children: [
                                     Icon(
@@ -278,11 +277,11 @@ class _AdminHomePageState extends State<AdminHomePage>
                     labelColor: Colors
                         .white, // Color for all labels (unused in this approach)
                     unselectedLabelColor: Colors.black,
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       fontWeight:
                           FontWeight.bold, // Style for the selected tab's label
                     ),
-                    unselectedLabelStyle: TextStyle(
+                    unselectedLabelStyle: const TextStyle(
                       fontWeight:
                           FontWeight.bold, // Style for unselected tabs' labels
                     ),
@@ -303,7 +302,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 Expanded(
                   child: Stack(
@@ -316,7 +315,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Expanded(
                                 child: TabBarView(
                                   controller: _tabController,
@@ -327,7 +326,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                                                     context,
                                                     listen: false)
                                             .fetchAdminUserReports(context),
-                                        child: AdminUserReportsList()),
+                                        child: const AdminUserReportsList()),
                                     RefreshIndicator(
                                         onRefresh: () async => await Provider
                                                 .of<ActionReportsProvider>(
@@ -335,7 +334,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                                                     listen: false)
                                             .fetchAllActionReports(context),
                                         child:
-                                            AdminActionReportsList()) // Replace with Action Team Reports widget
+                                            const AdminActionReportsList()) // Replace with Action Team Reports widget
                                   ],
                                 ),
                               ),

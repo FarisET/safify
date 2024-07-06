@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, non_constant_identifier_names
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,8 +6,6 @@ import '../../widgets/user_report_list.dart';
 import '../../services/UserServices.dart';
 import 'login_page.dart';
 import 'user_form.dart';
-
-// ignore_for_file: prefer_const_constructors
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,7 +41,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Safify',
           style: TextStyle(
               fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Roboto'),
@@ -54,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 100,
             child: FilledButton(
-              child: Text(
+              child: const Text(
                 'Logout',
                 style: TextStyle(
                     fontSize: 16,
@@ -67,18 +63,18 @@ class _HomePageState extends State<HomePage> {
                   context: context,
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
-                      title: Text('Confirmation'),
-                      content: Text('Are you sure you want to log out?'),
+                      title: const Text('Confirmation'),
+                      content: const Text('Are you sure you want to log out?'),
                       actions: <Widget>[
                         TextButton(
-                          child: Text('Cancel'),
+                          child: const Text('Cancel'),
                           onPressed: () {
                             Navigator.of(dialogContext)
                                 .pop(); // Close the dialog
                           },
                         ),
                         TextButton(
-                          child: Text('Logout'),
+                          child: const Text('Logout'),
                           onPressed: () {
                             Navigator.of(dialogContext)
                                 .pop(); // Close the dialog
@@ -87,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
+                                  builder: (context) => const LoginPage()),
                             );
                           },
                         ),
@@ -124,17 +120,17 @@ class _HomePageState extends State<HomePage> {
                                 Text('Hi,$user_name!',
                                     style:
                                         Theme.of(context).textTheme.titleLarge),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Text(
                                   intl.DateFormat.yMd().format(DateTime.now()),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                               ],
@@ -155,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
                   SizedBox(
@@ -170,11 +166,12 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => UserForm()),
+                          MaterialPageRoute(
+                              builder: (context) => const UserForm()),
                         );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
                         child: Text(
                           'Report an Incident',
                           style: TextStyle(
@@ -190,7 +187,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
 
@@ -204,15 +201,15 @@ class _HomePageState extends State<HomePage> {
                   child: SizedBox(
                     height: containerHeight,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20.0),
                           topRight: Radius.circular(20.0),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

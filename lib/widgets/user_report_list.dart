@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +37,7 @@ class _UserReportListState extends State<UserReportList> {
           // Navigator to login page only when user clicks "Close"
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
       );
@@ -71,18 +69,18 @@ class _UserReportListState extends State<UserReportList> {
           },
         );
       } else if (reportProvider.reports.isEmpty && reportProvider.isLoading) {
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       }
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('No Reports'),
+          const Text('No Reports'),
           IconButton(
               onPressed: () {
                 Provider.of<UserReportsProvider>(context, listen: false)
                     .fetchReports(context);
               },
-              icon: Icon(Icons.refresh))
+              icon: const Icon(Icons.refresh))
         ],
       );
     }));

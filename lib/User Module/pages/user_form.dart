@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -34,8 +32,7 @@ import '../../services/report_service.dart';
 import 'home.dart';
 
 class UserForm extends StatefulWidget {
-  // ignore: avoid_types_as_parameter_names
-  const UserForm({super.key, Key});
+  const UserForm({super.key});
 
   @override
   State<UserForm> createState() => _UserFormState();
@@ -157,7 +154,7 @@ class _UserFormState extends State<UserForm> {
           // If the exit is confirmed, replace the current route with the home page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage2()),
+            MaterialPageRoute(builder: (context) => const HomePage2()),
           );
           return false; // Prevent the user from going back
         } else {
@@ -165,8 +162,8 @@ class _UserFormState extends State<UserForm> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Confirm Exit'),
-              content: Text(
+              title: const Text('Confirm Exit'),
+              content: const Text(
                   'Do you want to leave this page? Any unsaved changes will be lost.'),
               actions: [
                 TextButton(
@@ -178,17 +175,18 @@ class _UserFormState extends State<UserForm> {
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage2()),
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage2()),
                     );
                   },
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                 ),
                 TextButton(
                   onPressed: () {
                     // If the user cancels, do nothing and pop the dialog
                     Navigator.pop(context);
                   },
-                  child: Text('No'),
+                  child: const Text('No'),
                 ),
               ],
             ),
@@ -253,7 +251,8 @@ class _UserFormState extends State<UserForm> {
                                   },
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
                                   child: Divider(
                                     thickness: 1,
                                     color: Theme.of(context).highlightColor,
@@ -274,7 +273,7 @@ class _UserFormState extends State<UserForm> {
                                 Consumer<IncidentProviderClass>(
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
-                                      return Center(
+                                      return const Center(
                                         child:
                                             CircularProgressIndicator(), // Display a loading indicator
                                       );
@@ -378,7 +377,7 @@ class _UserFormState extends State<UserForm> {
                                     }
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 if (isFirstIncidentDropdownSelected)
@@ -386,7 +385,7 @@ class _UserFormState extends State<UserForm> {
                                       builder: (context, selectedValue, child) {
                                     if (SelectedIncidentType != null) {
                                       if (selectedValue.loading) {
-                                        return Center(
+                                        return const Center(
                                           child:
                                               CircularProgressIndicator(), // Display a loading indicator
                                         );
@@ -481,7 +480,7 @@ class _UserFormState extends State<UserForm> {
                                         );
                                       }
                                     } else {
-                                      return Text(
+                                      return const Text(
                                           'Please select a incident first',
                                           style: TextStyle(
                                             color: Colors.red,
@@ -531,8 +530,8 @@ class _UserFormState extends State<UserForm> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 12),
                                 ),
                                 Padding(
                                   padding:
@@ -549,7 +548,7 @@ class _UserFormState extends State<UserForm> {
                                 Consumer<LocationProviderClass>(
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
-                                      return Center(
+                                      return const Center(
                                         child:
                                             CircularProgressIndicator(), // Display a loading indicator
                                       );
@@ -653,7 +652,7 @@ class _UserFormState extends State<UserForm> {
                                     }
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 if (isFirstLocationDropdownSelected)
@@ -661,7 +660,7 @@ class _UserFormState extends State<UserForm> {
                                       builder: (context, selectedValue, child) {
                                     if (SelectedLocationType != null) {
                                       if (selectedValue.loading) {
-                                        return Center(
+                                        return const Center(
                                           child:
                                               CircularProgressIndicator(), // Display a loading indicator
                                         );
@@ -757,15 +756,15 @@ class _UserFormState extends State<UserForm> {
                                         );
                                       }
                                     } else {
-                                      return Text(
+                                      return const Text(
                                           'Please select a location first',
                                           style: TextStyle(
                                             color: Colors.red,
                                           ));
                                     }
                                   }),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 12),
                                 ),
                               ],
                             ),
@@ -834,7 +833,7 @@ class _UserFormState extends State<UserForm> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
-                                                  Icon(Icons.image),
+                                                  const Icon(Icons.image),
                                                   Text(returnedImage != null
                                                       ? '  Image Added'
                                                       : ' Add Image'),
@@ -892,7 +891,7 @@ class _UserFormState extends State<UserForm> {
                                     hintText:
                                         'Describe the incident in a few words',
                                     fillColor: Colors.blue,
-                                    labelStyle: TextStyle(
+                                    labelStyle: const TextStyle(
                                       color: Colors.blue,
                                       fontWeight: FontWeight.normal,
                                     ),
@@ -903,7 +902,7 @@ class _UserFormState extends State<UserForm> {
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide:
-                                          BorderSide(color: Colors.green),
+                                          const BorderSide(color: Colors.green),
                                       borderRadius: BorderRadius.circular(5.0),
                                     ),
                                   ),
@@ -1005,9 +1004,8 @@ class _UserFormState extends State<UserForm> {
                           children: [
                             TextButton(
                                 onPressed: () {},
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 12.0),
                                   child: Text('CANCEL',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -1038,8 +1036,10 @@ class _UserFormState extends State<UserForm> {
                                                 .showSnackBar(SnackBar(
                                               backgroundColor: Theme.of(context)
                                                   .primaryColor,
-                                              content: Text('Report Submitted'),
-                                              duration: Duration(seconds: 3),
+                                              content: const Text(
+                                                  'Report Submitted'),
+                                              duration:
+                                                  const Duration(seconds: 3),
                                             ));
 
                                             await Provider.of<
@@ -1065,7 +1065,7 @@ class _UserFormState extends State<UserForm> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        HomePage2()),
+                                                        const HomePage2()),
                                               );
                                             });
                                           } else {
@@ -1077,16 +1077,17 @@ class _UserFormState extends State<UserForm> {
                                             SnackBar(
                                               backgroundColor: Theme.of(context)
                                                   .primaryColor,
-                                              content: Text(
+                                              content: const Text(
                                                   'Failed to Submit Report'),
-                                              duration: Duration(seconds: 3),
+                                              duration:
+                                                  const Duration(seconds: 3),
                                             ),
                                           );
                                         }
                                       } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
+                                          const SnackBar(
                                             backgroundColor: Colors.redAccent,
                                             content: Text(
                                                 'Please fill in all required fields'),
@@ -1102,13 +1103,13 @@ class _UserFormState extends State<UserForm> {
                                       ? Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Text(
+                                            const Text(
                                               'Submitting',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 20,
                                             ),
                                             SizedBox(
@@ -1118,13 +1119,14 @@ class _UserFormState extends State<UserForm> {
                                               width: MediaQuery.sizeOf(context)
                                                       .height *
                                                   0.02,
-                                              child: CircularProgressIndicator(
+                                              child:
+                                                  const CircularProgressIndicator(
                                                 color: Colors.white,
                                               ),
                                             )
                                           ],
                                         )
-                                      : Text(
+                                      : const Text(
                                           'Submit',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
@@ -1164,18 +1166,18 @@ class _UserFormState extends State<UserForm> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Draw on Image?'),
-            content: Text('Circle key objects in your image.'),
+            title: const Text('Draw on Image?'),
+            content: const Text('Circle key objects in your image.'),
             actions: <Widget>[
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(context)
                       .pop(false); // Return false if 'No' is pressed
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   Navigator.of(context)
                       .pop(true); // Return true if 'Yes' is pressed
@@ -1189,7 +1191,7 @@ class _UserFormState extends State<UserForm> {
       if (shouldNavigate == true) {
         // Create an ImageStream from the selected image
         final ImageStream imageStream =
-            FileImage(image).resolve(ImageConfiguration());
+            FileImage(image).resolve(const ImageConfiguration());
 
         final editedImage = await Navigator.push(
           context,
@@ -1242,18 +1244,18 @@ class _UserFormState extends State<UserForm> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Draw on Image?'),
-            content: Text('Circle key objects in your image.'),
+            title: const Text('Draw on Image?'),
+            content: const Text('Circle key objects in your image.'),
             actions: <Widget>[
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(context)
                       .pop(false); // Return false if 'No' is pressed
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   Navigator.of(context)
                       .pop(true); // Return true if 'Yes' is pressed
@@ -1267,7 +1269,7 @@ class _UserFormState extends State<UserForm> {
       if (shouldNavigate == true) {
         // Create an ImageStream from the selected image
         final ImageStream imageStream =
-            FileImage(image).resolve(ImageConfiguration());
+            FileImage(image).resolve(const ImageConfiguration());
 
         final editedImage = await Navigator.push(
           context,

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +40,7 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
           // Navigator to login page only when user clicks "Close"
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
       );
@@ -57,13 +55,13 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
         Consumer<AssignedTasksProvider>(builder: (context, assignProvider, _) {
       // return Icon(Icons.error_outline);
       if (assignProvider.isLoading) {
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       }
       if (assignProvider.error != null) {
         if (assignProvider.error!.contains('TokenExpiredException')) {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => _handleSessionExpired(context));
-          return Text("Failed to load tasks, session expired.");
+          return const Text("Failed to load tasks, session expired.");
         }
         if (assignProvider.error!.contains('SocketException')) {
           return SizedBox(
@@ -75,9 +73,9 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
                   Icons.error,
                   color: Colors.grey.shade700,
                 ),
-                SizedBox(width: 8.0),
-                Flexible(
-                  child: Text("Please check your internet connection."),
+                const SizedBox(width: 8.0),
+                const Flexible(
+                  child: const Text("Please check your internet connection."),
                 ),
               ],
             ),
@@ -97,7 +95,7 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
           );
         }
       }
-      return Icon(Icons.error_outline);
+      return const Icon(Icons.error_outline);
     }));
   }
   // padding: const EdgeInsets.only(bottom:8.0),

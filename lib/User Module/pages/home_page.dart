@@ -4,26 +4,18 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
-import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/db/database_helper.dart';
-import 'package:safify/dummy.dart';
-import 'package:safify/models/location.dart';
-import 'package:safify/models/sub_location.dart';
 import 'package:safify/models/user_report_form_details.dart';
-import 'package:safify/services/notif_test_service.dart';
 import 'package:safify/services/report_service.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/network_util.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:sqflite/sqflite.dart';
-import 'package:workmanager/workmanager.dart';
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -138,18 +130,18 @@ class _HomePage2State extends State<HomePage2> {
               ),
             ),
 
-            const SizedBox(
-              height: 10,
-            ),
-            FloatingActionButton(
-              child: const Icon(Icons.notifications),
-              onPressed: () async {
-                Future.delayed(const Duration(seconds: 3), () {
-                  NotifTestService.testNotif();
-                });
-                // NotifTestService.testNotif();
-              },
-            )
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            // FloatingActionButton(
+            //   child: const Icon(Icons.notifications),
+            //   onPressed: () async {
+            //     Future.delayed(const Duration(seconds: 0), () {
+            //       NotifTestService.testNotif();
+            //     });
+            //     // NotifTestService.testNotif();
+            //   },
+            // )
             // const SizedBox(
             //   height: 10,
             // ),

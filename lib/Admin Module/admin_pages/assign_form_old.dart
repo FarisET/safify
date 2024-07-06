@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
-
 import 'dart:io';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
@@ -43,9 +41,9 @@ class _AssignFormOldState extends State<AssignFormOld> {
   Color? _getSelectedColor(int index) {
     if (isSelected[index]) {
       if (index == 0) {
-        return Color.fromARGB(255, 6, 209, 70);
+        return const Color.fromARGB(255, 6, 209, 70);
       } else if (index == 1) {
-        return Color.fromARGB(255, 255, 135, 22);
+        return const Color.fromARGB(255, 255, 135, 22);
       } else if (index == 2) {
         return Colors.redAccent;
       }
@@ -102,7 +100,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
           // If the exit is confirmed, replace the current route with the home page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => AdminHomePage()),
+            MaterialPageRoute(builder: (context) => const AdminHomePage()),
           );
           return false; // Prevent the user from going back
         } else {
@@ -110,8 +108,8 @@ class _AssignFormOldState extends State<AssignFormOld> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Confirm Exit'),
-              content: Text(
+              title: const Text('Confirm Exit'),
+              content: const Text(
                   'Do you want to leave this page? Any unsaved changes will be lost.'),
               actions: [
                 TextButton(
@@ -125,17 +123,17 @@ class _AssignFormOldState extends State<AssignFormOld> {
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => AdminHomePage()),
+                      MaterialPageRoute(builder: (context) => const AdminHomePage()),
                     );
                   },
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                 ),
                 TextButton(
                   onPressed: () {
                     // If the user cancels, do nothing and pop the dialog
                     Navigator.pop(context);
                   },
-                  child: Text('No'),
+                  child: const Text('No'),
                 ),
               ],
             ),
@@ -170,7 +168,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                   child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -179,13 +177,13 @@ class _AssignFormOldState extends State<AssignFormOld> {
                           Expanded(
                             child: ListView(
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 Consumer<DepartmentProviderClass>(
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
-                                      return Center(
+                                      return const Center(
                                         child:
                                             CircularProgressIndicator(), // Display a loading indicator
                                       );
@@ -203,21 +201,21 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                             return DropdownButton<String>(
                                               value: selectedVal
                                                   .selectedDepartment,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.blue,
                                                 fontWeight: FontWeight.normal,
                                               ),
                                               isExpanded: true,
-                                              icon: Icon(Icons.arrow_drop_down,
+                                              icon: const Icon(Icons.arrow_drop_down,
                                                   color: Colors.blue),
                                               underline: Container(),
                                               items: [
-                                                DropdownMenuItem<String>(
+                                                const DropdownMenuItem<String>(
                                                   value:
                                                       null, // Placeholder value
                                                   child: Padding(
                                                     padding:
-                                                        const EdgeInsets.only(
+                                                        EdgeInsets.only(
                                                             left: 8.0),
                                                     child: Text(
                                                         'Select department'),
@@ -254,14 +252,14 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                     }
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 Consumer<ActionTeamProviderClass>(
                                     builder: (context, selectedValue, child) {
                                   if (SelectedDepartment != null) {
                                     if (selectedValue.loading) {
-                                      return Center(
+                                      return const Center(
                                         child:
                                             CircularProgressIndicator(), // Display a loading indicator
                                       );
@@ -279,21 +277,21 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                             return DropdownButton<String>(
                                               value: selectedValue
                                                   .selectedActionTeam,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.blue,
                                                 fontWeight: FontWeight.normal,
                                               ),
                                               isExpanded: true,
-                                              icon: Icon(Icons.arrow_drop_down,
+                                              icon: const Icon(Icons.arrow_drop_down,
                                                   color: Colors.blue),
                                               underline: Container(),
                                               items: [
-                                                DropdownMenuItem<String>(
+                                                const DropdownMenuItem<String>(
                                                   value:
                                                       null, // Placeholder value
                                                   child: Padding(
                                                     padding:
-                                                        const EdgeInsets.only(
+                                                        EdgeInsets.only(
                                                             left: 8.0),
                                                     child: Text(
                                                         'Select action team'),
@@ -330,13 +328,13 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                           borderRadius:
                                               BorderRadius.circular(5),
                                         ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
                                               horizontal: 5.0, vertical: 12),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
-                                            children: const [
+                                            children: [
                                               Text(
                                                   'Please select a department first',
                                                   style: TextStyle(
@@ -349,7 +347,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                         ));
                                   }
                                 }),
-                                SizedBox(
+                                const SizedBox(
                                   height: 15,
                                 ),
                                 DropdownButtonFormField<String>(
@@ -454,7 +452,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      AdminHomePage()),
+                                                      const AdminHomePage()),
                                             );
                                           } else {
                                             ScaffoldMessenger.of(context)
@@ -494,7 +492,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text(
+                                                const Text(
                                                   "Assigning..",
                                                   style: TextStyle(
                                                       color: Colors.white,
@@ -502,7 +500,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                                       fontWeight:
                                                           FontWeight.bold),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 20,
                                                 ),
                                                 SizedBox(
@@ -515,7 +513,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                                               .height *
                                                           0.03,
                                                   child:
-                                                      CircularProgressIndicator(
+                                                      const CircularProgressIndicator(
                                                     color: Colors.white,
                                                   ),
                                                 ),
@@ -526,7 +524,7 @@ class _AssignFormOldState extends State<AssignFormOld> {
                                             height: MediaQuery.sizeOf(context)
                                                     .height *
                                                 0.03,
-                                            child: Center(
+                                            child: const Center(
                                               child: Text(
                                                 "Assign",
                                                 style: TextStyle(

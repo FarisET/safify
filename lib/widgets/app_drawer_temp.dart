@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
 import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
@@ -25,7 +23,7 @@ class AppDrawerTemp extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
@@ -46,13 +44,13 @@ class AppDrawerTemp extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: ListTile(
-                contentPadding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: Icon(
+                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                leading: const Icon(
                   Icons.personal_injury,
                   color: Colors.blue,
                   size: 31,
                 ),
-                title: Text('Total Incidents Reported'),
+                title: const Text('Total Incidents Reported'),
                 trailing: CircleAvatar(
                     maxRadius: 16, child: Text(totalIncidentsReported)),
               ),
@@ -67,13 +65,13 @@ class AppDrawerTemp extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: ListTile(
-                contentPadding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: Icon(
+                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                leading: const Icon(
                   Icons.check_box,
                   color: Colors.blue,
                   size: 31,
                 ),
-                title: Text('Total Incidents Resolved'),
+                title: const Text('Total Incidents Resolved'),
                 trailing: CircleAvatar(
                     maxRadius: 16, child: Text(totalIncidentsResolved)),
               ),
@@ -91,9 +89,9 @@ class AppDrawerTemp extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.category,
                             color: Colors.blue,
@@ -115,18 +113,18 @@ class AppDrawerTemp extends StatelessWidget {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               dense: true,
-                              leading: Icon(
+                              leading: const Icon(
                                 Icons.arrow_forward_ios,
                               ),
                               title: Text(
                                 '${item?.incident_subtype_description}',
-                                style: TextStyle(),
+                                style: const TextStyle(),
                               ),
                               trailing: CircleAvatar(
                                 maxRadius: 12,
                                 child: Text(
                                   '${item?.incident_count}',
-                                  style: TextStyle(),
+                                  style: const TextStyle(),
                                 ),
                               ),
                             );
@@ -151,9 +149,9 @@ class AppDrawerTemp extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.category,
                             color: Colors.blue,
@@ -175,18 +173,18 @@ class AppDrawerTemp extends StatelessWidget {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               dense: true,
-                              leading: Icon(
+                              leading: const Icon(
                                 Icons.arrow_forward_ios,
                               ),
                               title: Text(
                                 '${item?.location_name}',
-                                style: TextStyle(),
+                                style: const TextStyle(),
                               ),
                               trailing: CircleAvatar(
                                 maxRadius: 12,
                                 child: Text(
                                   '${item?.incident_count}',
-                                  style: TextStyle(),
+                                  style: const TextStyle(),
                                 ),
                               ),
                             );
@@ -211,9 +209,9 @@ class AppDrawerTemp extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.category,
                             color: Colors.blue,
@@ -235,12 +233,12 @@ class AppDrawerTemp extends StatelessWidget {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               dense: true,
-                              leading: Icon(
+                              leading: const Icon(
                                 Icons.arrow_forward_ios,
                               ),
                               title: Text(
                                 '${item?.action_team_name}',
-                                style: TextStyle(),
+                                style: const TextStyle(),
                               ),
                               trailing: Container(
                                 decoration: BoxDecoration(
@@ -251,7 +249,7 @@ class AppDrawerTemp extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     '${item?.efficiency_value}',
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ),

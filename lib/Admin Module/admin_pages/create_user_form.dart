@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
-
 import 'dart:io';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +79,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
           // If the exit is confirmed, replace the current route with the home page
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => AdminHomePage()),
+            MaterialPageRoute(builder: (context) => const AdminHomePage()),
           );
           return false; // Prevent the user from going back
         } else {
@@ -89,8 +87,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Confirm Exit'),
-              content: Text(
+              title: const Text('Confirm Exit'),
+              content: const Text(
                   'Do you want to leave this page? Any unsaved changes will be lost.'),
               actions: [
                 TextButton(
@@ -103,17 +101,18 @@ class _CreatUserFormState extends State<CreatUserForm> {
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => AdminHomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const AdminHomePage()),
                     );
                   },
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                 ),
                 TextButton(
                   onPressed: () {
                     // If the user cancels, do nothing and pop the dialog
                     Navigator.pop(context);
                   },
-                  child: Text('No'),
+                  child: const Text('No'),
                 ),
               ],
             ),
@@ -148,7 +147,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                   child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -180,7 +179,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                         decoration: InputDecoration(
                                           hintText: 'Enter username',
                                           fillColor: Colors.blue,
-                                          labelStyle: TextStyle(
+                                          labelStyle: const TextStyle(
                                             color: Colors.blue,
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -192,8 +191,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                                 BorderRadius.circular(5.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.green),
+                                            borderSide: const BorderSide(
+                                                color: Colors.green),
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           ),
@@ -229,7 +228,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                           hintText:
                                               'Password must be atleast 8 characters',
                                           fillColor: Colors.blue,
-                                          labelStyle: TextStyle(
+                                          labelStyle: const TextStyle(
                                             color: Colors.blue,
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -241,8 +240,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                                 BorderRadius.circular(5.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.green),
+                                            borderSide: const BorderSide(
+                                                color: Colors.green),
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           ),
@@ -277,7 +276,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                         decoration: InputDecoration(
                                           hintText: 'Re enter password',
                                           fillColor: Colors.blue,
-                                          labelStyle: TextStyle(
+                                          labelStyle: const TextStyle(
                                             color: Colors.blue,
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -289,8 +288,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                                 BorderRadius.circular(5.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.green),
+                                            borderSide: const BorderSide(
+                                                color: Colors.green),
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           ),
@@ -317,7 +316,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                           : Colors.grey[700],
                                       label: Text(
                                         chipLabels[index],
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                       selected: isSelected[index],
                                       selectedColor: _getSelectedColor(index),
@@ -382,7 +382,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      AdminHomePage()),
+                                                      const AdminHomePage()),
                                             );
                                           } else {
                                             ScaffoldMessenger.of(context)
@@ -423,7 +423,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text(
+                                                const Text(
                                                   "Creating..",
                                                   style: TextStyle(
                                                       color: Colors.white,
@@ -431,7 +431,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                                       fontWeight:
                                                           FontWeight.bold),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 20,
                                                 ),
                                                 SizedBox(
@@ -444,7 +444,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                                               .height *
                                                           0.03,
                                                   child:
-                                                      CircularProgressIndicator(
+                                                      const CircularProgressIndicator(
                                                     color: Colors.white,
                                                   ),
                                                 ),
@@ -455,7 +455,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                             height: MediaQuery.sizeOf(context)
                                                     .height *
                                                 0.03,
-                                            child: Center(
+                                            child: const Center(
                                               child: Text(
                                                 "Create",
                                                 style: TextStyle(

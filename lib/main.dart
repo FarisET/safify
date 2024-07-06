@@ -2,9 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Action%20Team%20Module/providers/update_user_report_status.dart';
 import 'package:safify/Admin%20Module/admin_pages/create_user_form.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/all_action_team_provider.dart';
@@ -14,12 +12,10 @@ import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/pages/splash_screen.dart';
-import 'package:safify/db/background_service.dart';
 import 'package:safify/db/background_task_manager.dart';
 import 'package:safify/services/UserServices.dart';
-import 'package:safify/services/notif_test_service.dart';
+import 'package:safify/services/message_handler.dart';
 import 'package:safify/services/notification_services.dart';
-import 'package:safify/widgets/notification_utils.dart';
 import 'package:safify/widgets/terms_and_conditions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
@@ -35,7 +31,6 @@ import 'Admin Module/providers/analytics_incident_resolved_provider.dart';
 import 'Admin Module/providers/department_provider.dart';
 import 'Admin Module/providers/admin_user_reports_provider.dart';
 import 'Admin Module/providers/fetch_countOfSubtypes_provider.dart';
-import 'User Module/pages/home.dart';
 import 'User Module/pages/login_page.dart';
 import 'User Module/pages/user_form.dart';
 import 'User Module/providers/user_reports_provider.dart';
@@ -153,8 +148,8 @@ void main() async {
 }
 
 Future<void> _handleBGMessage(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
-  print(message.toMap());
+  MessageHandlerService.printMessage(message);
+  MessageHandlerService.handleBackgroundMessage(message);
 }
 
 // void handleNotificationMessage(RemoteMessage message) {

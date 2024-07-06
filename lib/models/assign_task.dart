@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 class AssignTask {
   final int? user_report_id;
   final int? assigned_task_id;

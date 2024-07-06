@@ -1,7 +1,3 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, library_private_types_in_public_api, non_constant_identifier_names
-
-//import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -45,17 +41,17 @@ class _LoginPageState extends State<LoginPage> {
       if (role == 'admin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AdminHomePage()),
+          MaterialPageRoute(builder: (context) => const AdminHomePage()),
         );
       } else if (role == 'user') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage2()),
+          MaterialPageRoute(builder: (context) => const HomePage2()),
         );
       } else if (role == 'action_team') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
+          MaterialPageRoute(builder: (context) => const ActionTeamHomePage()),
         );
       } else {
         Fluttertoast.showToast(msg: 'Unknown role');
@@ -82,21 +78,21 @@ class _LoginPageState extends State<LoginPage> {
                   width: 300,
                   height: 300,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 0,
                 ),
-                Text(
+                const Text(
                   'Login',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 makeInput(
                   label: 'Enter your registered id',
                   controller_val: cuserid,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 makeInput(
@@ -112,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             closeApp();
                           },
-                          child: Text('CANCEL')),
+                          child: const Text('CANCEL')),
                       SizedBox(
                         height: MediaQuery.sizeOf(context).height * 0.05,
                         // width: MediaQuery.sizeOf(context).height * 0.1,
@@ -128,8 +124,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ? Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text('Loading'),
-                                      SizedBox(
+                                      const Text('Loading'),
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       SizedBox(
@@ -139,21 +135,21 @@ class _LoginPageState extends State<LoginPage> {
                                         width:
                                             MediaQuery.sizeOf(context).height *
                                                 0.025,
-                                        child: CircularProgressIndicator(
+                                        child: const CircularProgressIndicator(
                                           color: Colors.grey,
                                           // strokeWidth: 3,
                                         ),
                                       ),
                                     ],
                                   )
-                                : Text('Login')),
+                                : const Text('Login')),
                       )
                     ],
                   ),
                 ),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Text(
                       "BETA - Version 1.0",
                       style: TextStyle(color: Colors.grey),
@@ -179,11 +175,12 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: label,
-          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-          enabledBorder: OutlineInputBorder(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
           ),
-          border: OutlineInputBorder(
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
           ),
         ),
@@ -216,17 +213,17 @@ class _LoginPageState extends State<LoginPage> {
         if (role.trim() == 'admin') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => AdminHomePage()),
+            MaterialPageRoute(builder: (context) => const AdminHomePage()),
           );
         } else if (role.trim() == 'user') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage2()),
+            MaterialPageRoute(builder: (context) => const HomePage2()),
           );
         } else if (role.trim() == 'action_team') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => ActionTeamHomePage()),
+            MaterialPageRoute(builder: (context) => const ActionTeamHomePage()),
           );
         } else {
           Alerts.customAlertWidget(context, 'Unknown role', () {});
