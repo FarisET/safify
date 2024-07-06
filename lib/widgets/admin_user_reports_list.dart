@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
-import 'package:safify/widgets/admin_report_tile.dart';
+import 'package:safify/widgets/admin_user_report_tile.dart';
 
 import '../Admin Module/providers/admin_user_reports_provider.dart';
 
@@ -62,7 +62,7 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
             itemBuilder: (context, i) {
               var item = allReports.reports![i];
 
-              return AdminReportTile(userReport: item);
+              return AdminUserReportTile(userReport: item);
             },
           );
         } else if (allReports.reports!.isEmpty && allReports.isLoading) {

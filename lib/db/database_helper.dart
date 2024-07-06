@@ -272,6 +272,10 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps =
         await db.query('admin_user_reports');
 
+    for (var map in maps) {
+      print(map);
+    }
+
     return maps;
   }
 

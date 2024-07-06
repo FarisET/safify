@@ -1,16 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/components/custom_button.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/alerts_util.dart';
-import 'package:safify/utils/button_utils.dart';
-import 'package:safify/utils/string_utils.dart';
 import 'package:safify/widgets/assigned_task_tile.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Action Team Module/pages/action_report_form.dart';
 import '../Action Team Module/providers/assigned_tasks_provider.dart';
 
 class AssignedTaskList extends StatefulWidget {
@@ -95,7 +88,18 @@ class _AssignedTaskListState extends State<AssignedTaskList> {
           );
         }
       }
-      return const Icon(Icons.error_outline);
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Failed to load tasks'),
+          IconButton(
+              onPressed: () {
+                Provider.of<AssignedTasksProvider>(context, listen: false)
+                    .fetchAssignedTasks(context);
+              },
+              icon: const Icon(Icons.refresh))
+        ],
+      );
     }));
   }
   // padding: const EdgeInsets.only(bottom:8.0),

@@ -9,9 +9,9 @@ import 'package:safify/utils/button_utils.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AdminReportTile extends StatelessWidget {
+class AdminUserReportTile extends StatelessWidget {
   final UserReport userReport;
-  const AdminReportTile({super.key, required this.userReport});
+  const AdminUserReportTile({super.key, required this.userReport});
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +154,8 @@ class AdminReportTile extends StatelessWidget {
                           ),
                           ImageButton(
                             height: double.infinity,
-                            onTap: () => handleImageButton(
-                                // null, context),
-                                // item.image,
-                                null,
-                                context),
+                            onTap: () =>
+                                handleImageButton(userReport.image, context),
                           )
                         ],
                       ),
