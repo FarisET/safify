@@ -169,6 +169,34 @@ class DatabaseHelper {
             )
         ''');
 
+        await db.execute('''
+            CREATE TABLE incident_analytics (
+              analytics_name TEXT PRIMARY KEY,
+              incident_count INTEGER
+            )
+        ''');
+
+        await db.execute('''
+            CREATE TABLE action_team_efficiency_analytics (
+              action_team_name TEXT PRIMARY KEY,
+              efficiency_value REAL
+            )
+        ''');
+
+        await db.execute('''
+            CREATE TABLE incident_subtype_analytics (
+              incident_subtype_description TEXT PRIMARY KEY,
+              incident_count INTEGER
+            )
+        ''');
+
+        await db.execute('''
+            CREATE TABLE incident_location_analytics (
+              location_name TEXT PRIMARY KEY,
+              incident_count INTEGER
+            )
+        ''');
+
         ///
         await db.insert(
           'locations',

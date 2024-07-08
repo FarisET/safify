@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:safify/models/count_incidents_by_location.dart';
+import 'package:safify/repositories/analytics_repository.dart';
 
 import '../../constants.dart';
 
@@ -12,13 +13,16 @@ class CountByLocationProviderClass extends ChangeNotifier {
   bool loading = false;
   String? jwtToken;
   final storage = const FlutterSecureStorage();
+  final AnalyticsRepository _analyticsRepository = AnalyticsRepository();
 
   Future<List<CountByLocation>?> getcountByIncidentLocationPostData() async {
     loading = true;
     notifyListeners();
 
     try {
-      countByLocation = await fetchTotalIncidentsLocation();
+      // countByLocation = await fetchTotalIncidentsLocation();
+      countByLocation =
+          await _analyticsRepository.fetchIncidentLocationAnalyticsFromDb();
       loading = false;
       notifyListeners();
 
@@ -59,6 +63,7 @@ class CountByLocationProviderClass extends ChangeNotifier {
 
         loading = false;
         notifyListeners();
+        // print("Count by location: ${response.body}");
         return countByIncidentLocationList;
       } else {
         throw Exception('Failed to load countByIncidentLocations');

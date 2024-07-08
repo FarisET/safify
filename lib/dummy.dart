@@ -422,6 +422,92 @@ final incidentTypesJson = {
     }
   ]
 };
+
+final analyticsJsonDummy = {
+  "incidents_reported": 98,
+  "incidents_resolved": 8,
+  "incidents_by_location": [
+    {"location_name": "Main Entrance", "incident_count": 30},
+    {"location_name": "Maintenance Room", "incident_count": 1},
+    {"location_name": "Restrooms", "incident_count": 0},
+    {"location_name": "Break Room", "incident_count": 4},
+    {"location_name": "Cafeteria", "incident_count": 8},
+    {"location_name": "Supervisor Office", "incident_count": 2},
+    {"location_name": "Manager Office", "incident_count": 6},
+    {"location_name": "HR Department", "incident_count": 12},
+    {"location_name": "Finance Department", "incident_count": 15},
+    {"location_name": "IT Department", "incident_count": 10},
+    {"location_name": "R&D Department", "incident_count": 4},
+    {"location_name": "Reception", "incident_count": 1},
+    {"location_name": "Conference Room", "incident_count": 0},
+    {"location_name": "Production Line A", "incident_count": 0},
+    {"location_name": "Production Line B", "incident_count": 2},
+    {"location_name": "Assembly Area", "incident_count": 1},
+    {"location_name": "Quality Control", "incident_count": 0},
+    {"location_name": "Packaging Area", "incident_count": 2}
+  ],
+  "incidents_by_subtype": [
+    {"incident_subtype_description": "Physical Injury", "incident_count": 28},
+    {"incident_subtype_description": "Near Miss", "incident_count": 14},
+    {
+      "incident_subtype_description": "Dress Code Violation",
+      "incident_count": 13
+    },
+    {"incident_subtype_description": "Theft", "incident_count": 5},
+    {"incident_subtype_description": "Violence", "incident_count": 4},
+    {
+      "incident_subtype_description": "Hazardous Material Spill",
+      "incident_count": 4
+    },
+    {"incident_subtype_description": "Electric Hazard", "incident_count": 4},
+    {
+      "incident_subtype_description": "Unidentified Vehicle",
+      "incident_count": 4
+    },
+    {"incident_subtype_description": "Indecent Conduct", "incident_count": 3},
+    {"incident_subtype_description": "Disorderly Conduct", "incident_count": 3},
+    {
+      "incident_subtype_description": "Equipment Breakdown",
+      "incident_count": 3
+    },
+    {
+      "incident_subtype_description": "Public Display of Affection",
+      "incident_count": 2
+    },
+    {"incident_subtype_description": "Accident", "incident_count": 2},
+    {"incident_subtype_description": "Fire Situation", "incident_count": 2}
+  ],
+  "action_team_efficiency": [
+    {"action_team_name": "Main Entrance Security", "efficiency_value": "4.76"},
+    {"action_team_name": "Cafeteria Cafe Services", "efficiency_value": "0.00"},
+    {"action_team_name": "Cafeteria Maintenance", "efficiency_value": "0.00"},
+    {"action_team_name": "Loading Dock IT", "efficiency_value": "0.00"},
+    {
+      "action_team_name": "Loading Dock Maintenance",
+      "efficiency_value": "0.00"
+    },
+    {"action_team_name": "Loading Dock Security", "efficiency_value": "0.00"},
+    {"action_team_name": "Production Line A IT", "efficiency_value": "0.00"},
+    {
+      "action_team_name": "Production Line A Maintenance",
+      "efficiency_value": "0.00"
+    },
+    {
+      "action_team_name": "Production Line A Security",
+      "efficiency_value": "0.00"
+    },
+    {"action_team_name": "Production Line B IT", "efficiency_value": "0.00"},
+    {
+      "action_team_name": "Production Line B Maintenance",
+      "efficiency_value": "0.00"
+    },
+    {"action_team_name": "Main Entrance Medical", "efficiency_value": "70.52"},
+    {
+      "action_team_name": "Production Line B Security",
+      "efficiency_value": "0.00"
+    }
+  ]
+};
 void main(List<String> args) {
   // final locationsAndSubLocations = parseLocationsAndSubLocations(locationsJson);
   // final locations = locationsAndSubLocations[0];

@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:safify/Action%20Team%20Module/pages/admin_analytics.dart';
 import 'package:safify/models/action_team_efficiency.dart';
+import 'package:safify/repositories/analytics_repository.dart';
 
 import '../../constants.dart';
 
@@ -13,13 +15,17 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
   bool loading = false;
   String? jwtToken;
   final storage = const FlutterSecureStorage();
-
+  final AnalyticsRepository _analyticsRepository = AnalyticsRepository();
   Future<List<ActionTeamEfficiency>?> getactionTeamEfficiencyData() async {
     loading = true;
     notifyListeners();
 
     try {
-      actionTeamEfficiency = await fetchActionTeamEfficiency();
+      // actionTeamEfficiency = await fetchActionTeamEfficiency();
+      actionTeamEfficiency =
+          await _analyticsRepository.fetchActionTeamEfficiencyAnalyticsFromDb();
+      print("action team: $actionTeamEfficiency");
+
       loading = false;
       notifyListeners();
 
@@ -29,7 +35,8 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
       notifyListeners();
       print('Error loading fetchActionTeamEfficiency: $e');
       // You might want to handle the error accordingly
-      throw Exception('Failed to load countByIncidentSubTypes');
+      // throw Exception('Failed to load countByIncidentSubTypes');
+      rethrow;
     }
   }
 
@@ -65,6 +72,7 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
 
         loading = false;
         notifyListeners();
+        // print("Action Team Efficiency: ${response.body}");
         return actionTeamEfficiencyList;
       } else {
         loading = false;

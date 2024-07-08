@@ -6,6 +6,7 @@ import 'package:safify/Admin%20Module/providers/analytics_incident_resolved_prov
 import 'package:safify/Admin%20Module/providers/fetch_countOfLocations_provider%20copy.dart';
 import 'package:safify/Admin%20Module/providers/fetch_countOfSubtypes_provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
+import 'package:safify/repositories/analytics_repository.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/components/shimmer_box.dart';
 import 'package:safify/models/action_team_efficiency.dart';
@@ -38,6 +39,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
             .getcountByIncidentLocationPostData();
         Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
             .getactionTeamEfficiencyData();
+
+        AnalyticsRepository().updateAnalytics(context);
       }
     });
   }
@@ -114,69 +117,76 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
         ],
       ),
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: ListTile(
-                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: const Icon(
-                  Icons.personal_injury,
-                  color: Colors.black,
-                  size: 31,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await AnalyticsRepository().updateAnalytics(context);
+        },
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                title: const Text('Total Incidents Reported'),
-                trailing: CircleAvatar(
-                  maxRadius: 16,
-                  backgroundColor: Theme.of(context).cardColor,
-                  child: Text(
-                    countReportedProvider ?? '',
-                    style: const TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  leading: const Icon(
+                    Icons.personal_injury,
+                    color: Colors.black,
+                    size: 31,
+                  ),
+                  title: const Text('Total Incidents Reported'),
+                  trailing: CircleAvatar(
+                    maxRadius: 16,
+                    backgroundColor: Theme.of(context).cardColor,
+                    child: Text(
+                      countReportedProvider ?? '',
+                      style: const TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: ListTile(
-                contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                leading: const Icon(
-                  Icons.check_box,
-                  color: Colors.black,
-                  size: 31,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                title: const Text('Total Incidents Resolved'),
-                trailing: CircleAvatar(
-                  maxRadius: 16,
-                  child: Text(
-                    countResolvedProvider != null ? countResolvedProvider! : '',
-                    style: const TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  leading: const Icon(
+                    Icons.check_box,
+                    color: Colors.black,
+                    size: 31,
                   ),
-                  backgroundColor: Theme.of(context).cardColor,
+                  title: const Text('Total Incidents Resolved'),
+                  trailing: CircleAvatar(
+                    maxRadius: 16,
+                    backgroundColor: Theme.of(context).cardColor,
+                    child: Text(
+                      countResolvedProvider != null
+                          ? countResolvedProvider!
+                          : '',
+                      style: const TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildIncidentSubtypeChart(),
-          _buildIncidentLocationChart(),
-          _buildActionTeamEfficiencyChart(),
-        ],
+            _buildIncidentSubtypeChart(),
+            _buildIncidentLocationChart(),
+            _buildActionTeamEfficiencyChart(),
+          ],
+        ),
       ),
     );
   }
@@ -325,7 +335,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         );
       }
       final data = provider.actionTeamEfficiency
-              ?.where((item) => double.tryParse(item.efficiency_value!)! > 0)
+              // ?.where((item) => double.tryParse(item.efficiency_value!)! > 0)
+              ?.where((item) => item.efficiency_value! > 0)
               .toList() ??
           [];
 
@@ -367,8 +378,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         xValueMapper: (ActionTeamEfficiency data, _) =>
                             data.action_team_name,
                         yValueMapper: (ActionTeamEfficiency data, _) =>
-                            double.tryParse(data.efficiency_value ?? '0') ??
-                            0.0,
+                            // double.tryParse(data.efficiency_value ?? '0') ??
+                            data.efficiency_value ?? 0.0,
                         dataLabelSettings:
                             const DataLabelSettings(isVisible: true),
                       ),

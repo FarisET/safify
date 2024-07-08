@@ -13,4 +13,9 @@ class CountByLocation {
       incident_count: json['incident_count'] ?? 0,
     );
   }
+
+  @override
+  String toString() {
+    return 'CountByLocation{location_name: $location_name, incident_count: $incident_count}';
+  }
 }

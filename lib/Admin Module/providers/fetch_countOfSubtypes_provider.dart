@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-
-import '../../constants.dart';
-import '../../models/count_incidents_by_subtype.dart';
+import 'package:safify/constants.dart';
+import 'package:safify/models/count_incidents_by_subtype.dart';
+import 'package:safify/repositories/analytics_repository.dart';
 
 class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   List<CountByIncidentSubTypes>? countByIncidentSubTypes;
   bool loading = false;
   String? jwtToken;
   final storage = const FlutterSecureStorage();
+  final AnalyticsRepository _analyticsRepository = AnalyticsRepository();
 
   Future<List<CountByIncidentSubTypes>?>
       getcountByIncidentSubTypesPostData() async {
@@ -19,7 +20,11 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
     notifyListeners();
 
     try {
-      countByIncidentSubTypes = await fetchTotalIncidentsOnSubTypes();
+      // countByIncidentSubTypes = await fetchTotalIncidentsOnSubTypes();
+
+      countByIncidentSubTypes =
+          await _analyticsRepository.fetchIncidentSubtypeAnalyticsFromDb();
+
       loading = false;
       notifyListeners();
 
@@ -76,7 +81,7 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
 
         loading = false;
         notifyListeners();
-        print('countByIncidentSubTypes Loaded');
+        // print("Incidents Subtypes: ${response.body}}");
         return countByIncidentSubTypesList;
 
         // } else {

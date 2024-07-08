@@ -13,4 +13,9 @@ class CountByIncidentSubTypes {
       incident_count: json['incident_count'] ?? 0,
     );
   }
+
+  @override
+  String toString() {
+    return 'CountByIncidentSubTypes{incident_subtype_description: $incident_subtype_description, incident_count: $incident_count}';
+  }
 }
