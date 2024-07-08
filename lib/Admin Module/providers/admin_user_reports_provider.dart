@@ -18,7 +18,9 @@ class AdminUserReportsProvider with ChangeNotifier {
   Future<void> fetchAdminUserReports(BuildContext context) async {
     try {
       _error = null;
+      _reports = null;
       isLoading = true;
+      notifyListeners();
       _reports =
           await _adminUserReportsRepository.fetchAdminUserReportsFromDb();
       isLoading = false;

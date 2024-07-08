@@ -433,10 +433,9 @@ void main(List<String> args) {
 
   // Print the map
   incidentTypes.forEach((incidentType) {
-    print('Incident Type: $incidentType');
     incidentSubTypes.forEach((incidentSubType) {
       if (incidentSubType.incidentTypeId == incidentType.incidentTypeId) {
-        print('   $incidentSubType');
+        // print('   $incidentSubType');
       }
     });
   });

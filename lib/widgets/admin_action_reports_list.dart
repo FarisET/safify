@@ -47,27 +47,45 @@ class _AdminActionReportsListState extends State<AdminActionReportsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child:
-        Consumer<ActionReportsProvider>(builder: (context, allReports, _) {
-      if (allReports.error != null &&
-          allReports.error!.contains('TokenExpiredException')) {
+    return Center(child: Consumer<ActionReportsProvider>(
+        builder: (context, actionReportsProvider, _) {
+      if (actionReportsProvider.error != null &&
+          actionReportsProvider.error!.contains('TokenExpiredException')) {
         WidgetsBinding.instance
             .addPostFrameCallback((_) => _handleSessionExpired(context));
       }
 
-      if (allReports.reports != null) {
-        if (allReports.reports!.isNotEmpty) {
+      if (actionReportsProvider.reports != null) {
+        if (actionReportsProvider.reports!.isNotEmpty) {
           return ListView.builder(
-            itemCount: allReports.reports!.length,
+            itemCount: actionReportsProvider.reports!.length,
             itemBuilder: (context, i) {
-              var item = allReports.reports![i];
+              var item = actionReportsProvider.reports![i];
 
               return AdminActionReportTile(report: item);
             },
           );
-        } else if (allReports.reports!.isEmpty && allReports.isLoading) {
+        } else if (actionReportsProvider.reports!.isEmpty &&
+            actionReportsProvider.isLoading) {
           return const CircularProgressIndicator();
         }
+      }
+      if (actionReportsProvider.reports == null) {
+        return const CircularProgressIndicator();
+      }
+      if (actionReportsProvider.reports!.isEmpty) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('No reports found'),
+            IconButton(
+                onPressed: () {
+                  Provider.of<ActionReportsProvider>(context, listen: false)
+                      .fetchAllActionReports(context);
+                },
+                icon: const Icon(Icons.refresh))
+          ],
+        );
       }
       return Column(
         mainAxisSize: MainAxisSize.min,

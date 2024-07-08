@@ -28,8 +28,6 @@ class NotifTestService {
       }
 
       Uri url = Uri.parse('$IP_URL/helper/sendDummyNotification');
-      print(url);
-      print(jwtToken);
 
       final response = await http.post(
         url,

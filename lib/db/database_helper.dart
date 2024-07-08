@@ -43,6 +43,16 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         print("creating db for the first time..");
         await db.execute(
+          "CREATE TABLE user_info(id INTEGER PRIMARY KEY, last_login_user_id TEXT)",
+        );
+
+        await db.insert(
+          'user_info',
+          {'id': 0, 'last_login_user_id': null},
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        await db.execute(
           'CREATE TABLE locations(location_id TEXT PRIMARY KEY, location_name TEXT)',
         );
         await db.execute(
@@ -201,6 +211,50 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> setLastUserId(String userId) async {
+    final db = await database;
+    final userInfo = {"id": 0, "last_login_user_id": userId};
+    db.insert(
+      "user_info",
+      userInfo,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Map<String, dynamic>> getLastUserId() async {
+    final db = await database;
+    ;
+    final List<Map<String, dynamic>> map =
+        await db.query('user_info', where: 'id = ?', whereArgs: [0]);
+    return map[0];
+  }
+
+  Future<void> clearDBdata() async {
+    final db = await database;
+    await db.delete('admin_user_reports');
+    await db.delete('admin_action_reports');
+
+    await db.delete('assign_tasks');
+    await db.delete('user_reports');
+
+    await db.delete('user_form_reports');
+    await db.delete('action_form_reports');
+
+    // var list = await getAdminActionReports();
+    // print("admin action reports: $list");
+    // list = await getAdminUserReports();
+    // print("admin user reports: $list");
+    // // list = await getAdminActionReports();
+    // print("assign tasks: $list");
+    // list = await getUserReports();
+    // print("user reports: $list");
+
+    // var list2 = await getActionFormReports();
+    // print("action form reports: $list");
+    // var list3 = await getUserFormReports();
+    // print("user form reports: $list");
+  }
+
   Future<void> insertUserReportsJson(
       List<Map<String, dynamic>> userReports) async {
     final db = await database;
@@ -271,10 +325,6 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps =
         await db.query('admin_user_reports');
-
-    for (var map in maps) {
-      print(map);
-    }
 
     return maps;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
+import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
@@ -59,7 +60,7 @@ class TermsAndConditionsPage extends StatelessWidget {
                 await prefs.setBool('acceptedTerms', true);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage2()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
               child: const Text('Agree'),

@@ -21,7 +21,9 @@ class ActionReportsProvider with ChangeNotifier {
     try {
       _error = null;
       isLoading = true;
-      _reports = await _actionReportRepository.fetchAdminActionReportsFromDb();
+      final reports =
+          await _actionReportRepository.fetchAdminActionReportsFromDb();
+      _reports = reports;
       isLoading = false;
 
       notifyListeners();

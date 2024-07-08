@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Action Team Module/pages/action_team_home_page.dart';
 import '../../Admin Module/admin_pages/admin_home_page.dart';
 import '../../services/UserServices.dart';
-import 'home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -200,13 +199,24 @@ class _LoginPageState extends State<LoginPage> {
 
     UserServices userServices = UserServices();
     final result = await userServices.login(
-      cuserid.text.toString(),
+      cuserid.text.toString().trim(),
       cpassword.text.toString(),
     );
 
     if (result['success']) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("user_id", cuserid.text);
+
+      final dbHelper = DatabaseHelper();
+      final userId = await dbHelper.getLastUserId();
+      if (userId['last_login_user_id'] != null) {
+        if (userId['last_login_user_id'] != cuserid.text) {
+          await dbHelper.clearDBdata();
+          print("removed db data");
+        }
+      }
+
+      await dbHelper.setLastUserId(cuserid.text);
 
       final role = await userServices.getRole();
       if (role != null) {

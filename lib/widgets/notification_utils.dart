@@ -88,8 +88,3 @@ class Notifications {
     }
   }
 }
-
-Future<String> getDeviceToken() async {
-  String? token = await FirebaseMessaging.instance.getToken();
-  return token!;
-}

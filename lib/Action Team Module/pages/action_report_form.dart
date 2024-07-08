@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -949,11 +948,6 @@ class _ActionReportState extends State<ActionReportForm>
     setState(() {
       isSubmitting = true;
     });
-    // await Future.delayed(Duration(seconds: 2));
-
-    print("pressed");
-
-    // return -1;
 
     ReportServices reportServices = ReportServices();
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -962,8 +956,6 @@ class _ActionReportState extends State<ActionReportForm>
     if (userReportId == null) {
       throw Exception('User report id not found');
     }
-    print("hello");
-
     final actionReportFormDetails = ActionReportFormDetails(
       incidentDesc: userFormState.incidentDescController.text,
       rootCause1: userFormState.rootCauseController1.text,
@@ -977,7 +969,6 @@ class _ActionReportState extends State<ActionReportForm>
       workProofImgPath: userFormState.workPrfImg!.path,
       userReportId: userReportId,
     );
-    print(actionReportFormDetails.toString());
 //    print(userFormState.incidentSiteImg.toString());
 
     final pingSuccess = await ping_google();

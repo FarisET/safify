@@ -48,44 +48,55 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child:
-        Consumer<AdminUserReportsProvider>(builder: (context, allReports, _) {
-      if (allReports.error != null &&
-          allReports.error!.contains('TokenExpiredException')) {
+    return Center(child: Consumer<AdminUserReportsProvider>(
+        builder: (context, adminUserReportsProvider, _) {
+      if (adminUserReportsProvider.error != null &&
+          adminUserReportsProvider.error!.contains('TokenExpiredException')) {
         WidgetsBinding.instance
             .addPostFrameCallback((_) => _handleSessionExpired(context));
       }
-      if (allReports.reports != null) {
-        if (allReports.reports!.isNotEmpty) {
+      if (adminUserReportsProvider.reports != null) {
+        if (adminUserReportsProvider.reports!.isNotEmpty) {
           return ListView.builder(
-            itemCount: allReports.reports!.length,
+            itemCount: adminUserReportsProvider.reports!.length,
             itemBuilder: (context, i) {
-              var item = allReports.reports![i];
+              var item = adminUserReportsProvider.reports![i];
 
               return AdminUserReportTile(userReport: item);
             },
           );
-        } else if (allReports.reports!.isEmpty && allReports.isLoading) {
+        } else if (adminUserReportsProvider.reports!.isEmpty &&
+            adminUserReportsProvider.isLoading) {
           return const CircularProgressIndicator();
         }
+      }
+      if (adminUserReportsProvider.reports == null) {
+        return const CircularProgressIndicator();
+      }
+      if (adminUserReportsProvider.reports!.isEmpty) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('No reports found'),
+            IconButton(
+                onPressed: () {
+                  Provider.of<AdminUserReportsProvider>(context, listen: false)
+                      .fetchAdminUserReports(context);
+                },
+                icon: const Icon(Icons.refresh))
+          ],
+        );
       }
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'No reports found.',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          const Text('Failed to load reports'),
           IconButton(
-            onPressed: () {
-              Provider.of<AdminUserReportsProvider>(context, listen: false)
-                  .fetchAdminUserReports(context);
-            },
-            icon: const Icon(Icons.refresh),
-          ),
+              onPressed: () {
+                Provider.of<AdminUserReportsProvider>(context, listen: false)
+                    .fetchAdminUserReports(context);
+              },
+              icon: const Icon(Icons.refresh))
         ],
       );
     }));

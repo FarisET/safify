@@ -1,12 +1,5 @@
 import 'dart:async';
-
-import 'package:image_picker/image_picker.dart';
-import 'package:safify/db/database_helper.dart';
-import 'package:safify/models/action_report_form_details.dart';
-import 'package:safify/models/user_report_form_details.dart';
-import 'package:safify/services/report_service.dart';
 import 'package:safify/services/report_upload_service.dart';
-import 'package:safify/utils/network_util.dart';
 import 'package:workmanager/workmanager.dart';
 
 class BackgroundTaskManager {
@@ -20,6 +13,12 @@ class BackgroundTaskManager {
   // Factory constructor to return the same instance
   factory BackgroundTaskManager() {
     return _instance;
+  }
+
+  void cancelTask(String uniqueTaskName) async {
+    Workmanager().cancelByUniqueName(uniqueTaskName).then((value) {
+      print("Task $uniqueTaskName cancelled");
+    });
   }
 
   Future<void> initializeWorkManager() async {
@@ -37,6 +36,13 @@ class BackgroundTaskManager {
     );
   }
 
+  void registerAnotherTask() {
+    Workmanager().registerOneOffTask(
+      "2",
+      "anotherTask",
+    );
+  }
+
   void registerSyncActionFormTask() {
     Workmanager().registerPeriodicTask(
       "3",
@@ -45,17 +51,60 @@ class BackgroundTaskManager {
     );
   }
 
-  void registerAnotherTask() {
+  // task to check last user id and clear db
+  void registerCheckLastUserIdTask() {
     Workmanager().registerOneOffTask(
-      "2",
-      "anotherTask",
+      "4",
+      "checkLastUserId",
     );
   }
 
-  void cancelTask(String uniqueTaskName) async {
-    Workmanager().cancelByUniqueName(uniqueTaskName).then((value) {
-      print("Task $uniqueTaskName cancelled");
-    });
+  // task to get locations
+  void registerGetLocationsTask() {
+    Workmanager().registerOneOffTask(
+      "4",
+      "getLocations",
+    );
+  }
+
+  // task to get incident types
+  void registerGetIncidentTypesTask() {
+    Workmanager().registerOneOffTask(
+      "5",
+      "getIncidentTypes",
+    );
+  }
+
+  // task to get user reports
+  void registerGetUserReportsTask() {
+    Workmanager().registerOneOffTask(
+      "6",
+      "getUserReports",
+    );
+  }
+
+  // task to get action reports
+  void registerGetActionReportsTask() {
+    Workmanager().registerOneOffTask(
+      "7",
+      "getActionReports",
+    );
+  }
+
+  // task to get admin user reports
+  void registerGetAdminUserReportsTask() {
+    Workmanager().registerOneOffTask(
+      "8",
+      "getAdminUserReports",
+    );
+  }
+
+  // task to get admin action reports
+  void registerGetAdminActionReportsTask() {
+    Workmanager().registerOneOffTask(
+      "9",
+      "getAdminActionReports",
+    );
   }
 }
 
