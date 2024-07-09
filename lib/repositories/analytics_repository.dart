@@ -85,20 +85,17 @@ class AnalyticsRepository {
       return;
     }
 
-    ToastService.showSyncingLocalDataSnackBar(context);
-
     final analyticsService = AnalyticsService();
     final json = await analyticsService.fetchAnalytics();
 
-    await _updateIncidentReportedProvider(json["incidents_reported"], context);
-    await _updateIncidentResolvedProvider(json["incidents_resolved"], context);
+    await _updateIncidentReportedProvider(json["incidentsReported"], context);
+    await _updateIncidentResolvedProvider(json["incidentsResolved"], context);
 
     await _updateIncidentSubtypeAnalyticsProvider(
-        json["incidents_by_subtype"], context);
+        json["totalIncidentsOnSubTypes"], context);
     await _updateIncidentLocationAnalyticsProvider(
-        json["incidents_by_location"], context);
-    await _updateActionTeamEfficiencyProvider(
-        json["action_team_efficiency"], context);
+        json["totalIncidentsOnLocations"], context);
+    await _updateActionTeamEfficiencyProvider(json["efficiency"], context);
   }
 
   Future<void> _updateIncidentReportedProvider(int count, context) async {

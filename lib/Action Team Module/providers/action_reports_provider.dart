@@ -17,7 +17,7 @@ class ActionReportsProvider with ChangeNotifier {
     return fetchAllActionReports(context);
   }
 
-  Future<void> fetchAllActionReports(BuildContext context) async {
+  Future<String> fetchAllActionReports(BuildContext context) async {
     try {
       _error = null;
       isLoading = true;
@@ -32,17 +32,19 @@ class ActionReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        ToastService.showSyncingLocalDataSnackBar(context);
+        // ToastService.showSyncingLocalDataSnackBar(context);
         await _actionReportRepository.syncDb();
         _reports =
             await _actionReportRepository.fetchAdminActionReportsFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched admin action user reports from API.");
+        return "successfully fetched admin action reports from API";
       } else {
-        ToastService.showCouldNotConnectSnackBar(context);
+        // ToastService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch admin action reports from API.");
+        return "failed to fetch admin action reports from API.";
       }
     } catch (e) {
       _error = e.toString();

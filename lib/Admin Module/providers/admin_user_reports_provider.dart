@@ -15,10 +15,9 @@ class AdminUserReportsProvider with ChangeNotifier {
   final AdminUserReportsRepository _adminUserReportsRepository =
       AdminUserReportsRepository();
 
-  Future<void> fetchAdminUserReports(BuildContext context) async {
+  Future<String> fetchAdminUserReports(BuildContext context) async {
     try {
       _error = null;
-      _reports = null;
       isLoading = true;
       notifyListeners();
       _reports =
@@ -31,17 +30,19 @@ class AdminUserReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        ToastService.showSyncingLocalDataSnackBar(context);
+        // ToastService.showSyncingLocalDataSnackBar(context);
         await _adminUserReportsRepository.syncDb();
         _reports =
             await _adminUserReportsRepository.fetchAdminUserReportsFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched admin user reports from API.");
+        return "successfully fetched admin user reports from API";
       } else {
-        ToastService.showCouldNotConnectSnackBar(context);
+        // ToastService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch admin user reports from API.");
+        return "failed to fetch admin user reports from API.";
       }
     } catch (e) {
       _error = e.toString();

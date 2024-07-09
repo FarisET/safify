@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:safify/dummy.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
@@ -33,9 +34,7 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'locations.db');
 
-    // print("deleting database...");
-    // await deleteDatabase(path);
-    // print("database deleted...");
+    print("deleting database...");
 
     return await openDatabase(
       path,
@@ -258,6 +257,8 @@ class DatabaseHelper {
   }
 
   Future<void> clearDBdata() async {
+    debugPrint("Clearing database...");
+
     final db = await database;
     await db.delete('admin_user_reports');
     await db.delete('admin_action_reports');
@@ -267,6 +268,8 @@ class DatabaseHelper {
 
     await db.delete('user_form_reports');
     await db.delete('action_form_reports');
+
+    debugPrint("Cleared database.");
 
     // var list = await getAdminActionReports();
     // print("admin action reports: $list");
@@ -352,7 +355,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getAdminUserReports() async {
     final db = await database;
     final List<Map<String, dynamic>> maps =
-        await db.query('admin_user_reports');
+        await db.query('admin_user_reports', orderBy: "date_time DESC");
 
     return maps;
   }

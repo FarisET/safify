@@ -8,6 +8,7 @@ import 'package:safify/db/database_helper.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/services/notif_test_service.dart';
 import 'package:safify/services/notification_services.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/fcm_util.dart';
 import 'package:safify/widgets/admin_action_reports_list.dart';
 import 'package:safify/widgets/admin_user_reports_list.dart';
@@ -323,18 +324,40 @@ class _AdminHomePageState extends State<AdminHomePage>
                                   controller: _tabController,
                                   children: <Widget>[
                                     RefreshIndicator(
-                                        onRefresh: () async => await Provider
-                                                .of<AdminUserReportsProvider>(
-                                                    context,
-                                                    listen: false)
-                                            .fetchAdminUserReports(context),
+                                        onRefresh: () async {
+                                          final value = await Provider.of<
+                                                      AdminUserReportsProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .fetchAdminUserReports(context);
+                                          if (value.contains("success")) {
+                                            ToastService
+                                                .showUpdatedLocalDbSuccess(
+                                                    context);
+                                          } else {
+                                            ToastService
+                                                .showFailedToFetchReportsFromServer(
+                                                    context);
+                                          }
+                                        },
                                         child: const AdminUserReportsList()),
                                     RefreshIndicator(
-                                        onRefresh: () async => await Provider
-                                                .of<ActionReportsProvider>(
-                                                    context,
-                                                    listen: false)
-                                            .fetchAllActionReports(context),
+                                        onRefresh: () async {
+                                          final value = await Provider.of<
+                                                      ActionReportsProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .fetchAllActionReports(context);
+                                          if (value.contains("success")) {
+                                            ToastService
+                                                .showUpdatedLocalDbSuccess(
+                                                    context);
+                                          } else {
+                                            ToastService
+                                                .showFailedToFetchReportsFromServer(
+                                                    context);
+                                          }
+                                        },
                                         child:
                                             const AdminActionReportsList()) // Replace with Action Team Reports widget
                                   ],

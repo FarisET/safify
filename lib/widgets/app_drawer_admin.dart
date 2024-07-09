@@ -22,23 +22,26 @@ class AppDrawer extends StatelessWidget {
             height: MediaQuery.sizeOf(context).height * 0.15,
             color: Theme.of(context).primaryColor,
             padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.person_outline,
-                  size: 24,
-                  color: Theme.of(context).cardColor,
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  username!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 22,
-                    color: Colors.white,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.person_outline,
+                    size: 24,
+                    color: Theme.of(context).cardColor,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Text(
+                    username!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 22,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -73,7 +76,7 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
-                  subtitle: const Text("Coming soon"),
+                  // subtitle: const Text("Coming soon"),
                   onTap: () {
                     // Navigate to Add Location page
                     //    Navigator.pushNamed(context, '/addLocation');
@@ -91,7 +94,7 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
-                  subtitle: const Text("Coming soon"),
+                  // subtitle: const Text("Coming soon"),
                   onTap: () {
                     // Navigate to Add Category page
                     //  Navigator.pushNamed(context, '/addCategory');
@@ -154,7 +157,7 @@ class AppDrawer extends StatelessWidget {
                 color: Theme.of(context).secondaryHeaderColor,
               ),
             ),
-            subtitle: const Text("Coming soon"),
+            // subtitle: const Text("Coming soon"),
             onTap: () {
               // Navigate to Settings page
               //  Navigator.pushNamed(context, '/settings');
