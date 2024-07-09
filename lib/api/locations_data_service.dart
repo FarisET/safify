@@ -61,4 +61,24 @@ class LocationsDataService {
       throw Exception('Failed to load locations from API');
     }
   }
+
+  Future<Map<String, dynamic>> fetchLocationsAndSublocationsJson() async {
+    String? jwtToken = await storage.read(key: 'jwt');
+    Uri url =
+        Uri.parse('$IP_URL/userReport/dashboard/getLocationsAndSubLocations');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    } else {
+      throw Exception('Failed to load locations from API');
+    }
+  }
 }

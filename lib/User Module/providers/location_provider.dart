@@ -69,15 +69,11 @@ class LocationProviderClass extends ChangeNotifier {
 
   void getLocationPostData() async {
     // loading = true;
-    final locations = await _locationRepository.fetchLocations();
-    updateLocations(locations);
+    final locations = await _locationRepository.fetchLocationsFromDb();
+    LocationPost = locations;
     // setLocation(locations);
     // loading = false;
     notifyListeners();
-  }
-
-  void updateLocations(List<Location> locations) {
-    LocationPost = locations;
   }
 
   void setLocation(selectedVal) {
@@ -85,9 +81,9 @@ class LocationProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
-  void refresh() async {
-    final locations = await _locationRepository.fetchLocations();
-    setLocation(locations);
-    notifyListeners();
-  }
+  // void refresh() async {
+  //   final locations = await _locationRepository.fetchLocationsFromDb();
+  //   setLocation(locations);
+  //   notifyListeners();
+  // }
 }

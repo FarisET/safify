@@ -4,8 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
@@ -735,10 +733,10 @@ class _UserFormState extends State<UserForm> {
                                                     ),
                                                   ),
                                                   if (selectedValue
-                                                          .subLocationtPost !=
+                                                          .subLocations !=
                                                       null)
                                                     ...selectedValue
-                                                        .subLocationtPost!
+                                                        .subLocations!
                                                         .map((type) {
                                                       print(type);
                                                       return buildSubLocationMenuItem(

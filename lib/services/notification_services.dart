@@ -47,6 +47,7 @@ class NotificationServices {
       print("Got a message whilst in the foreground!");
 
       RemoteNotification? notification = message.notification;
+      // handle when notification is null
       AndroidNotification? android = message.notification!.android;
 
       if (kDebugMode) {

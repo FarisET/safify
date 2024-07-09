@@ -4,21 +4,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:safify/models/sub_location.dart';
+import 'package:safify/repositories/location_repository.dart';
 import 'package:safify/repositories/sublocation_repository.dart';
 import 'package:safify/utils/map_utils.dart';
 
-import '../../constants.dart';
-import '../../models/sub_location.dart';
-
 class SubLocationProviderClass extends ChangeNotifier {
-  List<SubLocation>? subLocationtPost;
+  List<SubLocation>? allSubLocations;
+
+  /// List of all sublocations for the selected location
+  List<SubLocation>? subLocations;
   bool loading = false;
   String? selectedSubLocation;
   String? jwtToken;
 
-  List<SubLocation>? allSubLocations;
   Map<String, List<SubLocation>> locationToSubLocationsMap = {};
-  final SublocationRepository _sublocationRepository = SublocationRepository();
+  final LocationRepository _locationRepository = LocationRepository();
 
   final storage = const FlutterSecureStorage();
 
@@ -26,14 +27,15 @@ class SubLocationProviderClass extends ChangeNotifier {
     loading = true;
     if (allSubLocations == null) {
       try {
-        final sublocations = await _sublocationRepository.fetchSublocations();
+        final sublocations =
+            await _locationRepository.fetchAllSublocationsFromDb();
         setAllSubLocations(sublocations);
       } catch (e) {
         print('Error fetching sublocations: $e');
       }
     }
 
-    subLocationtPost = getSubLocationsForLocation(locationId);
+    subLocations = getSubLocationsForLocation(locationId);
     loading = false;
     notifyListeners();
   }
@@ -54,14 +56,9 @@ class SubLocationProviderClass extends ChangeNotifier {
     return locationToSubLocationsMap[locationID] ?? [];
   }
 
-  void refresh() async {
-    final sublocations = await _sublocationRepository.fetchSublocations();
-    setAllSubLocations(sublocations);
-    notifyListeners();
-  }
+  // Future<void> refresh() async {
+  //   final list = await _locationRepository.fetchAllSublocationsFromDb();
+  //   setAllSubLocations(list);
+  //   notifyListeners();
+  // }
 }
-
-//IPs
-//stormfiber: 192.168.18.74
-//mobile data: 192.168.71.223
-  

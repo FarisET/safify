@@ -10,6 +10,7 @@ import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/user_report_form_details.dart';
+import 'package:safify/repositories/location_repository.dart';
 import 'package:safify/services/report_service.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/utils/network_util.dart';
@@ -124,6 +125,12 @@ class _HomePage2State extends State<HomePage2> {
             FloatingActionButton(
               //  backgroundColor: Colors.white,
               onPressed: () {
+                LocationRepository().syncDbLocationsAndSublocations();
+                DatabaseHelper().getAllSubLocations().then((value) {
+                  for (var subLocation in value) {
+                    print(subLocation);
+                  }
+                });
                 _showBottomSheet();
               },
               child: const Icon(
