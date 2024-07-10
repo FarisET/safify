@@ -113,8 +113,14 @@ class _ActionTeamHomePageState extends State<ActionTeamHomePage> {
         child: RefreshIndicator(
           onRefresh: () async {
             try {
-              await Provider.of<AssignedTasksProvider>(context, listen: false)
+              final value = await Provider.of<AssignedTasksProvider>(context,
+                      listen: false)
                   .fetchAssignedTasks(context);
+              if (value.contains("success")) {
+                ToastService.showUpdatedLocalDbSuccess(context);
+              } else {
+                ToastService.showFailedToFetchReportsFromServer(context);
+              }
             } on SocketException {
               ToastService.showNoConnectionSnackBar(context);
             }

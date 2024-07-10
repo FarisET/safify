@@ -17,7 +17,7 @@ class CountIncidentsResolvedProvider extends ChangeNotifier {
     loading = true;
     // _totalIncidentsResolved = await fetchIncidentsResolved();
     final val = await _analyticsRepository.fetchTotalIncidentsResolvedFromDb();
-    _totalIncidentsResolved = val.toString();
+    _totalIncidentsResolved = val != null ? val.toString() : "n/a";
     print("Total Incidents Resolved: $_totalIncidentsResolved");
     ;
 

@@ -18,7 +18,7 @@ class UserReportsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchReports(BuildContext context) async {
+  Future<String> fetchReports(BuildContext context) async {
     try {
       _error = null;
       isLoading = true;
@@ -31,16 +31,16 @@ class UserReportsProvider with ChangeNotifier {
       final ping = await ping_google();
 
       if (ping) {
-        ToastService.showSyncingLocalDataSnackBar(context);
         await _userReportsRepository.syncDb();
         _reports = await _userReportsRepository.fetchUserReportsFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched user's reports from API.");
+        return "successfully fetched user reports from API";
       } else {
-        ToastService.showNoConnectionSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch user's reports from API.");
+        return "failed to fetch user reports from API.";
       }
     } catch (e) {
       _error = e.toString();

@@ -12,6 +12,7 @@ import 'package:safify/components/shimmer_box.dart';
 import 'package:safify/models/action_team_efficiency.dart';
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -119,7 +120,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await AnalyticsRepository().updateAnalytics(context);
+          final value = await AnalyticsRepository().updateAnalytics(context);
+          if (value.contains("success")) {
+            ToastService.showUpdatedLocalDbSuccess(context);
+          } else {
+            ToastService.showFailedToFetchReportsFromServer(context);
+          }
         },
         child: ListView(
           padding: EdgeInsets.zero,

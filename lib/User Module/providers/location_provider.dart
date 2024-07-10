@@ -57,20 +57,23 @@
 //   }
 // }
 
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image/image.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/repositories/location_repository.dart';
 
-class LocationProviderClass extends ChangeNotifier {
-  List<Location>? LocationPost;
+class LocationProvider extends ChangeNotifier {
+  List<Location>? allLocations;
   bool loading = false;
   String? selectedLocation;
   final LocationRepository _locationRepository = LocationRepository();
 
-  void getLocationPostData() async {
+  Future<void> fetchLocations() async {
     // loading = true;
-    final locations = await _locationRepository.fetchLocationsFromDb();
-    LocationPost = locations;
+    final locationsList = await _locationRepository.fetchLocationsFromDb();
+    allLocations = locationsList;
     // setLocation(locations);
     // loading = false;
     notifyListeners();
@@ -79,6 +82,16 @@ class LocationProviderClass extends ChangeNotifier {
   void setLocation(selectedVal) {
     selectedLocation = selectedVal;
     notifyListeners();
+  }
+
+  Future<void> SyncDbAndFetchLocations() async {
+    try {
+      await _locationRepository.syncDbLocationsAndSublocations();
+      await fetchLocations();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   // void refresh() async {

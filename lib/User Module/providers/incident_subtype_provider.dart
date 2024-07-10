@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:safify/repositories/incident_subtypes_repository.dart';
+import 'package:safify/repositories/incident_types_repository.dart';
 import 'package:safify/utils/map_utils.dart';
 
 import '../../constants.dart';
@@ -18,13 +19,12 @@ class SubIncidentProviderClass extends ChangeNotifier {
   List<IncidentSubType>? filteredIncidentSubTypes;
   final storage = const FlutterSecureStorage();
 
-  /**
-   * List of all the subtypes of incidents
-   */
+  /// List of all the subtypes of incidents
   List<IncidentSubType>? allSubIncidents;
+
   Map<String, List<IncidentSubType>> incidentToSubIncidentsMap = {};
-  final IncidentSubtypesRepository _incidentSubtypesRepository =
-      IncidentSubtypesRepository();
+  final IncidentTypesRepository _incidentTypesRepository =
+      IncidentTypesRepository();
 
   Future<void> getSubIncidentPostData(String incidentId) async {
     loading = true;
@@ -32,15 +32,15 @@ class SubIncidentProviderClass extends ChangeNotifier {
     if (allSubIncidents == null) {
       try {
         final incidentSubtypes =
-            await _incidentSubtypesRepository.fetchIncidentSubtypes();
+            // await _incidentSubtypesRepository.fetchIncidentSubtypes();
+            await _incidentTypesRepository.fetchAllIncidentSubTypesFromDb();
         setAllIncidentSubTypes(incidentSubtypes);
+        notifyListeners();
       } catch (e) {
         print('Error fetching incident subtypes: $e');
       }
     }
-
     subIncidentPost = getSubIncidentsForIncident(incidentId);
-    // subIncidentPost = await fetchIncidentSubTypes(selectedIncidentType);
     loading = false;
     notifyListeners();
   }
@@ -48,13 +48,8 @@ class SubIncidentProviderClass extends ChangeNotifier {
   void setAllIncidentSubTypes(List<IncidentSubType> allIncidentSubTypes) {
     this.allSubIncidents = allIncidentSubTypes;
     incidentToSubIncidentsMap = makeIncidentSubtypeMap(allIncidentSubTypes);
-
-    notifyListeners();
   }
 
-  /**
-   * 
-   */
   void setSubIncidentType(selectedVal) {
     selectedSubIncident = selectedVal;
     notifyListeners();
@@ -64,10 +59,11 @@ class SubIncidentProviderClass extends ChangeNotifier {
     return incidentToSubIncidentsMap[incidentID] ?? [];
   }
 
-  void refresh() async {
-    final incidentSubtypes =
-        await _incidentSubtypesRepository.fetchIncidentSubtypes();
-    setAllIncidentSubTypes(incidentSubtypes);
-    notifyListeners();
-  }
+  // void refresh() async {
+  //   final incidentSubtypes =
+  //       // await _incidentSubtypesRepository.fetchIncidentSubtypes();
+  //       await _incidentTypesRepository.fetchAllIncidentSubTypesFromDb();
+  //   setAllIncidentSubTypes(incidentSubtypes);
+  //   notifyListeners();
+  // }
 }

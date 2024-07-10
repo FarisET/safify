@@ -182,8 +182,8 @@ class MyApp extends StatelessWidget {
             create: (context) => IncidentProviderClass()),
         ChangeNotifierProvider<SubIncidentProviderClass>(
             create: (context) => SubIncidentProviderClass()),
-        ChangeNotifierProvider<LocationProviderClass>(
-            create: (context) => LocationProviderClass()),
+        ChangeNotifierProvider<LocationProvider>(
+            create: (context) => LocationProvider()),
         ChangeNotifierProvider<SubLocationProviderClass>(
             create: (context) => SubLocationProviderClass()),
         ChangeNotifierProvider<DepartmentProviderClass>(

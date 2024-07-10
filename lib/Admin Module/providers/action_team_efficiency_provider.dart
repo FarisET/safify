@@ -24,7 +24,7 @@ class ActionTeamEfficiencyProviderClass extends ChangeNotifier {
       // actionTeamEfficiency = await fetchActionTeamEfficiency();
       actionTeamEfficiency =
           await _analyticsRepository.fetchActionTeamEfficiencyAnalyticsFromDb();
-      print("action team: $actionTeamEfficiency");
+      print("action team efficiency: $actionTeamEfficiency");
 
       loading = false;
       notifyListeners();

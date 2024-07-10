@@ -13,7 +13,7 @@ class AssignedTasksProvider with ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  Future<void> fetchAssignedTasks(BuildContext context) async {
+  Future<String> fetchAssignedTasks(BuildContext context) async {
     try {
       _error = null;
       isLoading = true;
@@ -25,16 +25,18 @@ class AssignedTasksProvider with ChangeNotifier {
 
       final ping = await ping_google();
       if (ping) {
-        ToastService.showSyncingLocalDataSnackBar(context);
+        // ToastService.showSyncingLocalDataSnackBar(context);
         await _assignTasksRepository.syncDb();
         _tasks = await _assignTasksRepository.fetchAssignTasksFromDb();
         isLoading = false;
         notifyListeners();
         debugPrint("Fetched assigned tasks from API.");
+        return "successfully fetched assigned tasks from API";
       } else {
-        ToastService.showCouldNotConnectSnackBar(context);
+        // ToastService.showCouldNotConnectSnackBar(context);
         debugPrint(
             "No internet connection, could not fetch assigned tasks from API.");
+        return "failed to fetch assigned tasks from API.";
       }
     } catch (e) {
       _error = e.toString();

@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:safify/constants.dart';
+import 'package:safify/dummy.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:safify/utils/json_utils.dart';
@@ -63,6 +64,8 @@ class LocationsDataService {
   }
 
   Future<Map<String, dynamic>> fetchLocationsAndSublocationsJson() async {
+    // return locationsJson;
+
     String? jwtToken = await storage.read(key: 'jwt');
     Uri url =
         Uri.parse('$IP_URL/userReport/dashboard/getLocationsAndSubLocations');
@@ -78,7 +81,33 @@ class LocationsDataService {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse;
     } else {
-      throw Exception('Failed to load locations from API');
+      throw Exception('Failed to load locations from API: ${response.body}');
+    }
+  }
+
+  Future<Map<String, dynamic>> addLocation(String locationName) async {
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    Uri url = Uri.parse('$IP_URL/admin/dashboard/addLocationOrSubLocation');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'location_name': locationName,
+        'sub_location_name': null,
+        'location_id': null,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    } else {
+      throw Exception('Failed to add location: ${response.body}');
     }
   }
 }

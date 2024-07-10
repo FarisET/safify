@@ -39,7 +39,8 @@ class UserActionsModalSheet extends StatelessWidget {
         indent: MediaQuery.sizeOf(context).width * .04,
       ),
       _OptionItem(
-          icon: Icon(Icons.copy_all_rounded, color: Colors.blue[600], size: 26),
+          // icon: Icon(Icons.copy_all_rounded, color: Colors.blue[600], size: 26),
+          icon: Icon(Icons.search_rounded, color: Colors.blue[600], size: 26),
           name: 'Start Inspection',
           description: 'Capture an incident, hazard',
           onTap: () {}),

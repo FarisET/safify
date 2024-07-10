@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Admin%20Module/admin_pages/add_incident_type.dart';
+import 'package:safify/Admin%20Module/admin_pages/add_location_page.dart';
+import 'package:safify/Admin%20Module/admin_pages/add_subincident_type.dart';
+import 'package:safify/Admin%20Module/admin_pages/add_sublocation_page.dart';
 import 'package:safify/Admin%20Module/providers/announcement_provider.dart';
 import 'package:safify/models/announcement_notif.dart';
 import 'package:safify/services/pdf_download_service.dart';
@@ -64,8 +68,8 @@ class AppDrawer extends StatelessWidget {
                     Navigator.pushNamed(context, '/create_user_form');
                   },
                 ),
-                ListTile(
-                  horizontalTitleGap: 0,
+                ExpansionTile(
+                  // horizontalTitleGap: 0,
                   leading: Icon(Icons.location_on_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
@@ -76,14 +80,64 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
+                  children: [
+                    ListTile(
+                      title: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Add Location',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: mainHeaderSize,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                          ),
+                          Icon(Icons.add,
+                              color: Theme.of(context).secondaryHeaderColor),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AddLocationPage()));
+                        // Navigate to Add Country page
+                        //  Navigator.pushNamed(context, '/addCountry');
+                      },
+                    ),
+                    ListTile(
+                      title: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Add SubLocation',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: mainHeaderSize,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                          ),
+                          Icon(Icons.add,
+                              color: Theme.of(context).secondaryHeaderColor),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AddSublocationPage()));
+                      },
+                    ),
+                  ],
                   // subtitle: const Text("Coming soon"),
-                  onTap: () {
-                    // Navigate to Add Location page
-                    //    Navigator.pushNamed(context, '/addLocation');
-                  },
+                  // onTap: () {
+                  //   // Navigate to Add Location page
+                  //   //    Navigator.pushNamed(context, '/addLocation');
+                  // },
                 ),
-                ListTile(
-                  horizontalTitleGap: 0,
+                ExpansionTile(
+                  // horizontalTitleGap: 0,
                   leading: Icon(Icons.type_specimen_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
@@ -95,10 +149,58 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   // subtitle: const Text("Coming soon"),
-                  onTap: () {
-                    // Navigate to Add Category page
-                    //  Navigator.pushNamed(context, '/addCategory');
-                  },
+                  children: [
+                    ListTile(
+                      title: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text(
+                            'Add Incident Type',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: mainHeaderSize,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(Icons.add,
+                              color: Theme.of(context).secondaryHeaderColor),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AddIncidentTypePage()));
+                      },
+                    ),
+                    ListTile(
+                      title: Row(
+                        children: [
+                          Text(
+                            'Add Incident Subtype',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: mainHeaderSize,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(Icons.add,
+                              color: Theme.of(context).secondaryHeaderColor),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AddSubIncidentTypePage()));
+                        // Navigate to Add Incident Subtype page
+                        //  Navigator.pushNamed(context, '/addIncidentSubtype');
+                      },
+                    ),
+                  ],
+                  // onTap: () {
+                  //   // ExpansionTile()
+                  //   // Navigate to Add Category page
+                  //   //  Navigator.pushNamed(context, '/addCategory');
+                  // },
                 ),
                 ListTile(
                   horizontalTitleGap: 0,

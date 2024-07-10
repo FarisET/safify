@@ -94,16 +94,16 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.notifications),
-          onPressed: () async {
-            Future.delayed(const Duration(seconds: 0), () {
-              NotifTestService.testNotif();
-            });
-            // await DatabaseHelper().clearDBdata();
-            // print(await DatabaseHelper().getAdminUserReports());
-          },
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   child: const Icon(Icons.notifications),
+        //   onPressed: () async {
+        //     Future.delayed(const Duration(seconds: 0), () {
+        //       NotifTestService.testNotif();
+        //     });
+        //     // await DatabaseHelper().clearDBdata();
+        //     // print(await DatabaseHelper().getAdminUserReports());
+        //   },
+        // ),
         appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,

@@ -29,15 +29,19 @@ class AnalyticsRepository {
 
   final _analyticsDb = AnalyticsDb();
 
-  Future<int> fetchTotalIncidentsReportedFromDb() async {
+  Future<int?> fetchTotalIncidentsReportedFromDb() async {
     final totalIncidents =
         await _analyticsDb.getIncidentAnalyticsByName("incidents_reported");
+    print(
+        "totalIncidents['incident_count'] ${totalIncidents['incident_count']}");
     return totalIncidents['incident_count'];
   }
 
-  Future<int> fetchTotalIncidentsResolvedFromDb() async {
+  Future<int?> fetchTotalIncidentsResolvedFromDb() async {
     final totalIncidents =
         await _analyticsDb.getIncidentAnalyticsByName("incidents_resolved");
+    print(
+        "totalIncidents['incident_count'] ${totalIncidents['incident_count']}");
     return totalIncidents['incident_count'];
   }
 
@@ -76,13 +80,13 @@ class AnalyticsRepository {
     return list;
   }
 
-  Future<void> updateAnalytics(BuildContext context) async {
+  Future<String> updateAnalytics(BuildContext context) async {
     debugPrint("Updating analytics..");
 
     final ping = await ping_google();
     if (!ping) {
-      ToastService.showCouldNotConnectSnackBar(context);
-      return;
+      // ToastService.showCouldNotConnectSnackBar(context);
+      return "failed to update analytics";
     }
 
     final analyticsService = AnalyticsService();
@@ -91,11 +95,24 @@ class AnalyticsRepository {
     await _updateIncidentReportedProvider(json["incidentsReported"], context);
     await _updateIncidentResolvedProvider(json["incidentsResolved"], context);
 
-    await _updateIncidentSubtypeAnalyticsProvider(
-        json["totalIncidentsOnSubTypes"], context);
+    final List<dynamic> l = json["totalIncidentsOnSubTypes"];
+    final List<Map<String, dynamic>> incidentsOnSubTypes =
+        l.map((e) => e as Map<String, dynamic>).toList();
+    final List<dynamic> r = json["totalIncidentsOnLocations"];
+    final List<Map<String, dynamic>> incidentsOnLocation =
+        r.map((e) => e as Map<String, dynamic>).toList();
+    r.map((e) => print(e));
+
+    final List<dynamic> m = json["efficiency"];
+    final List<Map<String, dynamic>> actionTeamEfficiency =
+        m.map((e) => e as Map<String, dynamic>).toList();
+
+    await _updateIncidentSubtypeAnalyticsProvider(incidentsOnSubTypes, context);
     await _updateIncidentLocationAnalyticsProvider(
-        json["totalIncidentsOnLocations"], context);
-    await _updateActionTeamEfficiencyProvider(json["efficiency"], context);
+        incidentsOnLocation, context);
+    await _updateActionTeamEfficiencyProvider(actionTeamEfficiency, context);
+
+    return "successfully updated analytics from server";
   }
 
   Future<void> _updateIncidentReportedProvider(int count, context) async {
@@ -108,7 +125,8 @@ class AnalyticsRepository {
         .getCountReportedPostData();
   }
 
-  Future<void> _updateIncidentResolvedProvider(int count, context) async {
+  Future<void> _updateIncidentResolvedProvider(
+      int count, BuildContext context) async {
     await _analyticsDb.insertIncidentAnalytic({
       "analytics_name": "incidents_resolved",
       "incident_count": count,
@@ -118,7 +136,7 @@ class AnalyticsRepository {
   }
 
   Future<void> _updateIncidentSubtypeAnalyticsProvider(
-      List<Map<String, dynamic>> jsonList, context) async {
+      List<Map<String, dynamic>> jsonList, BuildContext context) async {
     await _analyticsDb.insertIncidentSubtypeAnalyticsJson(jsonList);
 
     Provider.of<CountByIncidentSubTypesProviderClass>(context, listen: false)
@@ -126,7 +144,7 @@ class AnalyticsRepository {
   }
 
   Future<void> _updateIncidentLocationAnalyticsProvider(
-      List<Map<String, dynamic>> jsonList, context) async {
+      List<Map<String, dynamic>> jsonList, BuildContext context) async {
     await _analyticsDb.insertIncidentLocationAnalyticsJson(jsonList);
 
     Provider.of<CountByLocationProviderClass>(context, listen: false)
@@ -134,7 +152,7 @@ class AnalyticsRepository {
   }
 
   Future<void> _updateActionTeamEfficiencyProvider(
-      List<Map<String, dynamic>> jsonList, context) async {
+      List<Map<String, dynamic>> jsonList, BuildContext context) async {
     await _analyticsDb.insertEfficiencyAnalyticsJson(jsonList);
 
     Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)

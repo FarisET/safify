@@ -135,8 +135,7 @@ class _UserFormState extends State<UserForm> {
             .getSubIncidentPostData(SelectedIncidentType!);
       }
 
-      Provider.of<LocationProviderClass>(context, listen: false)
-          .getLocationPostData();
+      Provider.of<LocationProvider>(context, listen: false).fetchLocations();
       if (SelectedIncidentType != null) {
         Provider.of<SubLocationProviderClass>(context, listen: false)
             .getSubLocationPostData(SelectedLocationType!);
@@ -295,8 +294,8 @@ class _UserFormState extends State<UserForm> {
                                           builder:
                                               (FormFieldState<String> state) {
                                             return DropdownButton<String>(
-                                              value:
-                                                  selectedVal.selectedIncident,
+                                              value: selectedVal
+                                                  .selectedIncidentType,
                                               style: TextStyle(
                                                 color: Theme.of(context)
                                                     .secondaryHeaderColor,
@@ -344,9 +343,9 @@ class _UserFormState extends State<UserForm> {
                                                     ),
                                                   ),
                                                 ),
-                                                if (selectedVal.incidentPost !=
+                                                if (selectedVal.incidentTypes !=
                                                     null)
-                                                  ...selectedVal.incidentPost!
+                                                  ...selectedVal.incidentTypes!
                                                       .map((type) {
                                                     return buildIncidentMenuItem(
                                                         type);
@@ -543,7 +542,7 @@ class _UserFormState extends State<UserForm> {
                                     ),
                                   ),
                                 ),
-                                Consumer<LocationProviderClass>(
+                                Consumer<LocationProvider>(
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
                                       return const Center(
@@ -619,9 +618,9 @@ class _UserFormState extends State<UserForm> {
                                                     ),
                                                   ),
                                                 ),
-                                                if (selectedVal.LocationPost !=
+                                                if (selectedVal.allLocations !=
                                                     null)
-                                                  ...selectedVal.LocationPost!
+                                                  ...selectedVal.allLocations!
                                                       .map((type) {
                                                     return buildLocationMenuItem(
                                                         type);
@@ -1050,10 +1049,11 @@ class _UserFormState extends State<UserForm> {
                                               setState(() {
                                                 returnedImage = null;
                                                 Provider.of<IncidentProviderClass>(
-                                                        context,
-                                                        listen: false)
-                                                    .selectedIncident = null;
-                                                Provider.of<LocationProviderClass>(
+                                                            context,
+                                                            listen: false)
+                                                        .selectedIncidentType =
+                                                    null;
+                                                Provider.of<LocationProvider>(
                                                         context,
                                                         listen: false)
                                                     .selectedLocation = null;

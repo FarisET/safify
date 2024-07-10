@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safify/dummy.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
@@ -9,8 +8,6 @@ import 'package:safify/models/location.dart';
 import 'package:safify/models/sub_location.dart';
 import 'package:safify/models/user_report.dart';
 import 'package:safify/models/user_report_form_details.dart';
-import 'package:safify/services/report_service.dart';
-import 'package:safify/widgets/user_report_list.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -34,7 +31,9 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'locations.db');
 
-    print("deleting database...");
+    // print("deleting database...");
+    // await deleteDatabase(path);
+    // print("deleted database.");
 
     return await openDatabase(
       path,
@@ -195,45 +194,6 @@ class DatabaseHelper {
               incident_count INTEGER
             )
         ''');
-
-        ///
-        await db.insert(
-          'locations',
-          Location(locationId: 'LT1', locationName: 'Main Entrance').toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-
-        // Insert one sublocation
-        await db.insert(
-          'sublocations',
-          const SubLocation(
-            sublocationId: 'SLT1',
-            location_id: 'LT1',
-            sublocationName: 'Reception Desk',
-          ).toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-
-        // Insert incident types and subtype
-
-        await db.insert(
-          'incident_types',
-          const IncidentType(
-            incidentTypeId: 'ITY1',
-            incidentTypeDescription: 'safety',
-          ).toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-
-        await db.insert(
-          'incident_subtypes',
-          const IncidentSubType(
-            incidentSubtypeId: 'ISTY1',
-            incidentTypeId: 'ITY1',
-            incidentSubtypeDescription: 'Physical Injury',
-          ).toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
       },
     );
   }
@@ -493,6 +453,31 @@ class DatabaseHelper {
       batch.insert(
         'sublocations',
         sublocation.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> insertIncidentAndSubincidentTypes(
+      List<IncidentType> incidentTypes,
+      List<IncidentSubType> incidentSubTypes) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (var incidentType in incidentTypes) {
+      batch.insert(
+        'incident_types',
+        incidentType.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    for (var incidentSubType in incidentSubTypes) {
+      batch.insert(
+        'incident_subtypes',
+        incidentSubType.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     }

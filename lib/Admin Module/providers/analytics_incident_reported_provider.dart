@@ -18,7 +18,7 @@ class CountIncidentsReportedProvider extends ChangeNotifier {
     // _totalIncidentsReported = await fetchIncidentsReported();
 
     final val = await _analyticsRepository.fetchTotalIncidentsReportedFromDb();
-    _totalIncidentsReported = val.toString();
+    _totalIncidentsReported = val != null ? val.toString() : "n/a";
     loading = false;
     notifyListeners();
   }

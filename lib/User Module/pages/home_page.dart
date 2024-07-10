@@ -10,9 +10,11 @@ import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/user_report_form_details.dart';
+import 'package:safify/repositories/incident_types_repository.dart';
 import 'package:safify/repositories/location_repository.dart';
 import 'package:safify/services/report_service.dart';
 import 'package:safify/services/UserServices.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import 'package:safify/widgets/user_actions_modal_sheet.dart';
 import 'package:safify/widgets/user_report_list.dart';
@@ -126,11 +128,7 @@ class _HomePage2State extends State<HomePage2> {
               //  backgroundColor: Colors.white,
               onPressed: () {
                 LocationRepository().syncDbLocationsAndSublocations();
-                DatabaseHelper().getAllSubLocations().then((value) {
-                  for (var subLocation in value) {
-                    print(subLocation);
-                  }
-                });
+                IncidentTypesRepository().syncDbIncidentAndSubincidentTypes();
                 _showBottomSheet();
               },
               child: const Icon(
@@ -287,9 +285,16 @@ class _HomePage2State extends State<HomePage2> {
                 child: RefreshIndicator(
                     onRefresh: () async {
                       updateUI();
-                      await Provider.of<UserReportsProvider>(context,
+                      final result = await Provider.of<UserReportsProvider>(
+                              context,
                               listen: false)
                           .fetchReports(context);
+                      if (result.contains("success")) {
+                        ToastService.showUpdatedLocalDbSuccess(context);
+                      } else {
+                        ToastService.showFailedToFetchReportsFromServer(
+                            context);
+                      }
                     },
                     child: const UserReportList()),
               )
