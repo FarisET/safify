@@ -81,187 +81,224 @@ class _AssignFormState extends State<AssignForm> {
         }
         return true;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            color: Colors.white,
-            icon: Icon(Icons.arrow_back,
-                color: Theme.of(context).secondaryHeaderColor),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            'Assign Task',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Theme.of(context).secondaryHeaderColor,
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              color: Colors.white,
+              icon: Icon(Icons.arrow_back,
+                  color: Theme.of(context).secondaryHeaderColor),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            title: Text(
+              'Assign Task',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
             ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      CustomSearchBar(
-                        controller: searchController,
-                        onSearchChanged: filterActionTeams,
-                        onFilterChanged: (filter) {
-                          setState(() {
-                            selectedFilter = filter;
-                          });
-                          filterActionTeams(searchController.text);
-                        },
-                        filterOptions: actionTeamProvider.allActionTeams
-                                ?.map((team) => team.department_name)
-                                .whereType<String>()
-                                .toSet()
-                                .toList() ??
-                            [],
-                        actionTeams: filteredActionTeams,
-                        onActionTeamSelected:
-                            _handleActionTeamSelected, // Handle selection
-                      ),
-                      SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: selectedRiskLevel,
-                        decoration: InputDecoration(
-                          labelText: 'Select Risk Level',
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                        ),
-                        items: List.generate(chipLabels.length, (index) {
-                          return DropdownMenuItem<String>(
-                            value: chipLabelsid[index],
-                            child: Text(chipLabels[index]),
-                          );
-                        }),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedRiskLevel = value;
-                            incident_criticality_id = value!;
-                          });
-                        },
-                        validator: (value) =>
-                            value == null ? 'Please select a risk level' : null,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[400],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: _formKey,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text("Select Action Team: $actionTeam",
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
-                          onPressed: isSubmitting
-                              ? null
-                              : () async {
-                                  if (actionTeam != '' &&
-                                      selectedRiskLevel != null) {
-                                    int result = await handleReportSubmitted(
-                                        context, this);
-                                    if (result == 1) {
-                                      await Provider.of<
-                                                  AdminUserReportsProvider>(
-                                              context,
-                                              listen: false)
-                                          .fetchAdminUserReports(context);
+                          const SizedBox(height: 10),
+                          CustomSearchBar(
+                            controller: searchController,
+                            onSearchChanged: filterActionTeams,
+                            onFilterChanged: (filter) {
+                              setState(() {
+                                selectedFilter = filter;
+                              });
+                              filterActionTeams(searchController.text);
+                            },
+                            filterOptions: actionTeamProvider.allActionTeams
+                                    ?.map((team) => team.department_name)
+                                    .whereType<String>()
+                                    .toSet()
+                                    .toList() ??
+                                [],
+                            actionTeams: filteredActionTeams,
+                            onActionTeamSelected:
+                                _handleActionTeamSelected, // Handle selection
+                          ),
+                          const SizedBox(height: 20),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text("Selected Risk Level:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField<String>(
+                            value: selectedRiskLevel,
+                            decoration: InputDecoration(
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              labelText: 'Select Risk Level',
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                            ),
+                            items: List.generate(chipLabels.length, (index) {
+                              return DropdownMenuItem<String>(
+                                value: chipLabelsid[index],
+                                child: Text(chipLabels[index]),
+                              );
+                            }),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedRiskLevel = value;
+                                incident_criticality_id = value!;
+                              });
+                            },
+                            validator: (value) => value == null
+                                ? 'Please select a risk level'
+                                : null,
+                          ),
+                          SizedBox(height: 10),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.sizeOf(context).height * 0.05,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[400],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () async {
+                                      if (actionTeam != '' &&
+                                          selectedRiskLevel != null) {
+                                        int result =
+                                            await handleReportSubmitted(
+                                                context, this);
+                                        if (result == 1) {
+                                          await Provider.of<
+                                                      AdminUserReportsProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .fetchAdminUserReports(context);
 
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                                const SnackBar(
+                                                  backgroundColor: Colors.blue,
+                                                  content: Text(
+                                                      'Report assigned successfully!'),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                ),
+                                              )
+                                              .closed
+                                              .then((_) {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const AdminHomePage()),
+                                            );
+                                          });
+                                        } else if (result == 0) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
                                             const SnackBar(
-                                              backgroundColor: Colors.blue,
-                                              content: Text(
-                                                  'Report assigned successfully!'),
+                                              backgroundColor: Colors.redAccent,
+                                              content:
+                                                  Text('Failed: Please retry'),
                                               duration: Duration(seconds: 3),
                                             ),
-                                          )
-                                          .closed
-                                          .then((_) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const AdminHomePage()),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.redAccent,
+                                            content: Text(
+                                                'Please Fill all required fields'),
+                                            duration: Duration(seconds: 3),
+                                          ),
                                         );
-                                      });
-                                    } else if (result == 0) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.redAccent,
-                                          content: Text('Failed: Please retry'),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor: Colors.redAccent,
-                                        content: Text(
-                                            'Please Fill all required fields'),
-                                        duration: Duration(seconds: 3),
-                                      ),
-                                    );
-                                  }
-                                },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: SizedBox(
-                              child: isSubmitting
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Assigning..",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(width: 20),
-                                        SizedBox(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.03,
-                                          width: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.03,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
+                                      }
+                                    },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: SizedBox(
+                                  child: isSubmitting
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              "Assigning..",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(width: 20),
+                                            SizedBox(
+                                              height: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.03,
+                                              width: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.03,
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : const Center(
+                                          child: Text(
+                                            "Assign",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ),
-                                      ],
-                                    )
-                                  : const Center(
-                                      child: Text(
-                                        "Assign",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),

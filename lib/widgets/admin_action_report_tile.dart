@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/action_reports_provider.dart';
 import 'package:safify/Action%20Team%20Module/providers/all_action_reports_approveal_provider.dart';
+import 'package:safify/Admin%20Module/providers/action_team_provider.dart';
 import 'package:safify/Admin%20Module/providers/delete_action_report_provider.dart';
 import 'package:safify/components/custom_button.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
+import 'package:safify/services/action_reports_service.dart';
 import 'package:safify/services/report_service.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/button_utils.dart';
+import 'package:safify/widgets/admin_action_reports_list.dart';
 
 class AdminActionReportTile extends StatelessWidget {
-  final ActionReport report;
+  final ActionReport actionReport;
 
-  const AdminActionReportTile({super.key, required this.report});
+  const AdminActionReportTile({super.key, required this.actionReport});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +45,7 @@ class AdminActionReportTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            report.incident_subtype_description!,
+                            actionReport.incident_subtype_description!,
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 18,
@@ -63,7 +69,7 @@ class AdminActionReportTile extends StatelessWidget {
                               color: Colors.black, size: 20),
                           Flexible(
                             child: Text(
-                              ' ${report.reported_by}',
+                              ' ${actionReport.reported_by}',
                               style: const TextStyle(),
                             ),
                           )
@@ -78,7 +84,7 @@ class AdminActionReportTile extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
-                              '${report.date_time?.split('T')[0]} | ${report.date_time?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}'),
+                              '${actionReport.date_time?.split('T')[0]} | ${actionReport.date_time?.split('T')[1].replaceAll(RegExp(r'\.\d+Z$'), '')}'),
                         )
                       ],
                     ),
@@ -92,8 +98,8 @@ class AdminActionReportTile extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8),
                             child: Text(
                               //    item.report_description!.isNotEmpty ?
-                              report.report_description!.isNotEmpty
-                                  ? report.report_description!
+                              actionReport.report_description!.isNotEmpty
+                                  ? actionReport.report_description!
                                   : '-',
                               style: const TextStyle(),
                             ),
@@ -110,7 +116,7 @@ class AdminActionReportTile extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8),
                             child: Text(
-                              '${report.resolution_description}',
+                              '${actionReport.resolution_description}',
                               style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.normal),
@@ -130,85 +136,23 @@ class AdminActionReportTile extends StatelessWidget {
                           ImageButton(
                               height: double.infinity,
                               onTap: () {
-                                handleImageButton(report.proof_image, context);
+                                handleImageButton(
+                                    actionReport.proof_image, context);
                               }),
                           ApproveButton(
                               height: double.infinity,
-                              isApproved: report.status!.contains('approved'),
+                              isApproved:
+                                  actionReport.status!.contains('approved'),
                               onTap: () async {
-                                if (report.action_report_id != null &&
-                                    report.user_report_id != null) {
-                                  ReportServices().postapprovedActionReport(
-                                      report.user_report_id,
-                                      report.action_report_id);
-                                  approvalStatusProvider
-                                      .updateStatus(report.status!);
-                                  fetchAllRepsProvider
-                                      .fetchAllActionReports(context);
-                                }
+                                await showApproveConfirmDialog(context);
                               }),
                           Visibility(
-                              visible: report.status != 'approved',
-                              child: RejectButton(onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Text("Reject?"),
-                                      content: const Text(
-                                          "Are you sure you want to reject this report?"),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: const Text("Cancel"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            DeleteActionReportProvider
-                                                deleteActionReportProvider =
-                                                Provider.of<
-                                                        DeleteActionReportProvider>(
-                                                    context,
-                                                    listen: false);
-
-                                            deleteActionReportProvider
-                                                .deleteActionReport(
-                                                    '${report.action_report_id}')
-                                                .then((success) async {
-                                              if (success) {
-                                                Navigator.of(context)
-                                                    .pop(); // Close the dialog
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                        const SnackBar(
-                                                  backgroundColor:
-                                                      Colors.greenAccent,
-                                                  content:
-                                                      Text('Report deleted'),
-                                                  duration:
-                                                      Duration(seconds: 2),
-                                                ));
-                                                await Provider.of<
-                                                            ActionReportsProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .fetchAllActionReports(
-                                                        context);
-
-                                                //PUSH NOTIFICATION
-                                              }
-                                            });
-                                          },
-                                          child: const Text("Confirm"),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              }))
+                              visible: actionReport.status != 'approved',
+                              child: RejectButton(
+                                onTap: () {
+                                  showRejectConfirmDialogue(context);
+                                },
+                              ))
                         ],
                       ),
                     ),
@@ -216,5 +160,89 @@ class AdminActionReportTile extends StatelessWidget {
             ],
           ),
         ));
+  }
+
+  Future<void> showApproveConfirmDialog(BuildContext context) {
+    final fetchAllRepsProvider =
+        Provider.of<ActionReportsProvider>(context, listen: false);
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Approve?"),
+          content: const Text("Are you sure you want to approve this report?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (actionReport.action_report_id != null &&
+                    actionReport.user_report_id != null) {
+                  final success = await ReportServices()
+                      .postapprovedActionReport(actionReport.user_report_id,
+                          actionReport.action_report_id);
+
+                  if (success) {
+                    fetchAllRepsProvider.fetchAllActionReports(context);
+                  } else {
+                    debugPrint("Failed to approve report");
+                  }
+                  ToastService.showReportApprovedSnackBar(context, success);
+                }
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showRejectConfirmDialogue(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Reject?"),
+          content: const Text(
+              "Are you sure you want to reject this report? This will delete the report."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final actionReportsService = ActionReportsService();
+                final result = await actionReportsService
+                    .deleteActionReport(actionReport.action_report_id!);
+
+                if (result) {
+                  final dbResult = await DatabaseHelper()
+                      .deleteAdminActionReport(actionReport.action_report_id!);
+                  if (dbResult) {
+                    final provResult = await Provider.of<ActionReportsProvider>(
+                            context,
+                            listen: false)
+                        .fetchAllActionReportsFromDb(context);
+                  }
+                }
+                Navigator.of(context).pop(); // Close the dialog
+
+                ToastService.showDeletedReportSnackBar(context, result);
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

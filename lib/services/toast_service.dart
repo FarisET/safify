@@ -256,4 +256,92 @@ class ToastService {
       ),
     ).show(context);
   }
+
+  static void showDeletedReportSnackBar(BuildContext context, bool result) {
+    if (result) {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.delete_forever_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Report deleted successfully.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    } else {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.error_outline_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Failed to delete report.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    }
+  }
+
+  static void showReportApprovedSnackBar(BuildContext context, bool result) {
+    if (result) {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.check_circle_outline_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Report approved successfully.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    } else {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.error_outline_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Failed to approve report.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    }
+  }
 }

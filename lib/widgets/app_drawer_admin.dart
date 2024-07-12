@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:safify/Admin%20Module/admin_pages/add_incident_type.dart';
+import 'package:safify/Admin%20Module/admin_pages/add_incident_type_page.dart';
 import 'package:safify/Admin%20Module/admin_pages/add_location_page.dart';
 import 'package:safify/Admin%20Module/admin_pages/add_subincident_type.dart';
 import 'package:safify/Admin%20Module/admin_pages/add_sublocation_page.dart';

@@ -8,7 +8,6 @@ import 'package:safify/constants.dart';
 import 'package:safify/models/action_report_form_details.dart';
 import 'package:safify/models/assign_task.dart';
 import 'package:safify/models/token_expired.dart';
-import 'package:safify/widgets/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -171,14 +170,14 @@ class ReportServices {
     }
   }
 
-  Future<void> postapprovedActionReport(
+  Future<bool> postapprovedActionReport(
       int? user_report_id, int? action_report_id) async {
     try {
       jwtToken = await storage.read(key: 'jwt');
 
       Uri url = Uri.parse('$IP_URL/admin/dashboard/approvedActionReport');
 
-      await http.post(
+      final response = await http.post(
         url,
         headers: {
           "Content-Type": "application/json",
@@ -191,9 +190,17 @@ class ReportServices {
           },
         ),
       );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to post approved action report: ${response.body}");
+        return false;
+      }
     } catch (e) {
       print('Error posting approved action report: $e');
-      throw Exception('Failed to post approved action report');
+      // throw Exception('Failed to post approved action report');
+      return false;
     }
   }
 

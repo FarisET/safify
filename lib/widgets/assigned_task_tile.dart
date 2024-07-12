@@ -18,14 +18,14 @@ class AssignedTaskTile extends StatelessWidget {
         //         ? Colors.orange[50]
         //         : Colors.green[50]),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(10),
         ),
         // side: BorderSide(
         //   // color: item.status!.contains('open')?Colors.redAccent:Colors.greenAccent,
         //    width:1)),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -69,6 +69,7 @@ class AssignedTaskTile extends StatelessWidget {
                     ),
 
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.location_on_outlined,
                             color: Colors.black, size: 20),
@@ -76,6 +77,7 @@ class AssignedTaskTile extends StatelessWidget {
                       ],
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.timer_outlined,
                             color: Colors.black, size: 20),
@@ -84,6 +86,7 @@ class AssignedTaskTile extends StatelessWidget {
                       ],
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.textsms_outlined,
                             color: Colors.black, size: 20),

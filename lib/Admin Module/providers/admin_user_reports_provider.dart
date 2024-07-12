@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/token_expired.dart';
 import 'package:safify/repositories/admin_user_reports_repository.dart';
 import 'package:safify/services/toast_service.dart';
@@ -44,6 +45,26 @@ class AdminUserReportsProvider with ChangeNotifier {
             "No internet connection, could not fetch admin user reports from API.");
         return "failed to fetch admin user reports from API.";
       }
+    } catch (e) {
+      _error = e.toString();
+      isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<String> fetchAdminUserReportsFromDb(BuildContext context) async {
+    try {
+      _error = null;
+      isLoading = true;
+      notifyListeners();
+      _reports =
+          await _adminUserReportsRepository.fetchAdminUserReportsFromDb();
+      isLoading = false;
+
+      notifyListeners();
+      debugPrint("Fetched admin user reports from local database.");
+      return "successfully fetched admin user reports from local database";
     } catch (e) {
       _error = e.toString();
       isLoading = false;

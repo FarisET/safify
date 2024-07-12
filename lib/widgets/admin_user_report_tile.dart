@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/Admin%20Module/admin_pages/assign_form.dart';
 import 'package:safify/Admin%20Module/providers/delete_user_report_provider.dart';
 import 'package:safify/Admin%20Module/providers/admin_user_reports_provider.dart';
+import 'package:safify/api/user_reports_service.dart';
 import 'package:safify/components/custom_button.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/user_report.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/button_utils.dart';
 import 'package:safify/utils/string_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminUserReportTile extends StatelessWidget {
   final UserReport userReport;
-  const AdminUserReportTile({super.key, required this.userReport});
+  final UserReportsService _userReportsService = UserReportsService();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  AdminUserReportTile({super.key, required this.userReport});
 
   @override
   Widget build(BuildContext context) {
@@ -184,32 +190,23 @@ class AdminUserReportTile extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 if (!'${item.status}'.contains('in progress')) {
-                  final deleteUserReportProvider =
-                      Provider.of<DeleteUserReportProvider>(context,
-                          listen: false);
-                  final success = await deleteUserReportProvider
+                  final success = await _userReportsService
                       .deleteUserReport('${item.userReportId}');
 
                   if (success) {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      backgroundColor: Colors.greenAccent,
-                      content: Text('Report deleted'),
-                      duration: Duration(seconds: 2),
-                    ));
-                    final allUserReportsProvider =
-                        Provider.of<AdminUserReportsProvider>(context,
-                            listen: false);
-                    await allUserReportsProvider.fetchAdminUserReports(context);
+                    final dbDeleteResult = await _databaseHelper
+                        .deleteAdminUserReport(item.userReportId!);
+                    if (dbDeleteResult) {
+                      final provResult =
+                          await Provider.of<AdminUserReportsProvider>(context,
+                                  listen: false)
+                              .fetchAdminUserReportsFromDb(context);
+                    }
                   }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    backgroundColor: Colors.redAccent,
-                    content: Text('Denied: task in progress'),
-                    duration: Duration(seconds: 2),
-                  ));
+
                   Navigator.of(context).pop(); // Close the dialog
-                }
+                  ToastService.showDeletedReportSnackBar(context, success);
+                } else {}
               },
               child: const Text("Confirm"),
             ),

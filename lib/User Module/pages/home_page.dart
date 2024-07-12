@@ -61,6 +61,10 @@ class _HomePage2State extends State<HomePage2> {
       appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/images/safify_icon.png'),
+          ),
           title: Text("Home",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -125,6 +129,8 @@ class _HomePage2State extends State<HomePage2> {
           mainAxisSize: MainAxisSize.min,
           children: [
             FloatingActionButton(
+              // backgroundColor: const Color(0xff1593f8),
+              backgroundColor: Colors.black,
               //  backgroundColor: Colors.white,
               onPressed: () {
                 LocationRepository().syncDbLocationsAndSublocations();
@@ -267,13 +273,12 @@ class _HomePage2State extends State<HomePage2> {
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
               // previous reports
-              Text(
+              const Text(
                 "My Reports",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Colors.grey.shade800,
-                ),
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.009,
@@ -290,7 +295,7 @@ class _HomePage2State extends State<HomePage2> {
                               listen: false)
                           .fetchReports(context);
                       if (result.contains("success")) {
-                        ToastService.showUpdatedLocalDbSuccess(context);
+                        // ToastService.showUpdatedLocalDbSuccess(context);
                       } else {
                         ToastService.showFailedToFetchReportsFromServer(
                             context);
@@ -361,7 +366,7 @@ class _HomePage2State extends State<HomePage2> {
         builder: (_) {
           return SizedBox(
             height: MediaQuery.sizeOf(context).height * .4,
-            child: UserActionsModalSheet(),
+            child: const UserActionsModalSheet(),
           );
         });
   }

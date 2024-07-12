@@ -24,7 +24,7 @@ class BackgroundTaskManager {
   Future<void> initializeWorkManager() async {
     await Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: true,
+      isInDebugMode: false,
     );
   }
 

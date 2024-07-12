@@ -18,7 +18,6 @@ import 'package:safify/services/message_handler.dart';
 import 'package:safify/services/notification_services.dart';
 import 'package:safify/widgets/terms_and_conditions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'Action Team Module/pages/action_team_home_page.dart';
 import 'Action Team Module/providers/all_action_reports_approveal_provider.dart';

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Required for LengthLimitingTextInputFormatter
 import 'package:safify/api/locations_data_service.dart';
@@ -47,6 +48,27 @@ class _AddLocationPageState extends State<AddLocationPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      const SizedBox(height: 10.0),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              CupertinoIcons.location_solid,
+                              color: Colors.black,
+                              size: 20.0,
+                            ),
+                            const SizedBox(width: 10.0),
+                            Text("New Location Name",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                )),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
                       TextField(
                         autofocus: true,
                         controller: _locationController,
@@ -55,6 +77,9 @@ class _AddLocationPageState extends State<AddLocationPage> {
                           LengthLimitingTextInputFormatter(50),
                         ],
                         decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white,
+                          filled: true,
                           labelText: 'New Location Name',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -124,11 +149,11 @@ class _AlertDialogBoxState extends State<AlertDialogBox> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text('Are you sure you want to add this new location:'),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           Text(widget.locationName,
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -140,7 +165,7 @@ class _AlertDialogBoxState extends State<AlertDialogBox> {
                 child: const Text('Cancel'),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(10.0),
@@ -151,8 +176,33 @@ class _AlertDialogBoxState extends State<AlertDialogBox> {
                       isSubmitting = true;
                     });
                     // Handle the confirmation action
-                    await Future.delayed(const Duration(seconds: 1));
-                    //     await _locationsDataService.addLocation(locationName);
+                    // await Future.delayed(const Duration(seconds: 1));
+
+                    try {
+                      // throw Exception(
+                      //     'Error adding location'); // remove this later
+
+                      await _locationsDataService
+                          .addLocation(widget.locationName);
+                    } catch (e) {
+                      print('Error adding location: $e');
+
+                      Navigator.of(context).popUntil(
+                          (route) => route.isFirst); // final response =
+                      ToastService.showCustomSnackBar(
+                        context: context,
+                        content: const Text('Failed to add location:'),
+                        leading: const Icon(
+                          Icons.error,
+                          color: Colors.black,
+                        ),
+                      );
+                      setState(() {
+                        isSubmitting = false;
+                      });
+                      return;
+                    }
+
                     setState(() {
                       isSubmitting = false;
                     });

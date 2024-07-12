@@ -320,6 +320,32 @@ class DatabaseHelper {
     return maps;
   }
 
+  Future<bool> deleteAdminUserReport(int userReportId) async {
+    final db = await database;
+    final int result = await db.delete(
+      'admin_user_reports',
+      where: 'user_report_id = ?',
+      whereArgs: [userReportId],
+    );
+    return result == 1;
+  }
+
+  Future<bool> deleteAdminActionReport(int actionReportId) async {
+    final db = await database;
+    final int result = await db.delete(
+      'admin_action_reports',
+      where: 'action_report_id = ?',
+      whereArgs: [actionReportId],
+    );
+    return result == 1;
+  }
+
+  Future<int> clearTable(String tableName) async {
+    final db = await database;
+    final int result = await db.delete(tableName);
+    return result;
+  }
+
   Future<void> insertAssignTasks(List<AssignTask> assignTasks) async {
     final db = await database;
     Batch batch = db.batch();

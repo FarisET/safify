@@ -62,52 +62,6 @@ void handleImageButton(String? imageUrl, BuildContext context) {
   }
 }
 
-void showRejectActionReportDialogue(BuildContext context, ActionReport item) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Reject?"),
-        content: Text("Are you sure you want to reject this report?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              DeleteActionReportProvider deleteActionReportProvider =
-                  Provider.of<DeleteActionReportProvider>(context,
-                      listen: false);
-
-              deleteActionReportProvider
-                  .deleteActionReport('${item.action_report_id}')
-                  .then((success) async {
-                if (success) {
-                  Navigator.of(context).pop(); // Close the dialog
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    backgroundColor: Colors.greenAccent,
-                    content: Text('Report deleted'),
-                    duration: Duration(seconds: 2),
-                  ));
-                  await Provider.of<ActionReportsProvider>(context,
-                          listen: false)
-                      .fetchAllActionReports(context);
-
-                  //PUSH NOTIFICATION
-                }
-              });
-            },
-            child: Text("Confirm"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
 void startResolution(AssignTask item, BuildContext context) async {
   //Add to Assigned form
   //  Fluttertoast.showToast(msg: '${item.id}');

@@ -30,14 +30,16 @@ class _AddSubIncidentTypePageState extends State<AddSubIncidentTypePage> {
     super.initState();
 
     Provider.of<IncidentProviderClass>(context, listen: false)
-        .getIncidentPostData();
+        .syncDbAndFetchIncidentTypes();
   }
 
-  void _showConfirmationDialog(String incidentName, String subincidentName) {
+  void _showConfirmationDialog(
+      String incidentId, String subincidentName, String incidentName) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return SubIncidentAlertDialogBox(
+          incidentId: incidentId,
           incidentName: incidentName,
           subincidentName: subincidentName,
         );
@@ -105,7 +107,7 @@ class _AddSubIncidentTypePageState extends State<AddSubIncidentTypePage> {
                         expandedInsets:
                             const EdgeInsets.symmetric(horizontal: 0.0),
                         requestFocusOnTap: true,
-                        menuHeight: MediaQuery.sizeOf(context).height * 0.4,
+                        menuHeight: MediaQuery.sizeOf(context).height * 0.3,
                         label: const Text("Select Incident Type"),
                         controller: _incdentTypeController,
                         enableFilter: true,
@@ -165,31 +167,31 @@ class _AddSubIncidentTypePageState extends State<AddSubIncidentTypePage> {
                             ),
                           ),
                         )),
-                    const SizedBox(height: 20.0),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: RichText(
-                            text: TextSpan(
-                              text: 'Selected Incident Type ID: ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
-                                color: Colors
-                                    .black, // You can specify the color if needed
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: _selectedIncidentId ?? 'None',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )),
+                    // const SizedBox(height: 20.0),
+                    // Align(
+                    //     alignment: Alignment.centerLeft,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.only(left: 8.0),
+                    //       child: RichText(
+                    //         text: TextSpan(
+                    //           text: 'Selected Incident Type ID: ',
+                    //           style: const TextStyle(
+                    //             fontWeight: FontWeight.bold,
+                    //             fontSize: 16.0,
+                    //             color: Colors
+                    //                 .black, // You can specify the color if needed
+                    //           ),
+                    //           children: [
+                    //             TextSpan(
+                    //               text: _selectedIncidentId ?? 'None',
+                    //               style: const TextStyle(
+                    //                 fontWeight: FontWeight.normal,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     )),
                     const SizedBox(height: 40.0),
                     Padding(
                       padding: EdgeInsets.only(left: 8.0),
@@ -265,8 +267,8 @@ class _AddSubIncidentTypePageState extends State<AddSubIncidentTypePage> {
                     final incidentSubtype = _subtypeController.text;
                     if (_selectedIncidentName != null &&
                         incidentSubtype.isNotEmpty) {
-                      _showConfirmationDialog(
-                          _selectedIncidentName!, incidentSubtype);
+                      _showConfirmationDialog(_selectedIncidentId!,
+                          incidentSubtype, _selectedIncidentName!);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           duration: Duration(seconds: 1),
@@ -286,10 +288,12 @@ class _AddSubIncidentTypePageState extends State<AddSubIncidentTypePage> {
 }
 
 class SubIncidentAlertDialogBox extends StatefulWidget {
+  final String incidentId;
   final String incidentName;
   final String subincidentName;
   SubIncidentAlertDialogBox({
     super.key,
+    required this.incidentId,
     required this.incidentName,
     required this.subincidentName,
   });
@@ -361,12 +365,37 @@ class _SubIncidentAlertDialogBoxState extends State<SubIncidentAlertDialogBox> {
                     setState(() {
                       isSubmitting = true;
                     });
-                    // Handle the confirmation action
-                    await Future.delayed(const Duration(seconds: 1));
 
-                    setState(() {
-                      isSubmitting = false;
-                    });
+                    try {
+                      // throw Exception(
+                      //     'Error adding Incident Subtype'); // remove this later
+
+                      final response =
+                          await _incidentTypeDataService.addIncidentSubType(
+                              widget.subincidentName, widget.incidentId);
+                    } catch (e) {
+                      setState(() {
+                        isSubmitting = false;
+                      });
+
+                      Navigator.of(context).popUntil(
+                          (route) => route.isFirst); // final response =
+                      ToastService.showCustomSnackBar(
+                          context: context,
+                          leading: const Icon(
+                            Icons.error_outline_rounded,
+                            color: Colors.black,
+                          ),
+                          content: const Text(
+                            'An error occurred while adding Incident SubType.',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          textColor: Colors.white);
+                      return;
+                    }
+
                     Navigator.of(context)
                         .popUntil((route) => route.isFirst); // final response =
                     // print('Response: $response');
@@ -382,6 +411,9 @@ class _SubIncidentAlertDialogBoxState extends State<SubIncidentAlertDialogBox> {
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         textColor: Colors.white);
+                    setState(() {
+                      isSubmitting = false;
+                    });
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.03,

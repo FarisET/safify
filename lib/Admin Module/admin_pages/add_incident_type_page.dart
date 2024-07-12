@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Required for LengthLimitingTextInputFormatter
 import 'package:safify/api/incident_types_data_service.dart';
@@ -49,6 +50,27 @@ class _AddIncidentTypePageState extends State<AddIncidentTypePage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      const SizedBox(height: 10.0),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.warning,
+                              color: Colors.black,
+                              size: 20.0,
+                            ),
+                            const SizedBox(width: 10.0),
+                            Text("New Incident Type Name",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                )),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
                       TextField(
                         autofocus: true,
                         controller: _incidTypeController,
@@ -57,6 +79,9 @@ class _AddIncidentTypePageState extends State<AddIncidentTypePage> {
                           LengthLimitingTextInputFormatter(50),
                         ],
                         decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white,
+                          filled: true,
                           labelText: 'New Incident Type Name',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -160,8 +185,32 @@ class _AlertDialogBoxState extends State<AlertDialogBoxa> {
                     setState(() {
                       isSubmitting = true;
                     });
-                    // Handle the confirmation action
-                    await Future.delayed(const Duration(seconds: 1));
+                    try {
+                      // throw Exception(
+                      //     'Error adding Incident Type'); // remove this later
+
+                      await _incidentTypeDataService
+                          .addIncidentType(widget.incidentType);
+                    } catch (e) {
+                      setState(() {
+                        isSubmitting = false;
+                      });
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      ToastService.showCustomSnackBar(
+                          context: context,
+                          leading: const Icon(
+                            Icons.error_outline_rounded,
+                            color: Colors.black,
+                          ),
+                          content: const Text(
+                            'Error adding Incident Type',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          textColor: Colors.white);
+                      return;
+                    }
 
                     setState(() {
                       isSubmitting = false;

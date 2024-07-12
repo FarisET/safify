@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/action_report.dart';
 import 'package:safify/repositories/admin_action_reports_repository.dart';
 import 'package:safify/services/toast_service.dart';
@@ -21,6 +22,7 @@ class ActionReportsProvider with ChangeNotifier {
     try {
       _error = null;
       isLoading = true;
+      // await DatabaseHelper().clearTable("admin_action_reports");
       final reports =
           await _actionReportRepository.fetchAdminActionReportsFromDb();
       _reports = reports;
@@ -51,6 +53,28 @@ class ActionReportsProvider with ChangeNotifier {
       isLoading = false;
       notifyListeners();
       rethrow;
+    }
+  }
+
+  Future<String> fetchAllActionReportsFromDb(BuildContext context) async {
+    try {
+      _error = null;
+      isLoading = true;
+      final reports =
+          await _actionReportRepository.fetchAdminActionReportsFromDb();
+      _reports = reports;
+      isLoading = false;
+
+      notifyListeners();
+      debugPrint("Fetched admin action reports from local database.");
+      return "successfully fetched admin action reports from local database.";
+    } catch (e) {
+      _error = e.toString();
+      isLoading = false;
+      notifyListeners();
+      return "failed to fetch admin action reports from local database.";
+
+      // rethrow;
     }
   }
 

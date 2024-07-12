@@ -31,17 +31,20 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
   void initState() {
     super.initState();
 
+    // Provider.of<LocationProvider>(context, listen: false).fetchLocations();
     Provider.of<LocationProvider>(context, listen: false)
         .SyncDbAndFetchLocations();
   }
 
-  void _showConfirmationDialog(String locationName, String sublocationName) {
+  void _showConfirmationDialog(
+      String locationId, String sublocationName, String locationName) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return SublocationAlertDialogBox(
-          locationName: locationName,
+          locationId: locationId,
           sublocationName: sublocationName,
+          locationName: locationName,
         );
       },
     );
@@ -63,31 +66,7 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
             children: [
               Expanded(
                 child: Column(
-                  children:
-                      // locationsProvider.allLocations == null
-                      //     ? [CircularProgressIndicator()]
-                      // :
-                      [
-                    // DropdownButtonFormField<String>(
-                    //   decoration: InputDecoration(
-                    //     labelText: 'Select Location',
-                    //     border: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //   ),
-                    //   items: locationsProvider.allLocations!
-                    //       .map((location) {
-                    //     return DropdownMenuItem(
-                    //       value: location.locationName,
-                    //       child: Text(location.locationName),
-                    //     );
-                    //   }).toList(),
-                    //   onChanged: (value) {
-                    //     setState(() {
-                    //       _selectedLocation = value;
-                    //     });
-                    //   },
-                    // ),
+                  children: [
                     const SizedBox(height: 10.0),
                     const Padding(
                       padding: EdgeInsets.only(left: 8.0),
@@ -129,7 +108,7 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
                         expandedInsets:
                             const EdgeInsets.symmetric(horizontal: 0.0),
                         requestFocusOnTap: true,
-                        menuHeight: MediaQuery.sizeOf(context).height * 0.4,
+                        menuHeight: MediaQuery.sizeOf(context).height * 0.3,
                         label: const Text("Select Location"),
                         controller: _locationController,
                         enableFilter: true,
@@ -189,32 +168,32 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
                             ),
                           ),
                         )),
-                    const SizedBox(height: 20.0),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: RichText(
-                            text: TextSpan(
-                              text: 'Selected Location ID: ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
-                                color: Colors
-                                    .black, // You can specify the color if needed
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: _selectedLocationId ?? 'None',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight
-                                        .normal, // Change the style for the location name
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )),
+                    // const SizedBox(height: 20.0),
+                    // Align(
+                    //     alignment: Alignment.centerLeft,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.only(left: 8.0),
+                    //       child: RichText(
+                    //         text: TextSpan(
+                    //           text: 'Selected Location ID: ',
+                    //           style: const TextStyle(
+                    //             fontWeight: FontWeight.bold,
+                    //             fontSize: 16.0,
+                    //             color: Colors
+                    //                 .black, // You can specify the color if needed
+                    //           ),
+                    //           children: [
+                    //             TextSpan(
+                    //               text: _selectedLocationId ?? 'None',
+                    //               style: const TextStyle(
+                    //                 fontWeight: FontWeight
+                    //                     .normal, // Change the style for the location name
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     )),
                     const SizedBox(height: 40.0),
                     Padding(
                       padding: EdgeInsets.only(left: 8.0),
@@ -289,8 +268,8 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
                     final sublocationName = _sublocationController.text;
                     if (_selectedLocationName != null &&
                         sublocationName.isNotEmpty) {
-                      _showConfirmationDialog(
-                          _selectedLocationName!, sublocationName);
+                      _showConfirmationDialog(_selectedLocationId!,
+                          sublocationName, _selectedLocationName!);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -312,10 +291,12 @@ class _AddSublocationPageState extends State<AddSublocationPage> {
 }
 
 class SublocationAlertDialogBox extends StatefulWidget {
+  final String locationId;
   final String locationName;
   final String sublocationName;
   SublocationAlertDialogBox({
     super.key,
+    required this.locationId,
     required this.locationName,
     required this.sublocationName,
   });
@@ -386,12 +367,32 @@ class _SublocationAlertDialogBoxState extends State<SublocationAlertDialogBox> {
                     setState(() {
                       isSubmitting = true;
                     });
-                    // Handle the confirmation action
-                    await Future.delayed(const Duration(seconds: 1));
-                    // await _locationsDataService.addSublocation(widget.locationName, widget.sublocationName);
-                    setState(() {
-                      isSubmitting = false;
-                    });
+
+                    try {
+                      // throw Exception(
+                      //     'Error adding sublocation'); // remove this later
+                      await _locationsDataService.addSublocation(
+                          widget.locationId, widget.sublocationName);
+                    } catch (e) {
+                      print('Error adding sublocation: $e');
+
+                      Navigator.of(context).popUntil(
+                          (route) => route.isFirst); // final response =
+                      ToastService.showCustomSnackBar(
+                        context: context,
+                        content: const Text('Failed to add location:'),
+                        leading: const Icon(
+                          Icons.error,
+                          color: Colors.black,
+                        ),
+                      );
+                      return;
+                    } finally {
+                      setState(() {
+                        isSubmitting = false;
+                      });
+                    }
+
                     Navigator.of(context)
                         .popUntil((route) => route.isFirst); // final response =
                     // print('Response: $response');

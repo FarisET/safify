@@ -62,7 +62,7 @@ class _AdminActionReportsListState extends State<AdminActionReportsList> {
             itemBuilder: (context, i) {
               var item = actionReportsProvider.reports![i];
 
-              return AdminActionReportTile(report: item);
+              return AdminActionReportTile(actionReport: item);
             },
           );
         } else if (actionReportsProvider.reports!.isEmpty &&
