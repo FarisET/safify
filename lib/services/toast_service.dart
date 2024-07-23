@@ -301,6 +301,50 @@ class ToastService {
     }
   }
 
+  static void showRejectedReportSnackBar(BuildContext context, bool result) {
+    if (result) {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.content_paste_off_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Report Rejected.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    } else {
+      DelightToastBar(
+        snackbarDuration: const Duration(seconds: 3),
+        animationDuration: const Duration(milliseconds: 450),
+        autoDismiss: true,
+        builder: (context) => const CustomToast(
+          leading: Icon(
+            Icons.error_outline_rounded,
+            size: 28,
+            color: Colors.black,
+          ),
+          title: Text(
+            "Failed to delete report.",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              // fontSize: 14,
+            ),
+          ),
+        ),
+      ).show(context);
+    }
+  }
+
   static void showReportApprovedSnackBar(BuildContext context, bool result) {
     if (result) {
       DelightToastBar(

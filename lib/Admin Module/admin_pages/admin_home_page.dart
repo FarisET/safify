@@ -89,6 +89,12 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            ToastService.showRejectedReportSnackBar(context, true);
+          },
+          child: const Icon(Icons.analytics_outlined),
+        ),
         // floatingActionButton: FloatingActionButton(
         //   child: const Icon(Icons.notifications),
         //   onPressed: () async {

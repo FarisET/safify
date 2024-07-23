@@ -141,6 +141,8 @@ class IncidentTypesDataService {
       }),
     );
 
+    print("Response: ${response.body}");
+
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse;

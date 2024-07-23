@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:safify/components/custom_button.dart';
 import 'package:safify/models/assign_task.dart';
@@ -36,23 +38,22 @@ class AssignedTaskTile extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 0.0),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            task.incident_subtype_description!,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Text(
+                              "${task.incident_subtype_description!} and accident and near the landing bay",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          //   Text('ID: ${item.id}'
-                          //   ,                                      style: TextStyle(
-                          //     color: Colors.black[800],
-                          //  //   fontSize: 18,
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          //   ),
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.04,
+                          ),
                           Text(
                               '${capitalizeFirstLetter(task.incident_criticality_level)}',
                               style: TextStyle(

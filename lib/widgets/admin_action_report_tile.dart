@@ -236,7 +236,7 @@ class AdminActionReportTile extends StatelessWidget {
                 }
                 Navigator.of(context).pop(); // Close the dialog
 
-                ToastService.showDeletedReportSnackBar(context, result);
+                ToastService.showRejectedReportSnackBar(context, result);
               },
               child: const Text("Confirm"),
             ),
