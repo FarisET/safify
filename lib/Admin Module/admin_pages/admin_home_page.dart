@@ -89,12 +89,12 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            ToastService.showRejectedReportSnackBar(context, true);
-          },
-          child: const Icon(Icons.analytics_outlined),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     ToastService.showRejectedReportSnackBar(context, true);
+        //   },
+        //   child: const Icon(Icons.analytics_outlined),
+        // ),
         // floatingActionButton: FloatingActionButton(
         //   child: const Icon(Icons.notifications),
         //   onPressed: () async {
@@ -207,16 +207,18 @@ class _AdminHomePageState extends State<AdminHomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               user_name != null
-                                  ? Text(
-                                      '$user_name',
-                                      style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold),
+                                  ? Flexible(
+                                      child: Text(
+                                        '$user_name',
+                                        style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     )
                                   : const Text(
                                       'Citizen',
                                       style: TextStyle(
-                                          fontSize: 22,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold),
                                     ),
                               SizedBox(

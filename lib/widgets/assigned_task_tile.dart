@@ -43,7 +43,7 @@ class AssignedTaskTile extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              "${task.incident_subtype_description!} and accident and near the landing bay",
+                              "${task.incident_subtype_description!}",
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,

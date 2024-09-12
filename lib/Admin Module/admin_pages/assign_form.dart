@@ -255,7 +255,7 @@ class _AssignFormState extends State<AssignForm> {
                                     },
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
+                                    const EdgeInsets.symmetric(vertical: 9),
                                 child: SizedBox(
                                   child: isSubmitting
                                       ? Row(
@@ -265,17 +265,17 @@ class _AssignFormState extends State<AssignForm> {
                                               "Assigning..",
                                               style: const TextStyle(
                                                   color: Colors.white,
-                                                  fontSize: 15,
+                                                  fontSize: 13,
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(width: 20),
                                             SizedBox(
                                               height: MediaQuery.sizeOf(context)
                                                       .height *
-                                                  0.03,
+                                                  0.04,
                                               width: MediaQuery.sizeOf(context)
                                                       .height *
-                                                  0.03,
+                                                  0.04,
                                               child:
                                                   const CircularProgressIndicator(
                                                 color: Colors.white,
@@ -288,7 +288,7 @@ class _AssignFormState extends State<AssignForm> {
                                             "Assign",
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 15,
+                                                fontSize: 13,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),

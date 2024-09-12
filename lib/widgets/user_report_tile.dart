@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:safify/components/custom_button.dart';
 import 'package:safify/models/user_report.dart';
+import 'package:safify/utils/button_utils.dart';
 import 'package:safify/utils/string_utils.dart';
 
 class UserReportTile extends StatelessWidget {
@@ -34,12 +35,15 @@ class UserReportTile extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            userReport.incidentSubtypeDescription!,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          Flexible(
+                            flex: 70,
+                            child: Text(
+                              userReport.incidentSubtypeDescription!,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           Text(
@@ -95,49 +99,55 @@ class UserReportTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ImageButton(
-                              height: double.infinity,
-                              //   width: MediaQuery.sizeOf(context).width *
-                              //      0.35,
-                              onTap: () {
-                                if (userReport.image != null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return Dialog(
-                                        child: SizedBox(
-                                          width: MediaQuery.of(context)
-                                              .size
-                                              .width, // 70% of screen width
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height, // 70% of screen width (square box)
-                                          child: FittedBox(
-                                            fit: BoxFit
-                                                .contain, // Maintain aspect ratio, fit within the box
-                                            child: CachedNetworkImage(
-                                              imageUrl: '${userReport.image}',
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return const Dialog(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text('No Image Added'),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              }),
+                            height: double.infinity,
+                            onTap: () =>
+                                handleImageButton(userReport.image, context),
+                          ),
+                          // ImageButton(
+                          //     height: double.infinity,
+                          //     //   width: MediaQuery.sizeOf(context).width *
+                          //     //      0.35,
+                          //     onTap: () {
+                          //       if (userReport.image != null) {
+                          //         showDialog(
+                          //           context: context,
+                          //           builder: (context) {
+                          //             return Dialog(
+                          //               child: SizedBox(
+                          //                 width: MediaQuery.of(context)
+                          //                     .size
+                          //                     .width, // 70% of screen width
+                          //                 height: MediaQuery.of(context)
+                          //                     .size
+                          //                     .height, // 70% of screen width (square box)
+                          //                 child: FittedBox(
+                          //                   fit: BoxFit
+                          //                       .contain, // Maintain aspect ratio, fit within the box
+                          //                   child: CachedNetworkImage(
+                          //                     imageUrl: '${userReport.image}',
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             );
+                          //           },
+                          //         );
+                          //       } else {
+
+                          //         // showDialog(
+                          //         //   context: context,
+                          //         //   builder: (context) {
+                          //         //     return const Dialog(
+                          //         //       child: Column(
+                          //         //         mainAxisSize: MainAxisSize.min,
+                          //         //         children: [
+                          //         //           Text('No Image Added'),
+                          //         //         ],
+                          //         //       ),
+                          //         //     );
+                          //         //   },
+                          //         // );
+                          //       }
+                          //     }),
                           userReport.status!.contains('completed')
                               ? const Text('Completed',
                                   style: TextStyle(
