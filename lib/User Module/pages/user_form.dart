@@ -11,6 +11,7 @@ import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/location.dart';
 import 'package:safify/models/user_report_form_details.dart';
+import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/file_utils.dart';
 import 'package:safify/utils/network_util.dart';
@@ -924,16 +925,23 @@ class _UserFormState extends State<UserForm> {
                             child: Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          MediaQuery.of(context).size.width *
+                                              0.02,
+                                      vertical:
+                                          MediaQuery.of(context).size.height *
+                                              0.02),
                                   child: Row(
                                     children: [
-                                      Text(
-                                        'How severe was the incident?',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .secondaryHeaderColor,
-                                          fontWeight: FontWeight.bold,
+                                      Flexible(
+                                        child: Text(
+                                          'How severe was the incident?',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .secondaryHeaderColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -1070,6 +1078,13 @@ class _UserFormState extends State<UserForm> {
                                           } else {
                                             throw Exception("not mounted");
                                           }
+                                        } else if (flag == 4) {
+                                          Navigator.pop(context);
+
+                                          ToastService.showLocallySavedSnackBar(
+                                              context);
+
+                                          return;
                                         } else {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
@@ -1393,6 +1408,12 @@ class _UserFormState extends State<UserForm> {
     setState(() {
       isSubmitting = true;
     });
+    DatabaseHelper databaseHelper = DatabaseHelper();
+    var maps = await databaseHelper.getAllUserReports();
+
+    for (var map in maps) {
+      print(map);
+    }
 
     final pingSuccess = await ping_google();
 
@@ -1400,7 +1421,6 @@ class _UserFormState extends State<UserForm> {
       final tempImgPath = selectedImage != null
           ? await saveImageTempLocally(File(_imageFile!.path))
           : null;
-      ;
 
       final userFormReport = UserReportFormDetails(
         sublocationId: userFormState.SelectedSubLocationType,

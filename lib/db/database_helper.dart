@@ -216,6 +216,12 @@ class DatabaseHelper {
     return map[0];
   }
 
+  Future<List<Map<String, dynamic>>> getAllUserReports() async {
+    final db = await database;
+    final List<Map<String, dynamic>> map = await db.query('user_form_reports');
+    return map;
+  }
+
   Future<void> clearDBdata() async {
     debugPrint("Clearing database...");
 
