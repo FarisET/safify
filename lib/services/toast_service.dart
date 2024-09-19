@@ -83,7 +83,7 @@ class ToastService {
       animationDuration: const Duration(milliseconds: 450),
       autoDismiss: true,
 
-      snackbarDuration: const Duration(seconds: 3),
+      snackbarDuration: const Duration(seconds: 7),
       builder: (context) => const CustomToast(
         leading: Icon(
           CupertinoIcons.wifi_slash,
@@ -98,7 +98,7 @@ class ToastService {
           ),
         ),
         title: Text(
-          "Report Submitted.",
+          "No Connection, report saved locally.",
           style: TextStyle(
             fontWeight: FontWeight.w700,
             // fontSize: 14,
