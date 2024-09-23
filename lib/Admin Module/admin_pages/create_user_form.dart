@@ -31,7 +31,7 @@ class _CreatUserFormState extends State<CreatUserForm> {
   String userID = '';
   String password = '';
   String confirmPassword = '';
-
+  String selectedDepartmentId = '';
   final TextEditingController _idFieldController = TextEditingController();
   final TextEditingController _passFieldController = TextEditingController();
   final TextEditingController _confpassFieldController =
@@ -73,89 +73,90 @@ class _CreatUserFormState extends State<CreatUserForm> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_confirmedExit) {
-          // If the exit is confirmed, replace the current route with the home page
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const AdminHomePage()),
-          );
-          return false; // Prevent the user from going back
-        } else {
-          // Show the confirmation dialog
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Confirm Exit'),
-              content: const Text(
-                  'Do you want to leave this page? Any unsaved changes will be lost.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    // If the user confirms, set _confirmedExit to true and pop the dialog
-                    setState(() {
-                      _confirmedExit = true;
-                    });
-                    _processData();
+    final departmentProvider = Provider.of<DepartmentProviderClass>(context);
 
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AdminHomePage()),
-                    );
-                  },
-                  child: const Text('Yes'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // If the user cancels, do nothing and pop the dialog
-                    Navigator.pop(context);
-                  },
-                  child: const Text('No'),
-                ),
-              ],
+    return WillPopScope(
+        onWillPop: () async {
+          if (_confirmedExit) {
+            // If the exit is confirmed, replace the current route with the home page
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminHomePage()),
+            );
+            return false; // Prevent the user from going back
+          } else {
+            // Show the confirmation dialog
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Confirm Exit'),
+                content: const Text(
+                    'Do you want to leave this page? Any unsaved changes will be lost.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // If the user confirms, set _confirmedExit to true and pop the dialog
+                      setState(() {
+                        _confirmedExit = true;
+                      });
+                      _processData();
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AdminHomePage()),
+                      );
+                    },
+                    child: const Text('Yes'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // If the user cancels, do nothing and pop the dialog
+                      Navigator.pop(context);
+                    },
+                    child: const Text('No'),
+                  ),
+                ],
+              ),
+            );
+            return false;
+          }
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              leading: IconButton(
+                color: Colors.white,
+                icon: Icon(Icons.arrow_back,
+                    color: Theme.of(context).secondaryHeaderColor),
+                onPressed: () {
+                  // Add your navigation logic here, such as pop or navigate back
+                  Navigator.of(context).pop();
+                },
+              ),
+              title: Text('Create User',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  )),
             ),
-          );
-          return false;
-        }
-      },
-      child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              color: Colors.white,
-              icon: Icon(Icons.arrow_back,
-                  color: Theme.of(context).secondaryHeaderColor),
-              onPressed: () {
-                // Add your navigation logic here, such as pop or navigate back
-                Navigator.of(context).pop();
-              },
-            ),
-            title: Text('Create User',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Theme.of(context).secondaryHeaderColor,
-                )),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              key: _formKey,
-              child: SafeArea(
-                  child: Padding(
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                  key: _formKey,
+                  child: SafeArea(
+                    child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(children: [
-                          Expanded(
-                            child: ListView(
-                              children: [
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(children: [
+                            Expanded(
+                              child: ListView(children: [
                                 Padding(
                                   padding: const EdgeInsets.all(22.0),
                                   child: Column(
@@ -334,146 +335,217 @@ class _CreatUserFormState extends State<CreatUserForm> {
                                             //     'crit level: $incident_criticality_id');
                                           }
                                           isRoleSelected = true;
+
+                                          // If "Action Team" is selected, load the departments
+                                          if (chipLabels[index] ==
+                                              "Action Team") {
+                                            departmentProvider
+                                                .getDepartmentPostData();
+                                          }
                                         });
                                       },
                                     );
                                   }),
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue[400],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                              ),
-                              onPressed: isSubmitting
-                                  ? null
-                                  : () async {
-                                      if (userID != '' &&
-                                          password != '' &&
-                                          confirmPassword != '' &&
-                                          isRoleSelected) {
-                                        // setState(() {
-                                        //   isSubmitting = true;
-                                        // });
-                                        int flag = await handleReportSubmitted(
-                                            context, this);
 
-                                        if (flag == 1) {
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                backgroundColor: Colors.blue,
-                                                content: Text('User Created'),
+                                // If "Action Team" is selected, show the department dropdown
+                                if (isSelected[1])
+                                  Padding(
+                                    padding: const EdgeInsets.all(22.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Note: Please assign a department to your action team',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontWeight: FontWeight.bold,
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.02,
+                                        ),
+                                        DropdownButtonFormField<String>(
+                                          decoration: const InputDecoration(
+                                            labelText: 'Select Department',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          isExpanded: true,
+                                          value: selectedDepartmentId.isEmpty
+                                              ? null
+                                              : selectedDepartmentId,
+                                          items: departmentProvider
+                                              .departmentPost
+                                              ?.map((department) {
+                                            return DropdownMenuItem<String>(
+                                              value: department.Department_ID,
+                                              child: Text(
+                                                  department.Department_Name),
+                                            );
+                                          }).toList(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedDepartmentId =
+                                                  value ?? '';
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue[400],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                    ),
+                                    onPressed: isSubmitting
+                                        ? null
+                                        : () async {
+                                            if (userID != '' &&
+                                                password != '' &&
+                                                confirmPassword != '' &&
+                                                isRoleSelected) {
+                                              // setState(() {
+                                              //   isSubmitting = true;
+                                              // });
+                                              int flag =
+                                                  await handleReportSubmitted(
+                                                      context, this);
+
+                                              if (flag == 1) {
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      backgroundColor:
+                                                          Colors.blue,
+                                                      content:
+                                                          Text('User Created'),
+                                                      duration:
+                                                          Duration(seconds: 3),
+                                                    ),
+                                                  );
+                                                  _processData();
+                                                  // setState(() {
+                                                  // });
+
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const AdminHomePage()),
+                                                  );
+                                                } else {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    backgroundColor:
+                                                        Colors.redAccent,
+                                                    content: Text(
+                                                        'Failed: Please retry'),
+                                                    duration:
+                                                        Duration(seconds: 3),
+                                                  ));
+                                                }
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                  content: Text(
+                                                      'Unable to Create User'),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                ));
+                                              }
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                                content: Text(
+                                                    'Please Fill all required fields'),
                                                 duration: Duration(seconds: 3),
-                                              ),
-                                            );
-                                            _processData();
-                                            // setState(() {
-                                            // });
-
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const AdminHomePage()),
-                                            );
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                              backgroundColor: Colors.redAccent,
-                                              content:
-                                                  Text('Failed: Please retry'),
-                                              duration: Duration(seconds: 3),
-                                            ));
-                                          }
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                            backgroundColor: Colors.redAccent,
-                                            content:
-                                                Text('Unable to Create User'),
-                                            duration: Duration(seconds: 3),
-                                          ));
-                                        }
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          backgroundColor: Colors.redAccent,
-                                          content: Text(
-                                              'Please Fill all required fields'),
-                                          duration: Duration(seconds: 3),
-                                        ));
-                                      }
-                                    },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: SizedBox(
-                                    // height: MediaQuery.sizeOf(context).height *
-                                    //     0.04,
-                                    child: isSubmitting
-                                        ? SizedBox(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Text(
-                                                  "Creating..",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                const SizedBox(
-                                                  width: 20,
-                                                ),
-                                                SizedBox(
+                                              ));
+                                            }
+                                          },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: SizedBox(
+                                          // height: MediaQuery.sizeOf(context).height *
+                                          //     0.04,
+                                          child: isSubmitting
+                                              ? SizedBox(
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      const Text(
+                                                        "Creating..",
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      SizedBox(
+                                                        height:
+                                                            MediaQuery.sizeOf(
+                                                                        context)
+                                                                    .height *
+                                                                0.03,
+                                                        width:
+                                                            MediaQuery.sizeOf(
+                                                                        context)
+                                                                    .height *
+                                                                0.03,
+                                                        child:
+                                                            const CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : SizedBox(
                                                   height:
                                                       MediaQuery.sizeOf(context)
                                                               .height *
                                                           0.03,
-                                                  width:
-                                                      MediaQuery.sizeOf(context)
-                                                              .height *
-                                                          0.03,
-                                                  child:
-                                                      const CircularProgressIndicator(
-                                                    color: Colors.white,
+                                                  child: const Center(
+                                                    child: Text(
+                                                      "Create",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : SizedBox(
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.03,
-                                            child: const Center(
-                                              child: Text(
-                                                "Create",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          )),
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ))),
-            ),
-          )),
-    );
+                                                )),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            )
+                          ])),
+                    ),
+                  )),
+            )));
   }
 
   Future<int> handleReportSubmitted(
@@ -497,7 +569,8 @@ class _CreatUserFormState extends State<CreatUserForm> {
         userFormState.userID,
         userFormState.userID,
         userFormState.password,
-        userFormState.selected_role_id);
+        userFormState.selected_role_id,
+        userFormState.selectedDepartmentId);
     setState(() {
       isSubmitting = false;
     });

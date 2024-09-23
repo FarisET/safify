@@ -133,8 +133,8 @@ class UserServices {
     return {'success': false, 'message': 'Unknown error occurred'};
   }
 
-  Future<int> createUser(
-      String userid, String username, String password, String role) async {
+  Future<int> createUser(String userid, String username, String password,
+      String role, String? department) async {
     try {
       jwtToken = await storage.read(key: 'jwt');
 
@@ -152,6 +152,7 @@ class UserServices {
             "user_pass": password,
             "user_name": username,
             "role_name": role,
+            "department_id": department == '' ? null : department
           },
         ),
       );
