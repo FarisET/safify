@@ -43,7 +43,7 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
     try {
       jwtToken = await storage.read(key: 'jwt');
       if (jwtToken == null) {
-        throw Exception('JWT token is null');
+        throw Exception('JWT token is invalid');
       }
       Uri url = Uri.parse('$IP_URL/analytics/fetchTotalIncidentsOnSubTypes');
       final response = await http.get(
