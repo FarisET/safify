@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,252 +57,179 @@ class _HomePage2State extends State<HomePage2> {
 
   @override
   Widget build(BuildContext context) {
+    // Define scaling factors based on screen dimensions
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = screenWidth /
+        400; // Base scaling factor for width around a medium screen width (e.g., 400px)
+
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/safify_icon.png'),
+      appBar: // Import the flutter_svg package
+
+          AppBar(
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        toolbarHeight: 56 * scaleFactor, // Scale the height of the AppBar
+        leading: Padding(
+          padding: EdgeInsets.all(8.0 * scaleFactor),
+          child: SvgPicture.asset(
+            'assets/images/safify_logo_wo_text.svg', // Use the SVG file instead
+            height: 56 * scaleFactor, // Scale the size of the app icon
+            width: 56 * scaleFactor, // Scale the size of the app icon
           ),
-          title: Text("Home",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: mainHeaderSize,
-                color: Theme.of(context).secondaryHeaderColor,
-              )),
-          actions: [
-            IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () {
-                  // Show a confirmation dialog before logging out
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext dialogContext) {
-                      return AlertDialog(
-                        title: const Text('Confirmation'),
-                        content:
-                            const Text('Are you sure you want to log out?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(dialogContext)
-                                  .pop(); // Close the dialog
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Logout'),
-                            onPressed: () async {
-                              Navigator.of(dialogContext)
-                                  .pop(); // Close the dialog
-                              // Perform logout actions here
-                              bool res = await handleLogout(context);
-                              if (res == true) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage()),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    backgroundColor:
-                                        Theme.of(context).primaryColor,
-                                    content: const Text('Logout Failed'),
-                                    duration: const Duration(seconds: 3),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      );
-                    },
+        ),
+        title: Text(
+          "Home",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20 * scaleFactor, // Scale font based on screen width
+            color: Theme.of(context).secondaryHeaderColor,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            iconSize: 24 * scaleFactor, // Scale the logout icon size
+            onPressed: () {
+              // Show a confirmation dialog before logging out
+              showDialog(
+                context: context,
+                builder: (BuildContext dialogContext) {
+                  return AlertDialog(
+                    title: const Text('Confirmation'),
+                    content: const Text('Are you sure you want to log out?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop(); // Close the dialog
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Logout'),
+                        onPressed: () async {
+                          Navigator.of(dialogContext).pop(); // Close the dialog
+                          bool res = await handleLogout(context);
+                          if (res) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                content: const Text('Logout Failed'),
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   );
                 },
-                color: Theme.of(context).secondaryHeaderColor),
-          ]),
+              );
+            },
+            color: Theme.of(context).secondaryHeaderColor,
+          ),
+        ],
+      ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FloatingActionButton(
-              // backgroundColor: const Color(0xff1593f8),
-              backgroundColor: Colors.black,
-              //  backgroundColor: Colors.white,
-              onPressed: () {
-                LocationRepository().syncDbLocationsAndSublocations();
-                IncidentTypesRepository().syncDbIncidentAndSubincidentTypes();
-                _showBottomSheet();
-              },
-              child: const Icon(
-                Icons.add,
-              ),
-            ),
-
-            // const SizedBox(
-            //   height: 10,
-            // ),
-            // FloatingActionButton(
-            //   child: const Icon(Icons.notifications),
-            //   onPressed: () async {
-            //     Future.delayed(const Duration(seconds: 0), () {
-            //       NotifTestService.testNotif();
-            //     });
-            //     // NotifTestService.testNotif();
-            //   },
-            // )
-            // const SizedBox(
-            //   height: 10,
-            // ),
-            // FloatingActionButton(
-            //   backgroundColor: Colors.blue,
-            //   onPressed: () async {
-            //     print("hi");
-            //     final dbhelper = DatabaseHelper();
-
-            //     // final lists = parseLocationsAndSubLocations(locationsJson);
-            //     // await dbhelper.insertLocationsAndSublocations(
-            //     //     lists[0] as List<Location>,
-            //     //     lists[1] as List<SubLocation>);
-            //     // final locations = await dbhelper.getLocations();
-            //     // final sublocations = await dbhelper.getAllSubLocations();
-            //     // print("count of locations: ${locations.length}");
-            //     // print("count of sublocations: ${sublocations.length}");
-
-            //     // print('Locations:');
-            //     // for (var location in locations) {
-            //     //   print(location);
-            //     // }
-
-            //     // print('\nSub Locations:');
-            //     // for (var subLocation in sublocations) {
-            //     //   print(subLocation);
-            //     // }
-
-            //     final userFormReports = await dbhelper.getUserFormReports();
-            //     print('User Form Reports:');
-            //     for (var report in userFormReports.values) {
-            //       print(report);
-            //     }
-
-            //     // await uploadUserFormReports(context);
-
-            //     final userFormReports2 = await dbhelper.getUserFormReports();
-            //     print('User Form Reports:');
-            //     for (var report in userFormReports2.values) {
-            //       print(report);
-            //     }
-            //   },
-            //   child: const Icon(
-            //     CupertinoIcons.pencil_ellipsis_rectangle,
-            //     color: Colors.white,
-            //   ),
-            // ),
-            // const SizedBox(height: 10),
-            // FloatingActionButton(
-            //   //  backgroundColor: Colors.white,
-            //   onPressed: () {
-            //     // FlutterBackgroundService().startService();
-            //     // FlutterBackgroundService().invoke('stopService');
-            //     "pressed suitcase button";
-            //     // BackgroundTaskManager().registerAnotherTask();
-            //     // BackgroundTaskManager().cancelTask("1");
-            //     // BackgroundTaskManager().registerPeriodicTasks();
-            //     // ping_google();
-            //   },
-            //   child: const Icon(
-            //     Icons.work,
-            //   ),
-            // )
-          ],
+        padding: EdgeInsets.only(bottom: 10.0 * scaleFactor),
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            LocationRepository().syncDbLocationsAndSublocations();
+            IncidentTypesRepository().syncDbIncidentAndSubincidentTypes();
+            _showBottomSheet();
+          },
+          child: const Icon(Icons.add),
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-              vertical: MediaQuery.sizeOf(context).height * 0.02),
+            horizontal: screenWidth * 0.05,
+            vertical: screenHeight * 0.02,
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              //    welcome home
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //TODO: get user name dynamically in welcome
-                      user_name != null
-                          ? Text(
-                              '$user_name',
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            )
-                          : const Text(
-                              'User',
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.007,
-                      ),
-                      Text(intl.DateFormat('d MMMM y').format(DateTime.now()),
-                          style: Theme.of(context).textTheme.titleSmall),
-                    ],
-                  ),
-                ],
-              ),
-
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              const Divider(
-                thickness: 1,
-                color: Color.fromARGB(255, 204, 204, 204),
+              // Username and Date with responsive styling
+              Container(
+                padding: EdgeInsets.all(16.0 * scaleFactor),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12 * scaleFactor),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.person,
+                        size: 36 * scaleFactor, color: Colors.grey[700]),
+                    SizedBox(width: 12 * scaleFactor),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user_name ?? 'User',
+                          style: TextStyle(
+                            fontSize: 22 * scaleFactor,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 4 * scaleFactor),
+                        Text(
+                          intl.DateFormat('d MMMM y').format(DateTime.now()),
+                          style: TextStyle(
+                            fontSize: 14 * scaleFactor,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              // previous reports
-              const Text(
+              SizedBox(height: 20 * scaleFactor),
+              Divider(
+                  thickness: 1 * scaleFactor,
+                  color: Color.fromARGB(255, 204, 204, 204)),
+              SizedBox(height: 20 * scaleFactor),
+
+              // My Reports section title with responsive font size
+              Text(
                 "My Reports",
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.black),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24 * scaleFactor,
+                  color: Colors.black,
+                ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.009,
-              ),
+              SizedBox(height: 8 * scaleFactor),
 
-              // list of reports
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.60,
+              // List of reports
+              Expanded(
                 child: RefreshIndicator(
-                    onRefresh: () async {
-                      updateUI();
-                      final result = await Provider.of<UserReportsProvider>(
-                              context,
-                              listen: false)
-                          .fetchReports(context);
-                      if (result.contains("success")) {
-                        // ToastService.showUpdatedLocalDbSuccess(context);
-                      } else {
-                        ToastService.showFailedToFetchReportsFromServer(
-                            context);
-                      }
-                    },
-                    child: const UserReportList()),
-              )
+                  onRefresh: () async {
+                    updateUI();
+                    final result = await Provider.of<UserReportsProvider>(
+                      context,
+                      listen: false,
+                    ).fetchReports(context);
+
+                    if (result.contains("success")) {
+                      // ToastService.showUpdatedLocalDbSuccess(context);
+                    } else {
+                      ToastService.showFailedToFetchReportsFromServer(context);
+                    }
+                  },
+                  child: const UserReportList(),
+                ),
+              ),
             ],
           ),
         ),
