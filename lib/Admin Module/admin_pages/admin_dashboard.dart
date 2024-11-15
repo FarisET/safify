@@ -23,6 +23,8 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   final double mainHeaderSize = 18;
+  late String totalLocations;
+  late String totalActionTeams;
   @override
   void initState() {
     super.initState();
@@ -182,7 +184,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               'Location',
               'Action Teams'
             ];
-            final counts = [reported, resolved, '12', '8'];
+            final counts = [
+              reported,
+              resolved,
+              totalLocations ?? 'N/A',
+              totalActionTeams ?? 'N/A'
+            ];
             return _buildStatCard(
               context,
               icon: icons[index],
@@ -241,264 +248,313 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildChartsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildIncidentSubtypeChart(),
-        const SizedBox(height: 20),
-        _buildIncidentLocationList(),
-        const SizedBox(height: 20),
-        _buildIncidentLocationChart(),
-        const SizedBox(height: 20),
-        _buildActionTeamEfficiencyChart(),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 4,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: _buildIncidentTypeTab(
+                  context), // Ensure this gets proper height
+            ),
+          ),
+          const SizedBox(height: 20),
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 4,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child:
+                  _buildLocationTab(context), // Ensure this gets proper height
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildActionTeamEfficiencyChart(),
+        ],
+      ),
     );
   }
 
-  Widget _buildIncidentSubtypeChart() {
-    // Get provider data
+  Widget _buildIncidentTypeTab(BuildContext context) {
     final provider = Provider.of<CountByIncidentSubTypesProviderClass>(context);
     final data = provider.countByIncidentSubTypes;
+
+    if (provider.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (data == null || data.isEmpty) {
+      return const Center(child: Text("No data available"));
+    }
+
     final filteredData = data
         ?.where((item) =>
             (item.incident_subtype_description != null &&
                 item.incident_subtype_description!.isNotEmpty) &&
             (item.incident_count != null && item.incident_count! > 0))
         .toList();
-
-    // Check if loading
-    if (provider.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // Check if data is null or empty and display a message if needed
-    if (data == null || data.isEmpty) {
-      return const Center(child: Text("No data available"));
-    }
-
-    // Create the chart using the data from provider
-    return _buildChartCard(
-      title: 'Incidents by Category (${filteredData!.length})',
-      child: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Scrollbar(
-                    thumbVisibility:
-                        true, // Set to true to make the scrollbar visible
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: filteredData!.length,
-                      itemBuilder: (context, index) {
-                        final item = filteredData[index];
-                        return Stack(
-                          alignment: Alignment.centerLeft,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: ListTile(
-                                title: Text(
-                                  item.incident_subtype_description ??
-                                      'Unknown Category',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                trailing: CircleAvatar(
-                                  backgroundColor: Colors.blue[100],
-                                  child: Text(
-                                    '${item.incident_count ?? 0}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ),
+    return DefaultTabController(
+      length: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TabBar(
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Theme.of(context).primaryColor,
+              tabs: const [
+                Tab(icon: Icon(Icons.list), text: 'List View'),
+                Tab(icon: Icon(Icons.bar_chart), text: 'Graph View'),
               ],
             ),
-          )
-        ],
+            const SizedBox(height: 12),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildIncidentTypeListView(context, filteredData!),
+                  _buildIncidentTypeGraphView(context, filteredData),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildIncidentLocationList() {
-    // Get provider data
-    final provider = Provider.of<CountByLocationProviderClass>(context);
-    final data = provider.countByLocation;
-    final filteredData = data
-        ?.where((item) =>
-            (item.incident_count != null && item.location_name!.isNotEmpty) &&
-            (item.incident_count != null && item.incident_count! > 0))
-        .toList();
-
-    // Check if loading
-    if (provider.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // Check if data is null or empty and display a message if needed
-    if (data == null || data.isEmpty) {
-      return const Center(child: Text("No data available"));
-    }
-
-    // Create the chart using the data from provider
-    // return _buildChartCard(
-    //   title: 'Incidents by Location',
-    //   child: Column(
-    //     children: [
-    //       SfCartesianChart(
-    //         tooltipBehavior: TooltipBehavior(
-    //           enable: true,
-    //           activationMode: ActivationMode.singleTap, // Show tooltip on tap
-    //           tooltipPosition:
-    //               TooltipPosition.auto, // Automatically position tooltips
-    //         ),
-    //         primaryXAxis: CategoryAxis(
-    //           isVisible: false, // Hide the X-axis labels
-    //         ),
-    //         primaryYAxis: NumericAxis(
-    //           title: AxisTitle(text: 'Incident Count'),
-    //         ),
-    //         legend: Legend(
-    //           isVisible: true,
-    //           position: LegendPosition.bottom,
-    //           overflowMode: LegendItemOverflowMode.wrap,
-    //           alignment: ChartAlignment.center,
-    //         ),
-    //         series: <CartesianSeries>[
-    //           LineSeries<CountByLocation, String>(
-    //             dataSource: filteredData,
-    //             xValueMapper: (item, _) => item.location_name ?? '',
-    //             yValueMapper: (item, _) => item.incident_count ?? 0,
-    //             dataLabelSettings: DataLabelSettings(
-    //               isVisible: true,
-    //               textStyle: const TextStyle(
-    //                   fontSize: 12, fontWeight: FontWeight.w500),
-    //             ),
-    //             color: Colors.blue,
-    //             name: 'Incident Count',
-    //             markerSettings: MarkerSettings(
-    //               isVisible: true, // Show markers
-    //               shape: DataMarkerType.circle, // Circle shape for data points
-    //               color: Colors.black, // Black color for the circle
-    //               borderColor: Colors.black, // Border color of the circle
-    //               borderWidth: 2, // Border width
-    //               height: 2, // Height of the circle
-    //               width: 2, // Width of the circle
-    //             ),
-    //             enableTooltip: true, // Enable tooltip for each data point
-    //           ),
-    //         ],
-    //       ),
-    //       const Padding(
-    //         padding: EdgeInsets.only(top: 8.0),
-    //         child: Text(
-    //           'Tap on a data point to reveal location',
-    //           style: TextStyle(fontSize: 12, color: Colors.grey),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-    return _buildChartCard(
-      title: 'Incidents by Location (${filteredData!.length})',
-      child: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Scrollbar(
-                    thumbVisibility:
-                        true, // Set to true to make the scrollbar visible
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: filteredData!.length,
-                      itemBuilder: (context, index) {
-                        final item = filteredData[index];
-                        return Stack(
-                          alignment: Alignment.centerLeft,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: ListTile(
-                                title: Text(
-                                  item.location_name ?? 'Unknown Category',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                trailing: CircleAvatar(
-                                  backgroundColor: Colors.blue[100],
-                                  child: Text(
-                                    '${item.incident_count ?? 0}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+  Widget _buildIncidentTypeListView(
+      BuildContext context, List<CountByIncidentSubTypes> filteredData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        Center(
+          child: Text(
+            'Incidents by Location (${filteredData.length})',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: ListView.builder(
+              itemCount: filteredData.length,
+              itemBuilder: (context, index) {
+                final item = filteredData[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListTile(
+                    title: Text(
+                      item.incident_subtype_description ?? 'Unknown Category',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: CircleAvatar(
+                      backgroundColor: Colors.blue[100],
+                      child: Text(
+                        '${item.incident_count ?? 0}',
+                        style: const TextStyle(color: Colors.black),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildIncidentLocationChart() {
-    // Get provider data
-    final provider = Provider.of<CountByLocationProviderClass>(context);
-    final data = provider.countByLocation;
-    final filteredData = data
-        ?.where((item) =>
-            (item.incident_count != null && item.location_name!.isNotEmpty) &&
-            (item.incident_count != null && item.incident_count! > 0))
-        .toList();
-
-    // Check if loading
-    if (provider.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // Check if data is null or empty and display a message if needed
-    if (data == null || data.isEmpty) {
-      return const Center(child: Text("No data available"));
-    }
-
-    // Create the chart using the data from provider
-    return _buildChartCard(
-      title: 'Incidents Trend by Location',
-      child: Column(
-        children: [
-          SfCartesianChart(
+  Widget _buildIncidentTypeGraphView(
+      BuildContext context, List<CountByIncidentSubTypes> filteredData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Incidents Trend by Category',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: SfCartesianChart(
             tooltipBehavior: TooltipBehavior(
               enable: true,
-              activationMode: ActivationMode.singleTap, // Show tooltip on tap
-              tooltipPosition:
-                  TooltipPosition.auto, // Automatically position tooltips
+              activationMode: ActivationMode.singleTap,
+              tooltipPosition: TooltipPosition.auto,
             ),
             primaryXAxis: CategoryAxis(
-              isVisible: false, // Hide the X-axis labels
+              isVisible: false,
+            ),
+            primaryYAxis: NumericAxis(
+              title: AxisTitle(text: 'Incident Count'),
+            ),
+            legend: Legend(
+              isVisible: true,
+              position: LegendPosition.bottom,
+              overflowMode: LegendItemOverflowMode.wrap,
+              alignment: ChartAlignment.center,
+            ),
+            series: <CartesianSeries>[
+              LineSeries<CountByIncidentSubTypes, String>(
+                dataSource: filteredData,
+                xValueMapper: (item, _) =>
+                    item.incident_subtype_description ?? '',
+                yValueMapper: (item, _) => item.incident_count ?? 0,
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: true,
+                  textStyle: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+                color: Colors.blue,
+                name: 'Incident Count',
+                markerSettings: MarkerSettings(
+                  isVisible: true,
+                  shape: DataMarkerType.circle,
+                  color: Colors.black,
+                  borderColor: Colors.black,
+                  borderWidth: 2,
+                  height: 5,
+                  width: 5,
+                ),
+                enableTooltip: true,
+              ),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text(
+            'Tap on a data point to reveal category',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationTab(BuildContext context) {
+    final provider = Provider.of<CountByLocationProviderClass>(context);
+    final data = provider.countByLocation;
+
+    if (provider.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (data == null || data.isEmpty) {
+      return const Center(child: Text("No data available"));
+    }
+
+    final filteredData = data
+        ?.where((item) =>
+            (item.incident_count != null && item.location_name!.isNotEmpty) &&
+            (item.incident_count != null && item.incident_count! > 0))
+        .toList();
+    setState(() {
+      totalLocations = filteredData!.length.toString();
+    });
+
+    return DefaultTabController(
+      length: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TabBar(
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Theme.of(context).primaryColor,
+              tabs: const [
+                Tab(icon: Icon(Icons.list), text: 'List View'),
+                Tab(icon: Icon(Icons.bar_chart), text: 'Graph View'),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildIncidentLocationListView(context, filteredData!),
+                  _buildIncidentLocationGraphView(context, filteredData),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIncidentLocationListView(
+      BuildContext context, List<CountByLocation> filteredData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        Center(
+          child: Text(
+            'Incidents by Location (${filteredData.length})',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: ListView.builder(
+              itemCount: filteredData.length,
+              itemBuilder: (context, index) {
+                final item = filteredData[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListTile(
+                    title: Text(
+                      item.location_name ?? 'Unknown Category',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: CircleAvatar(
+                      backgroundColor: Colors.blue[100],
+                      child: Text(
+                        '${item.incident_count ?? 0}',
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIncidentLocationGraphView(
+      BuildContext context, List<CountByLocation> filteredData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Incidents Trend by Location',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: SfCartesianChart(
+            tooltipBehavior: TooltipBehavior(
+              enable: true,
+              activationMode: ActivationMode.singleTap,
+              tooltipPosition: TooltipPosition.auto,
+            ),
+            primaryXAxis: CategoryAxis(
+              isVisible: false,
             ),
             primaryYAxis: NumericAxis(
               title: AxisTitle(text: 'Incident Count'),
@@ -522,29 +578,184 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 color: Colors.blue,
                 name: 'Incident Count',
                 markerSettings: MarkerSettings(
-                  isVisible: true, // Show markers
-                  shape: DataMarkerType.circle, // Circle shape for data points
-                  color: Colors.black, // Black color for the circle
-                  borderColor: Colors.black, // Border color of the circle
-                  borderWidth: 2, // Border width
-                  height: 2, // Height of the circle
-                  width: 2, // Width of the circle
+                  isVisible: true,
+                  shape: DataMarkerType.circle,
+                  color: Colors.black,
+                  borderColor: Colors.black,
+                  borderWidth: 2,
+                  height: 5,
+                  width: 5,
                 ),
-                enableTooltip: true, // Enable tooltip for each data point
+                enableTooltip: true,
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text(
-              'Tap on a data point to reveal location',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text(
+            'Tap on a data point to reveal location',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+
+// Widget _buildIncidentLocationList() {
+//   // Get provider data
+//   final provider = Provider.of<CountByLocationProviderClass>(context);
+//   final data = provider.countByLocation;
+//   final filteredData = data
+//       ?.where((item) =>
+//           (item.incident_count != null && item.location_name!.isNotEmpty) &&
+//           (item.incident_count != null && item.incident_count! > 0))
+//       .toList();
+
+//   // Check if loading
+//   if (provider.loading) {
+//     return const Center(child: CircularProgressIndicator());
+//   }
+
+//   // Check if data is null or empty and display a message if needed
+//   if (data == null || data.isEmpty) {
+//     return const Center(child: Text("No data available"));
+//   }
+
+//   return _buildChartCard(
+//     title: 'Incidents by Location (${filteredData!.length})',
+//     child: Column(
+//       children: [
+//         Container(
+//           height: MediaQuery.of(context).size.height * 0.5,
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Expanded(
+//                 child: Scrollbar(
+//                   thumbVisibility:
+//                       true, // Set to true to make the scrollbar visible
+//                   child: ListView.builder(
+//                     scrollDirection: Axis.vertical,
+//                     itemCount: filteredData!.length,
+//                     itemBuilder: (context, index) {
+//                       final item = filteredData[index];
+//                       return Stack(
+//                         alignment: Alignment.centerLeft,
+//                         children: [
+//                           Padding(
+//                             padding:
+//                                 const EdgeInsets.symmetric(horizontal: 16.0),
+//                             child: ListTile(
+//                               title: Text(
+//                                 item.location_name ?? 'Unknown Category',
+//                                 style: const TextStyle(
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                               trailing: CircleAvatar(
+//                                 backgroundColor: Colors.blue[100],
+//                                 child: Text(
+//                                   '${item.incident_count ?? 0}',
+//                                   style: const TextStyle(color: Colors.black),
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         )
+//       ],
+//     ),
+//   );
+// }
+
+// Widget _buildIncidentLocationChart() {
+//   // Get provider data
+//   final provider = Provider.of<CountByLocationProviderClass>(context);
+//   final data = provider.countByLocation;
+//   final filteredData = data
+//       ?.where((item) =>
+//           (item.incident_count != null && item.location_name!.isNotEmpty) &&
+//           (item.incident_count != null && item.incident_count! > 0))
+//       .toList();
+
+//   // Check if loading
+//   if (provider.loading) {
+//     return const Center(child: CircularProgressIndicator());
+//   }
+
+//   // Check if data is null or empty and display a message if needed
+//   if (data == null || data.isEmpty) {
+//     return const Center(child: Text("No data available"));
+//   }
+
+//   // Create the chart using the data from provider
+//   return _buildChartCard(
+//     title: 'Incidents Trend by Location',
+//     child: Column(
+//       children: [
+//         SfCartesianChart(
+//           tooltipBehavior: TooltipBehavior(
+//             enable: true,
+//             activationMode: ActivationMode.singleTap, // Show tooltip on tap
+//             tooltipPosition:
+//                 TooltipPosition.auto, // Automatically position tooltips
+//           ),
+//           primaryXAxis: CategoryAxis(
+//             isVisible: false, // Hide the X-axis labels
+//           ),
+//           primaryYAxis: NumericAxis(
+//             title: AxisTitle(text: 'Incident Count'),
+//           ),
+//           legend: Legend(
+//             isVisible: true,
+//             position: LegendPosition.bottom,
+//             overflowMode: LegendItemOverflowMode.wrap,
+//             alignment: ChartAlignment.center,
+//           ),
+//           series: <CartesianSeries>[
+//             LineSeries<CountByLocation, String>(
+//               dataSource: filteredData,
+//               xValueMapper: (item, _) => item.location_name ?? '',
+//               yValueMapper: (item, _) => item.incident_count ?? 0,
+//               dataLabelSettings: DataLabelSettings(
+//                 isVisible: true,
+//                 textStyle: const TextStyle(
+//                     fontSize: 12, fontWeight: FontWeight.w500),
+//               ),
+//               color: Colors.blue,
+//               name: 'Incident Count',
+//               markerSettings: MarkerSettings(
+//                 isVisible: true, // Show markers
+//                 shape: DataMarkerType.circle, // Circle shape for data points
+//                 color: Colors.black, // Black color for the circle
+//                 borderColor: Colors.black, // Border color of the circle
+//                 borderWidth: 2, // Border width
+//                 height: 2, // Height of the circle
+//                 width: 2, // Width of the circle
+//               ),
+//               enableTooltip: true, // Enable tooltip for each data point
+//             ),
+//           ],
+//         ),
+//         const Padding(
+//           padding: EdgeInsets.only(top: 8.0),
+//           child: Text(
+//             'Tap on a data point to reveal location',
+//             style: TextStyle(fontSize: 12, color: Colors.grey),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
   Widget _buildActionTeamEfficiencyChart() {
     // Get provider data
@@ -556,6 +767,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 item.action_team_name!.isNotEmpty) &&
             (item.efficiency_value != null && item.efficiency_value! > 0))
         .toList();
+
+    setState(() {
+      totalActionTeams = filteredData!.length.toString();
+    });
 
     // Check if loading
     if (provider.loading) {
@@ -607,9 +822,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
     );
   }
-}
 
-void handleLogout(BuildContext context) async {
-  UserServices userServices = UserServices();
-  await userServices.logout();
+  void handleLogout(BuildContext context) async {
+    UserServices userServices = UserServices();
+    await userServices.logout();
+  }
 }

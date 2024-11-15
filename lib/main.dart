@@ -137,13 +137,13 @@ void main() async {
         const LoginPage(); // Handle the case where user session does not exist
   }
 
-  runApp(MyApp(initialScreen: initialScreen));
-  // runApp(DevicePreview(
-  //   enabled: true,
-  //   builder: (BuildContext context) => MyApp(
-  //     initialScreen: initialScreen,
-  //   ),
-  // ));
+  // runApp(MyApp(initialScreen: initialScreen));
+  runApp(DevicePreview(
+    enabled: true,
+    builder: (BuildContext context) => MyApp(
+      initialScreen: initialScreen,
+    ),
+  ));
 }
 
 Future<void> _handleBGMessage(RemoteMessage message) async {
