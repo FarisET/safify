@@ -51,23 +51,23 @@ class AppDrawer extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                // ListTile(
-                //   horizontalTitleGap: 0,
-                //   leading: Icon(Icons.person_add_outlined,
-                //       color: Theme.of(context).secondaryHeaderColor),
-                //   title: Text(
-                //     'Add User',
-                //     style: TextStyle(
-                //       fontWeight: FontWeight.normal,
-                //       fontSize: mainHeaderSize,
-                //       color: Theme.of(context).secondaryHeaderColor,
-                //     ),
-                //   ),
-                //   onTap: () {
-                //     // Navigate to Add User page
-                //     Navigator.pushNamed(context, '/create_user_form');
-                //   },
-                // ),
+                ListTile(
+                  horizontalTitleGap: 0,
+                  leading: Icon(Icons.person_add_outlined,
+                      color: Theme.of(context).secondaryHeaderColor),
+                  title: Text(
+                    'Add User',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: mainHeaderSize,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                  onTap: () {
+                    // Navigate to Add User page
+                    Navigator.pushNamed(context, '/create_user_form');
+                  },
+                ),
                 ExpansionTile(
                   // horizontalTitleGap: 0,
                   leading: Icon(Icons.location_on_outlined,
