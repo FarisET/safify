@@ -62,6 +62,7 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
         builder: (context, adminUserReportsProvider, _) {
       if (adminUserReportsProvider.error != null &&
           adminUserReportsProvider.error!.contains('TokenExpiredException')) {
+        adminUserReportsProvider.error = null;
         WidgetsBinding.instance
             .addPostFrameCallback((_) => _handleSessionExpired(context));
       }

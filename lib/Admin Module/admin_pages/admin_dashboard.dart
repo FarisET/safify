@@ -43,7 +43,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
             .getactionTeamEfficiencyData();
 
-        AnalyticsRepository().updateAnalytics(context);
+        //  AnalyticsRepository().updateAnalytics(context);
       }
     });
   }
