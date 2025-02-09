@@ -50,58 +50,55 @@ class _UserReportListState extends State<UserReportList> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child:
-        Consumer<UserReportsProvider>(builder: (context, reportProvider, _) {
-      if (reportProvider.error != null &&
-          reportProvider.error!.contains('TokenExpiredException')) {
-        if (reportProvider.error!.contains('TokenExpiredException')) {
-          reportProvider.error = null;
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => _handleSessionExpired(context));
-        }
-        // return
-        // Center(child: Text('Error: ${reportProvider.error}'));
-      }
+    return Center(
+      child: Consumer<UserReportsProvider>(
+        builder: (context, reportProvider, _) {
+          if (reportProvider.error != null &&
+              reportProvider.error!.contains('TokenExpiredException')) {
+            reportProvider.error = null;
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => _handleSessionExpired(context));
+          }
 
-      // if (reportProvider.reports.isNotEmpty) {
-      //   return ListView.builder(
-      //     itemCount: reportProvider.reports.length,
-      //     itemBuilder: (context, i) {
-      //       var item = reportProvider.reports[i];
+          // Filter reports based on selectedStatus
+          var filteredReports = reportProvider.reports.where((report) {
+            if (widget.selectedStatus == "All") return true;
+            return report.status == widget.selectedStatus;
+          }).toList();
 
-      //       return UserReportTile(userReport: item);
-      //     },
-      //   );
-      // }
-      if (reportProvider.reports.isNotEmpty) {
-        // Filter reports based on selectedStatus
-        var filteredReports = reportProvider.reports.where((report) {
-          if (widget.selectedStatus == "All") return true;
-          return report.status == widget.selectedStatus;
-        }).toList();
+          if (reportProvider.isLoading) {
+            return const CircularProgressIndicator();
+          }
 
-        return ListView.builder(
-          itemCount: filteredReports.length,
-          itemBuilder: (context, i) {
-            var item = filteredReports[i];
-            return UserReportTile(userReport: item);
-          },
-        );
-      } else if (reportProvider.reports.isEmpty && reportProvider.isLoading) {
-        return const CircularProgressIndicator();
-      }
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('No Reports'),
-          IconButton(
-              onPressed: () {
-                Provider.of<UserReportsProvider>(context, listen: false)
-                    .fetchReports(context);
-              },
-              icon: const Icon(Icons.refresh))
-        ],
-      );
-    }));
+          // Check if there are no reports for the selected status
+          if (filteredReports.isEmpty) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'No Reports',
+                  style: TextStyle(fontSize: 18),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Provider.of<UserReportsProvider>(context, listen: false)
+                        .fetchReports(context);
+                  },
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            );
+          }
+
+          return ListView.builder(
+            itemCount: filteredReports.length,
+            itemBuilder: (context, i) {
+              var item = filteredReports[i];
+              return UserReportTile(userReport: item);
+            },
+          );
+        },
+      ),
+    );
   }
 }

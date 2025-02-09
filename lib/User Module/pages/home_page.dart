@@ -210,14 +210,30 @@ class _HomePage2State extends State<HomePage2> {
 
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildFilterButton("All"),
-                    _buildFilterButton("open"),
-                    _buildFilterButton("in progress"),
-                    _buildFilterButton("completed"),
-                  ],
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double screenWidth = constraints.maxWidth;
+
+                    // Define spacing dynamically based on screen width
+                    double spacing = screenWidth < 350
+                        ? 3.0
+                        : screenWidth < 600
+                            ? 8.0
+                            : 16.0;
+
+                    return Wrap(
+                      spacing: spacing, // Dynamic spacing
+                      runSpacing:
+                          spacing, // Apply same spacing for wrapped rows
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildFilterButton("All"),
+                        _buildFilterButton("open"),
+                        _buildFilterButton("in progress"),
+                        _buildFilterButton("completed"),
+                      ],
+                    );
+                  },
                 ),
               ),
               SizedBox(height: 8 * scaleFactor),
@@ -262,14 +278,22 @@ class _HomePage2State extends State<HomePage2> {
             ? Colors.blue[100]
             : Colors.grey[300], // Active: Blue, Inactive: Light Grey
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Add border radius
+          borderRadius: BorderRadius.circular(12),
+          // Add border radius
         ),
         elevation: 0, // Remove elevation
       ),
-      child: Text(
-        ' ${capitalizeFirstLetter(status)}',
-        style:
-            const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: Screen(context).screenWidth * 0.005,
+            vertical: Screen(context).screenHeight * 0.005),
+        child: Text(
+          ' ${capitalizeFirstLetter(status)}',
+          style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 12 * Screen(context).scaleFactor),
+        ),
       ),
     );
   }
