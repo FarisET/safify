@@ -195,7 +195,7 @@ class _UserFormState extends State<UserForm> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          toolbarHeight: Screen(context).screenHeight * 0.05,
+          toolbarHeight: Screen(context).screenHeight * 0.07,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,

@@ -1,9 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
+import 'dart:io';
+import 'package:badges/badges.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
@@ -22,6 +25,7 @@ import 'package:safify/widgets/user_actions_modal_sheet.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:badges/badges.dart' as custom_badge;
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -69,8 +73,9 @@ class _HomePage2State extends State<HomePage2> {
     return Scaffold(
       appBar: // Import the flutter_svg package
           AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
-        toolbarHeight: Screen(context).screenHeight * 0.05,
+        toolbarHeight: Screen(context).screenHeight * 0.07,
         leading: IconButton(
           icon: Image.asset('assets/images/safify_icon.png'),
           onPressed: () {
@@ -198,13 +203,32 @@ class _HomePage2State extends State<HomePage2> {
               SizedBox(height: 20 * scaleFactor),
 
               // My Reports section title with responsive font size
-              Text(
-                "My Reports",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24 * scaleFactor,
-                  color: Colors.black,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "My Reports",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24 * scaleFactor,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _showBottomSheetUnsynced();
+                    },
+                    // child: Text(
+                    //   "pending",
+                    //   style: TextStyle(
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: 12 * scaleFactor,
+                    //     color: Colors.black,
+                    //   ),
+                    // )),
+                    child: _buildTriggerButton(),
+                  ),
+                ],
               ),
               SizedBox(height: 8 * scaleFactor),
 
@@ -357,6 +381,180 @@ class _HomePage2State extends State<HomePage2> {
             child: const UserActionsModalSheet(),
           );
         });
+  }
+
+  Widget _buildTriggerButton() {
+    DatabaseHelper databaseHelper = DatabaseHelper();
+    return FutureBuilder<int>(
+      future:
+          databaseHelper.getAllUserReports().then((reports) => reports.length),
+      builder: (context, snapshot) {
+        final count = snapshot.hasData ? snapshot.data! : 0;
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Pending text
+            // if (count > 0)
+            //   Padding(
+            //     padding: const EdgeInsets.only(right: 8.0),
+            //     child: Text(
+            //       'Pending',
+            //       style: TextStyle(
+            //         color: Colors.orange,
+            //         fontWeight: FontWeight.bold,
+            //         fontSize: 12 * MediaQuery.of(context).textScaleFactor,
+            //       ),
+            //     ),
+            //   ),
+
+            // Badge with icon
+            custom_badge.Badge(
+              badgeStyle: BadgeStyle(
+                badgeColor: Colors.orange, // Set badge color to orange
+              ),
+              showBadge: count > 0, // Only show badge if count > 0
+              badgeContent: Text('$count'),
+              position: custom_badge.BadgePosition.topEnd(top: -8, end: -12),
+              child: IconButton(
+                icon: const Icon(Icons.sync_problem),
+                color: count > 0 ? Colors.orange : Colors.greenAccent,
+                onPressed: () => _showBottomSheetUnsynced(),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetUnsynced() {
+    final databaseHelper = DatabaseHelper();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Unsynced Reports',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            Expanded(
+              child: FutureBuilder<List<UserReportFormDetails>>(
+                future: databaseHelper.getAllUserReports().then((maps) => maps
+                    .map((map) => UserReportFormDetails.fromJson(map))
+                    .toList()),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final reports = snapshot.data ?? [];
+
+                  if (reports.isEmpty) {
+                    return const Center(child: Text('All reports are synced!'));
+                  }
+
+                  return ListView.builder(
+                    itemCount: reports.length,
+                    itemBuilder: (context, index) =>
+                        _buildReportCard(reports[index]),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReportCard(UserReportFormDetails report) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (report.imagePath != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    File(report.imagePath!),
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            // _buildInfoRow('Location', report.sublocationId),
+            // _buildInfoRow('Incident Type', report.incidentSubtypeId),
+            // _buildInfoRow('Criticality', report.criticalityId),
+            // _buildInfoRow(
+            //   'Date',
+            //   DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
+            // ),
+            Text(
+              DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
+              style: TextStyle(),
+            ),
+            if (report.description.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  report.description,
+                  style: TextStyle(fontSize: 14, color: Colors.blue[700]),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Helper widget for consistent info rows
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'Not specified',
+              style: TextStyle(
+                color: value.isEmpty ? Colors.grey : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
