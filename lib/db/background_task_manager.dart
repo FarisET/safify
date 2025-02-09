@@ -32,7 +32,7 @@ class BackgroundTaskManager {
     Workmanager().registerPeriodicTask(
       "1",
       "syncUserFormReports",
-      frequency: const Duration(minutes: 15),
+      frequency: const Duration(minutes: 2),
     );
   }
 

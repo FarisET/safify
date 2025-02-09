@@ -55,7 +55,7 @@ void main() async {
   final backgroundTaskManager = BackgroundTaskManager();
   await backgroundTaskManager.initializeWorkManager();
   backgroundTaskManager.registerSyncUserFormTask();
-  backgroundTaskManager.registerSyncActionFormTask();
+  // backgroundTaskManager.registerSyncActionFormTask();
 
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //     FlutterLocalNotificationsPlugin();
