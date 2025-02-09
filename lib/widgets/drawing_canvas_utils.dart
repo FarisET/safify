@@ -215,17 +215,17 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
                   : Center(child: CircularProgressIndicator()),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Note: Circle the object you are referring to in the image.',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Text(
+          //     'Note: Circle the object you are referring to in the image.',
+          //     textAlign: TextAlign.left,
+          //     style: TextStyle(
+          //         color: Colors.grey.shade600,
+          //         fontWeight: FontWeight.bold,
+          //         fontStyle: FontStyle.italic),
+          //   ),
+          // ),
           Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(

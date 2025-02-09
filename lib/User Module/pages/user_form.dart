@@ -29,7 +29,6 @@ import '../providers/incident_type_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/sub_location_provider.dart';
 import '../../services/report_service.dart';
-import 'home.dart';
 
 class UserForm extends StatefulWidget {
   const UserForm({super.key});
@@ -51,7 +50,7 @@ class _UserFormState extends State<UserForm> {
   bool _confirmedExit = false;
   bool isFirstIncidentDropdownSelected = false;
   bool isFirstLocationDropdownSelected = false;
-  XFile? _imageFile;
+  XFile? returnedImage;
   final ImageUtils _imageService = ImageUtils();
   bool _isEditing = false;
   ImageStream? _imageStream;
@@ -89,7 +88,6 @@ class _UserFormState extends State<UserForm> {
   String? SelectedIncidentType;
   String? SelectedLocationType;
   String SelectedSubLocationType = '';
-  XFile? returnedImage;
   bool isRiskLevelSelected = false;
   ImageUtils imageUtils = ImageUtils();
   DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
@@ -833,7 +831,7 @@ class _UserFormState extends State<UserForm> {
                                                     MainAxisAlignment.center,
                                                 children: [
                                                   const Icon(Icons.image),
-                                                  Text(_imageFile != null
+                                                  Text(returnedImage != null
                                                       ? '  Image Added'
                                                       : ' Add Image'),
                                                 ],
@@ -1034,7 +1032,7 @@ class _UserFormState extends State<UserForm> {
                                           (SelectedSubLocationType != '')) {
                                         print("pressed");
                                         int flag = await handleReportSubmitted(
-                                            context, this, _imageFile);
+                                            context, this, returnedImage);
                                         if (flag == 1) {
                                           // Show loading indicator
                                           if (mounted) {
@@ -1056,7 +1054,7 @@ class _UserFormState extends State<UserForm> {
                                                 .then((_) {
                                               // Fetch reports completed, proceed with other tasks
                                               setState(() {
-                                                _imageFile = null;
+                                                returnedImage = null;
                                                 Provider.of<IncidentProviderClass>(
                                                             context,
                                                             listen: false)
@@ -1163,185 +1161,185 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
-  Future _pickImageFromGallery() async {
-    XFile? returnedImage1 =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  // Future _pickImageFromGallery() async {
+  //   XFile? returnedImage1 =
+  //       await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (returnedImage1 != null) {
-      setState(() {
-        _imageFile = returnedImage1;
-      });
-      Fluttertoast.showToast(msg: 'Image selected');
-    }
-  }
-
-  Future _pickImageFromCamera() async {
-    XFile? returnedImage1 =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-
-    if (returnedImage1 != null) {
-      setState(() {
-        _imageFile = returnedImage1;
-      });
-      Fluttertoast.showToast(msg: 'Image captured');
-    }
-  }
-
-  // Future<void> _pickImageGallery1(BuildContext context) async {
-  //   ImageUtils imageUtils = ImageUtils();
-
-  //   // Show loading dialog while picking image
-  //   Alerts.showLoadingDialog(context);
-
-  //   File? image = await imageUtils.pickImageFromGallery();
-
-  //   // Dismiss loading dialog after picking image
-  //   Navigator.of(context, rootNavigator: true).pop();
-
-  //   if (image != null) {
-  //     // Show alert dialog
-  //     bool shouldNavigate = await showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('Draw on Image?'),
-  //           content: const Text('Circle key objects in your image.'),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               child: const Text('No'),
-  //               onPressed: () {
-  //                 Navigator.of(context)
-  //                     .pop(false); // Return false if 'No' is pressed
-  //               },
-  //             ),
-  //             TextButton(
-  //               child: const Text('Yes'),
-  //               onPressed: () {
-  //                 Navigator.of(context)
-  //                     .pop(true); // Return true if 'Yes' is pressed
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       },
-  //     );
-
-  //     if (shouldNavigate == true) {
-  //       // Create an ImageStream from the selected image
-  //       final ImageStream imageStream =
-  //           FileImage(image).resolve(const ImageConfiguration());
-
-  //       final editedImage = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => DrawingCanvas(imageStream: imageStream),
-  //         ),
-  //       );
-
-  //       if (editedImage != null) {
-  //         // Show loading dialog while converting edited image
-  //         Alerts.showLoadingDialog(context);
-
-  //         File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
-
-  //         // Dismiss loading dialog after converting edited image
-  //         Navigator.of(context, rootNavigator: true).pop();
-
-  //         setState(() {
-  //           returnedImage = finalImg;
-  //         });
-  //         //  Fluttertoast.showToast(msg: 'Image edited and saved');
-  //       } else {
-  //         setState(() {
-  //           returnedImage = image;
-  //         });
-  //         Fluttertoast.showToast(msg: 'Image editing failed');
-  //       }
-  //     } else {
-  //       //Fluttertoast.showToast(msg: 'Image editing cancelled');
-  //     }
-  //   } else {
-  //     Fluttertoast.showToast(msg: 'No Image Selected');
+  //   if (returnedImage1 != null) {
+  //     setState(() {
+  //       returnedImage = returnedImage1;
+  //     });
+  //     Fluttertoast.showToast(msg: 'Image selected');
   //   }
   // }
 
-  // Future<void> _pickImageCamera1(BuildContext context) async {
-  //   ImageUtils imageUtils = ImageUtils();
+  // Future _pickImageFromCamera() async {
+  //   XFile? returnedImage1 =
+  //       await ImagePicker().pickImage(source: ImageSource.camera);
 
-  //   // Show loading dialog while picking image
-  //   Alerts.showLoadingDialog(context);
-
-  //   File? image = await imageUtils.pickImageFromCamera();
-
-  //   // Dismiss loading dialog after picking image
-  //   Navigator.of(context, rootNavigator: true).pop();
-
-  //   if (image != null) {
-  //     // Show alert dialog
-  //     bool shouldNavigate = await showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('Draw on Image?'),
-  //           content: const Text('Circle key objects in your image.'),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               child: const Text('No'),
-  //               onPressed: () {
-  //                 Navigator.of(context)
-  //                     .pop(false); // Return false if 'No' is pressed
-  //               },
-  //             ),
-  //             TextButton(
-  //               child: const Text('Yes'),
-  //               onPressed: () {
-  //                 Navigator.of(context)
-  //                     .pop(true); // Return true if 'Yes' is pressed
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       },
-  //     );
-
-  //     if (shouldNavigate == true) {
-  //       // Create an ImageStream from the selected image
-  //       final ImageStream imageStream =
-  //           FileImage(image).resolve(const ImageConfiguration());
-
-  //       final editedImage = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => DrawingCanvas(imageStream: imageStream),
-  //         ),
-  //       );
-
-  //       if (editedImage != null) {
-  //         // Show loading dialog while converting edited image
-  //         Alerts.showLoadingDialog(context);
-
-  //         File? finalImg = await imageUtils.imageToMemoryFile(editedImage);
-
-  //         // Dismiss loading dialog after converting edited image
-  //         Navigator.of(context, rootNavigator: true).pop();
-
-  //         setState(() {
-  //           returnedImage = finalImg;
-  //         });
-  //         // Fluttertoast.showToast(msg: 'Image edited and saved');
-  //       } else {
-  //         setState(() {
-  //           returnedImage = image;
-  //         });
-  //         Fluttertoast.showToast(msg: 'Image editing failed');
-  //       }
-  //     } else {
-  //       //   Fluttertoast.showToast(msg: 'Image editing cancelled');
-  //     }
-  //   } else {
-  //     Fluttertoast.showToast(msg: 'No Image Selected');
+  //   if (returnedImage1 != null) {
+  //     setState(() {
+  //       returnedImage = returnedImage1;
+  //     });
+  //     Fluttertoast.showToast(msg: 'Image captured');
   //   }
   // }
+
+  Future<void> _pickImageGallery1(BuildContext context) async {
+    ImageUtils imageUtils = ImageUtils();
+
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
+    XFile? image = await imageUtils.pickImageFromGallery();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
+    if (image != null) {
+      // Show alert dialog
+      bool shouldNavigate = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Draw on Image?'),
+            content: const Text('Circle key objects in your image.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(false); // Return false if 'No' is pressed
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(true); // Return true if 'Yes' is pressed
+                },
+              )
+            ],
+          );
+        },
+      );
+
+      if (shouldNavigate == true) {
+        // Create an ImageStream from the selected image
+        final ImageStream imageStream =
+            FileImage(File(image.path)).resolve(const ImageConfiguration());
+
+        final editedImage = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
+        );
+
+        if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
+          XFile? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
+
+          setState(() {
+            returnedImage = finalImg;
+          });
+          //  Fluttertoast.showToast(msg: 'Image edited and saved');
+        } else {
+          setState(() {
+            returnedImage = image;
+          });
+          Fluttertoast.showToast(msg: 'Image editing failed');
+        }
+      } else {
+        //Fluttertoast.showToast(msg: 'Image editing cancelled');
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'No Image Selected');
+    }
+  }
+
+  Future<void> _pickImageCamera1(BuildContext context) async {
+    ImageUtils imageUtils = ImageUtils();
+
+    // Show loading dialog while picking image
+    Alerts.showLoadingDialog(context);
+
+    XFile? image = await imageUtils.pickImageFromCamera();
+
+    // Dismiss loading dialog after picking image
+    Navigator.of(context, rootNavigator: true).pop();
+
+    if (image != null) {
+      // Show alert dialog
+      bool shouldNavigate = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Draw on Image?'),
+            content: const Text('Circle key objects in your image.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(false); // Return false if 'No' is pressed
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(true); // Return true if 'Yes' is pressed
+                },
+              )
+            ],
+          );
+        },
+      );
+
+      if (shouldNavigate == true) {
+        // Create an ImageStream from the selected image
+        final ImageStream imageStream =
+            FileImage(File(image.path)).resolve(const ImageConfiguration());
+
+        final editedImage = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DrawingCanvas(imageStream: imageStream),
+          ),
+        );
+
+        if (editedImage != null) {
+          // Show loading dialog while converting edited image
+          Alerts.showLoadingDialog(context);
+
+          XFile? finalImg = await imageUtils.imageToMemoryFile(editedImage);
+
+          // Dismiss loading dialog after converting edited image
+          Navigator.of(context, rootNavigator: true).pop();
+
+          setState(() {
+            returnedImage = finalImg;
+          });
+          // Fluttertoast.showToast(msg: 'Image edited and saved');
+        } else {
+          setState(() {
+            returnedImage = image;
+          });
+          Fluttertoast.showToast(msg: 'Image editing failed');
+        }
+      } else {
+        //   Fluttertoast.showToast(msg: 'Image editing cancelled');
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'No Image Selected');
+    }
+  }
 
   void _showBottomSheet() {
     showModalBottomSheet(
@@ -1379,7 +1377,7 @@ class _UserFormState extends State<UserForm> {
                           fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
                               MediaQuery.sizeOf(context).height * .15)),
                       onPressed: () async {
-                        _pickImageFromCamera();
+                        _pickImageCamera1(context);
                         // _pickImageCamera(context);
                       },
                       child: Image.asset('assets/images/camera.png')),
@@ -1392,7 +1390,7 @@ class _UserFormState extends State<UserForm> {
                           fixedSize: Size(MediaQuery.sizeOf(context).width * .3,
                               MediaQuery.sizeOf(context).height * .15)),
                       onPressed: () async {
-                        _pickImageFromGallery();
+                        _pickImageGallery1(context);
                         // _pickImageGallery(context);
                       },
                       child: Image.asset('assets/images/add_image.png')),
@@ -1419,7 +1417,7 @@ class _UserFormState extends State<UserForm> {
 
     if (!pingSuccess) {
       final tempImgPath = selectedImage != null
-          ? await saveImageTempLocally(File(_imageFile!.path))
+          ? await saveImageTempLocally(File(returnedImage!.path))
           : null;
 
       final userFormReport = UserReportFormDetails(
@@ -1446,7 +1444,7 @@ class _UserFormState extends State<UserForm> {
       try {
         ReportServices reportServices = ReportServices();
         int flag = await reportServices.uploadReportWithImage(
-          userFormState._imageFile?.path,
+          userFormState.returnedImage?.path,
           userFormState.SelectedSubLocationType,
           userFormState.incidentSubType,
           userFormState.description,
@@ -1459,7 +1457,8 @@ class _UserFormState extends State<UserForm> {
 
         return flag;
       } catch (e) {
-        final tempImgPath = await saveImageTempLocally(File(_imageFile!.path));
+        final tempImgPath =
+            await saveImageTempLocally(File(returnedImage!.path));
 
         final userFormReport = UserReportFormDetails(
           sublocationId: userFormState.SelectedSubLocationType,
