@@ -15,6 +15,7 @@ import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/file_utils.dart';
 import 'package:safify/utils/network_util.dart';
+import 'package:safify/utils/screen.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
 
@@ -194,9 +195,13 @@ class _UserFormState extends State<UserForm> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
+          toolbarHeight: Screen(context).screenHeight * 0.05,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back,
-                color: Theme.of(context).secondaryHeaderColor),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).secondaryHeaderColor,
+              size: 16 * Screen(context).scaleFactor,
+            ),
             onPressed: () {
               // Add your navigation logic here, such as pop or navigate back
               Navigator.of(context).pop();
@@ -205,7 +210,7 @@ class _UserFormState extends State<UserForm> {
           title: Text("Report an Incident",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 16 * Screen(context).scaleFactor,
                 color: Theme.of(context).secondaryHeaderColor,
               )),
           actions: [

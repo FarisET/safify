@@ -16,6 +16,7 @@ import 'package:safify/services/report_service.dart';
 import 'package:safify/services/UserServices.dart';
 import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
+import 'package:safify/utils/screen.dart';
 import 'package:safify/widgets/user_actions_modal_sheet.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,27 +66,21 @@ class _HomePage2State extends State<HomePage2> {
 
     return Scaffold(
       appBar: // Import the flutter_svg package
-
           AppBar(
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        toolbarHeight: 56 * scaleFactor, // Scale the height of the AppBar
-        leading: Padding(
-          padding: EdgeInsets.all(8.0 * scaleFactor),
-          child: SvgPicture.asset(
-            'assets/images/safify_logo_wo_text.svg', // Use the SVG file instead
-            height: 56 * scaleFactor, // Scale the size of the app icon
-            width: 56 * scaleFactor, // Scale the size of the app icon
-          ),
+        toolbarHeight: Screen(context).screenHeight * 0.05,
+        leading: IconButton(
+          icon: Image.asset('assets/images/safify_icon.png'),
+          onPressed: () {
+            // Handle settings button press
+          },
         ),
-        title: Text(
-          "Home",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20 * scaleFactor, // Scale font based on screen width
-            color: Theme.of(context).secondaryHeaderColor,
-          ),
-        ),
+        title: Text("Home",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16 * scaleFactor,
+              color: Theme.of(context).secondaryHeaderColor,
+            )),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
