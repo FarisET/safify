@@ -17,6 +17,7 @@ import 'package:safify/services/UserServices.dart';
 import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import 'package:safify/utils/screen.dart';
+import 'package:safify/utils/string_utils.dart';
 import 'package:safify/widgets/user_actions_modal_sheet.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,6 +37,7 @@ class _HomePage2State extends State<HomePage2> {
   String? user_name;
   String? user_id;
   UserServices userServices = UserServices();
+  String selectedStatus = "All";
 
   @override
   void initState() {
@@ -206,6 +208,20 @@ class _HomePage2State extends State<HomePage2> {
               ),
               SizedBox(height: 8 * scaleFactor),
 
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildFilterButton("All"),
+                    _buildFilterButton("open"),
+                    _buildFilterButton("in progress"),
+                    _buildFilterButton("completed"),
+                  ],
+                ),
+              ),
+              SizedBox(height: 8 * scaleFactor),
+
               // List of reports
               Expanded(
                 child: RefreshIndicator(
@@ -222,12 +238,38 @@ class _HomePage2State extends State<HomePage2> {
                       ToastService.showFailedToFetchReportsFromServer(context);
                     }
                   },
-                  child: const UserReportList(),
+                  child: UserReportList(
+                    selectedStatus: selectedStatus,
+                  ),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFilterButton(String status) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedStatus = status;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: selectedStatus == status
+            ? Colors.blue[100]
+            : Colors.grey[300], // Active: Blue, Inactive: Light Grey
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Add border radius
+        ),
+        elevation: 0, // Remove elevation
+      ),
+      child: Text(
+        ' ${capitalizeFirstLetter(status)}',
+        style:
+            const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
     );
   }

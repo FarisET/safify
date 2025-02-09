@@ -11,7 +11,9 @@ import 'package:safify/widgets/user_report_tile.dart';
 import '../User Module/providers/user_reports_provider.dart';
 
 class UserReportList extends StatefulWidget {
-  const UserReportList({super.key});
+  final String selectedStatus;
+
+  const UserReportList({super.key, required this.selectedStatus});
 
   @override
   State<UserReportList> createState() => _UserReportListState();
@@ -60,12 +62,28 @@ class _UserReportListState extends State<UserReportList> {
         // return
         // Center(child: Text('Error: ${reportProvider.error}'));
       }
-      if (reportProvider.reports.isNotEmpty) {
-        return ListView.builder(
-          itemCount: reportProvider.reports.length,
-          itemBuilder: (context, i) {
-            var item = reportProvider.reports[i];
 
+      // if (reportProvider.reports.isNotEmpty) {
+      //   return ListView.builder(
+      //     itemCount: reportProvider.reports.length,
+      //     itemBuilder: (context, i) {
+      //       var item = reportProvider.reports[i];
+
+      //       return UserReportTile(userReport: item);
+      //     },
+      //   );
+      // }
+      if (reportProvider.reports.isNotEmpty) {
+        // Filter reports based on selectedStatus
+        var filteredReports = reportProvider.reports.where((report) {
+          if (widget.selectedStatus == "All") return true;
+          return report.status == widget.selectedStatus;
+        }).toList();
+
+        return ListView.builder(
+          itemCount: filteredReports.length,
+          itemBuilder: (context, i) {
+            var item = filteredReports[i];
             return UserReportTile(userReport: item);
           },
         );
