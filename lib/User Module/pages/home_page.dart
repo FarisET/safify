@@ -3,15 +3,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:badges/badges.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
-import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
+import 'package:safify/models/user.dart';
 import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/repositories/incident_types_repository.dart';
 import 'package:safify/repositories/location_repository.dart';
@@ -21,6 +20,7 @@ import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import 'package:safify/utils/screen.dart';
 import 'package:safify/utils/string_utils.dart';
+import 'package:safify/utils/user_utils.dart';
 import 'package:safify/widgets/user_actions_modal_sheet.dart';
 import 'package:safify/widgets/user_report_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +42,7 @@ class _HomePage2State extends State<HomePage2> {
   String? user_id;
   UserServices userServices = UserServices();
   String selectedStatus = "All";
+  final UserUtils user = UserUtils();
 
   @override
   void initState() {
@@ -53,26 +54,26 @@ class _HomePage2State extends State<HomePage2> {
     setState(() {});
   }
 
-  void getUsername() {
-    SharedPreferences.getInstance().then((prefs) async {
-      user_name = await userServices.getName();
-      setState(() {
-        user_id = prefs.getString("user_id");
-      });
+  //SRB VIOLATION 1 -> fetching username interacts with flutter's local storage and should be in a DAL with the Single Responsibility to retrieve user name
+
+  void getUsername() async {
+    await user.loadUserDetails();
+    setState(() {
+      user_name = user.userName;
+      user_id = user.userId;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Define scaling factors based on screen dimensions
+    //SRB VIOLATION 2 -> These MediaQuery declarations should be in a Sizes helper class
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double scaleFactor = screenWidth /
-        400; // Base scaling factor for width around a medium screen width (e.g., 400px)
+    double scaleFactor = screenWidth / 400;
 
     return Scaffold(
-      appBar: // Import the flutter_svg package
-          AppBar(
+      appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
         toolbarHeight: Screen(context).screenHeight * 0.07,
@@ -91,9 +92,8 @@ class _HomePage2State extends State<HomePage2> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            iconSize: 24 * scaleFactor, // Scale the logout icon size
+            iconSize: 24 * scaleFactor,
             onPressed: () {
-              // Show a confirmation dialog before logging out
               showDialog(
                 context: context,
                 builder: (BuildContext dialogContext) {
@@ -104,13 +104,13 @@ class _HomePage2State extends State<HomePage2> {
                       TextButton(
                         child: const Text('Cancel'),
                         onPressed: () {
-                          Navigator.of(dialogContext).pop(); // Close the dialog
+                          Navigator.of(dialogContext).pop();
                         },
                       ),
                       TextButton(
                         child: const Text('Logout'),
                         onPressed: () async {
-                          Navigator.of(dialogContext).pop(); // Close the dialog
+                          Navigator.of(dialogContext).pop();
                           bool res = await handleLogout(context);
                           if (res) {
                             Navigator.pushReplacement(
@@ -159,7 +159,6 @@ class _HomePage2State extends State<HomePage2> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Username and Date with responsive styling
               Container(
                 padding: EdgeInsets.all(16.0 * scaleFactor),
                 decoration: BoxDecoration(
@@ -190,6 +189,32 @@ class _HomePage2State extends State<HomePage2> {
                             color: Colors.grey[600],
                           ),
                         ),
+                        SizedBox(height: 4 * scaleFactor),
+
+                        // Display Score
+                        Consumer<UserReportsProvider>(
+                          builder: (context, provider, child) {
+                            if (provider.isLoading) {
+                              return Text("Loading score...",
+                                  style: TextStyle(
+                                      fontSize: 14 * scaleFactor,
+                                      color: Colors.grey[600]));
+                            } else if (provider.score != null) {
+                              return Text(
+                                "Score: ${provider.score}",
+                                style: TextStyle(
+                                    fontSize: 16 * scaleFactor,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue),
+                              );
+                            } else {
+                              return Text("Score: N/A",
+                                  style: TextStyle(
+                                      fontSize: 14 * scaleFactor,
+                                      color: Colors.grey[600]));
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ],
@@ -199,10 +224,9 @@ class _HomePage2State extends State<HomePage2> {
               SizedBox(height: 20 * scaleFactor),
               Divider(
                   thickness: 1 * scaleFactor,
-                  color: Color.fromARGB(255, 204, 204, 204)),
+                  color: const Color.fromARGB(255, 204, 204, 204)),
               SizedBox(height: 20 * scaleFactor),
 
-              // My Reports section title with responsive font size
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -218,14 +242,6 @@ class _HomePage2State extends State<HomePage2> {
                     onPressed: () {
                       _showBottomSheetUnsynced();
                     },
-                    // child: Text(
-                    //   "pending",
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     fontSize: 12 * scaleFactor,
-                    //     color: Colors.black,
-                    //   ),
-                    // )),
                     child: _buildTriggerButton(),
                   ),
                 ],
@@ -242,14 +258,14 @@ class _HomePage2State extends State<HomePage2> {
                     double spacing = screenWidth < 350
                         ? 3.0
                         : screenWidth < 600
-                            ? 8.0
+                            ? 6.0
                             : 16.0;
 
                     return Wrap(
                       spacing: spacing, // Dynamic spacing
                       runSpacing:
                           spacing, // Apply same spacing for wrapped rows
-                      alignment: WrapAlignment.center,
+                      alignment: WrapAlignment.start,
                       children: [
                         _buildFilterButton("All"),
                         _buildFilterButton("open"),
@@ -260,6 +276,7 @@ class _HomePage2State extends State<HomePage2> {
                   },
                 ),
               ),
+
               SizedBox(height: 8 * scaleFactor),
 
               // List of reports
@@ -273,7 +290,6 @@ class _HomePage2State extends State<HomePage2> {
                     ).fetchReports(context);
 
                     if (result.contains("success")) {
-                      // ToastService.showUpdatedLocalDbSuccess(context);
                     } else {
                       ToastService.showFailedToFetchReportsFromServer(context);
                     }
@@ -289,6 +305,8 @@ class _HomePage2State extends State<HomePage2> {
       ),
     );
   }
+
+  //SRB VIOLATION 3-> UI component should be in a separate widget component with the single responsibility to render FilterButton
 
   Widget _buildFilterButton(String status) {
     return ElevatedButton(
@@ -368,6 +386,7 @@ class _HomePage2State extends State<HomePage2> {
     }
   }
 
+  //SRB VIOLATION 4 -> UI component should be in a separate widget component with the single responsibility to render TriggerButton
   void _showBottomSheet() {
     showModalBottomSheet(
         isDismissible: true,
@@ -383,6 +402,7 @@ class _HomePage2State extends State<HomePage2> {
         });
   }
 
+  //SRB VIOLATION 5 -> UI component should be in a separate widget component with the single responsibility to render TriggerButton
   Widget _buildTriggerButton() {
     DatabaseHelper databaseHelper = DatabaseHelper();
     return FutureBuilder<int>(
@@ -394,20 +414,6 @@ class _HomePage2State extends State<HomePage2> {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Pending text
-            // if (count > 0)
-            //   Padding(
-            //     padding: const EdgeInsets.only(right: 8.0),
-            //     child: Text(
-            //       'Pending',
-            //       style: TextStyle(
-            //         color: Colors.orange,
-            //         fontWeight: FontWeight.bold,
-            //         fontSize: 12 * MediaQuery.of(context).textScaleFactor,
-            //       ),
-            //     ),
-            //   ),
-
             // Badge with icon
             custom_badge.Badge(
               badgeStyle: BadgeStyle(
@@ -418,7 +424,7 @@ class _HomePage2State extends State<HomePage2> {
               position: custom_badge.BadgePosition.topEnd(top: -8, end: -12),
               child: IconButton(
                 icon: const Icon(Icons.sync_problem),
-                color: count > 0 ? Colors.orange : Colors.greenAccent,
+                color: count > 0 ? Colors.orange : Colors.green,
                 onPressed: () => _showBottomSheetUnsynced(),
               ),
             ),
@@ -427,6 +433,8 @@ class _HomePage2State extends State<HomePage2> {
       },
     );
   }
+
+  //SRB VIOLATION 6 -> UI component should be in a separate widget component with the single responsibility to render BottomSheet
 
   void _showBottomSheetUnsynced() {
     final databaseHelper = DatabaseHelper();
@@ -484,6 +492,8 @@ class _HomePage2State extends State<HomePage2> {
     );
   }
 
+  //SRB VIOLATION 7 -> UI component should be in a separate widget component with the single responsibility to render Card. Releaving burden from Home Widget.
+
   Widget _buildReportCard(UserReportFormDetails report) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -505,54 +515,52 @@ class _HomePage2State extends State<HomePage2> {
                   ),
                 ),
               ),
-            // _buildInfoRow('Location', report.sublocationId),
-            // _buildInfoRow('Incident Type', report.incidentSubtypeId),
-            // _buildInfoRow('Criticality', report.criticalityId),
-            // _buildInfoRow(
-            //   'Date',
-            //   DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
-            // ),
-            Text(
-              DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
-              style: TextStyle(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
+                  style: TextStyle(),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: report.criticalityId.contains('CRT1')
+                        ? Colors.green[100]
+                        : report.criticalityId.contains('CRT2')
+                            ? Colors.orange[100]
+                            : Colors.red[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    ' ${capitalizeFirstLetter(
+                      report.criticalityId.contains('CRT1')
+                          ? 'minor'
+                          : report.criticalityId!.contains('CRT2')
+                              ? 'serious'
+                              : 'critical',
+                    )}',
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
             if (report.description.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  report.description,
-                  style: TextStyle(fontSize: 14, color: Colors.blue[700]),
+                child: Row(
+                  children: [
+                    Text(
+                      report.description,
+                      style: TextStyle(fontSize: 14, color: Colors.blue[700]),
+                    ),
+                  ],
                 ),
               ),
           ],
         ),
-      ),
-    );
-  }
-
-// Helper widget for consistent info rows
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value.isNotEmpty ? value : 'Not specified',
-              style: TextStyle(
-                color: value.isEmpty ? Colors.grey : null,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

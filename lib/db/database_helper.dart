@@ -156,7 +156,7 @@ class DatabaseHelper {
               incident_criticality_level TEXT,
               incident_criticality_id TEXT,
               image TEXT,
-              status TEXT
+              status TEXT,
             )
           ''');
 

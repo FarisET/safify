@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:safify/repositories/user_reports_repository.dart';
-import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import '../../models/user_report.dart';
 import '../../services/report_service.dart';
 
 class UserReportsProvider with ChangeNotifier {
   List<UserReport> _reports = [];
+  int? _score;
+
   List<UserReport> get reports => _reports;
+  int? get score => _score;
+
   bool isLoading = false;
   String? _error;
   String? get error => _error;
@@ -30,10 +33,9 @@ class UserReportsProvider with ChangeNotifier {
       isLoading = true;
       _reports = await _userReportsRepository.fetchUserReportsFromDb();
       isLoading = false;
-
       notifyListeners();
-      debugPrint("Fetched admin action reports from local database.");
 
+      debugPrint("Fetched admin action reports from local database.");
       final ping = await ping_google();
 
       if (ping) {
@@ -55,4 +57,15 @@ class UserReportsProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  // Future<void> fetchScore() async {
+  //   try {
+  //     final result = await _userReportsRepository.fetchUserScore();
+  //     _score = result.score;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     _error = e.toString();
+  //     notifyListeners();
+  //   }
+  // }
 }

@@ -16,8 +16,10 @@ import 'package:safify/utils/alerts_util.dart';
 import 'package:safify/utils/file_utils.dart';
 import 'package:safify/utils/network_util.dart';
 import 'package:safify/utils/screen.dart';
+import 'package:safify/widgets/custom_dropdown.dart';
 import 'package:safify/widgets/drawing_canvas_utils.dart';
 import 'package:safify/widgets/image_utils.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../models/sub_location.dart';
 import '../../models/incident_sub_type.dart';
@@ -91,19 +93,19 @@ class _UserFormState extends State<UserForm> {
   String SelectedSubLocationType = '';
   bool isRiskLevelSelected = false;
   ImageUtils imageUtils = ImageUtils();
-  DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
-    return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
-        type, type.incidentTypeId, type.incidentTypeDescription
-        // Add the condition to check if it's selected based on your logic
-        );
-  }
+  // DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
+  //   return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
+  //       type, type.incidentTypeId, type.incidentTypeDescription
+  //       // Add the condition to check if it's selected based on your logic
+  //       );
+  // }
 
-  DropdownMenuItem<String> buildSubIncidentMenuItem(IncidentSubType type) {
-    return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentSubType>(
-        type, type.incidentSubtypeId, type.incidentSubtypeDescription
-        // Add the condition to check if it's selected based on your logic
-        );
-  }
+  // DropdownMenuItem<String> buildSubIncidentMenuItem(IncidentSubType type) {
+  //   return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentSubType>(
+  //       type, type.incidentSubtypeId, type.incidentSubtypeDescription
+  //       // Add the condition to check if it's selected based on your logic
+  //       );
+  // }
 
   DropdownMenuItem<String> buildLocationMenuItem(Location type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<Location>(
@@ -202,9 +204,62 @@ class _UserFormState extends State<UserForm> {
               color: Theme.of(context).secondaryHeaderColor,
               size: 16 * Screen(context).scaleFactor,
             ),
-            onPressed: () {
-              // Add your navigation logic here, such as pop or navigate back
-              Navigator.of(context).pop();
+            onPressed: () async {
+              bool? confirmExit = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirm Exit'),
+                    content: Text(
+                      'Are you sure you want to go back? All changes will be lost.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // Cancel
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(true); // Confirm exit
+                        },
+                        child: Text('Yes, Go Back'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirmExit == true) {
+                // Reset form before going back
+                if (mounted) {
+                  setState(() {
+                    returnedImage = null;
+                    Provider.of<IncidentProviderClass>(context, listen: false)
+                        .selectedIncidentType = null;
+                    Provider.of<LocationProvider>(context, listen: false)
+                        .selectedLocation = null;
+                    Provider.of<IncidentProviderClass>(context, listen: false)
+                        .setIncidentType(null);
+                    Provider.of<LocationProvider>(context, listen: false)
+                        .selectedLocation = null;
+
+                    SelectedIncidentType = null;
+                    SelectedLocationType = null;
+                  });
+                }
+
+                // Give a small delay to ensure UI update before navigation
+                await Future.delayed(Duration(milliseconds: 200));
+
+                if (mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomePage2()),
+                    (route) => false, // Remove all previous routes
+                  );
+                }
+              }
             },
           ),
           title: Text("Report an Incident",
@@ -272,58 +327,140 @@ class _UserFormState extends State<UserForm> {
                                     ),
                                   ),
                                 ),
+                                // Incident Dropdown
+// Incident Dropdown
                                 Consumer<IncidentProviderClass>(
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
-                                      return const Center(
-                                        child:
-                                            CircularProgressIndicator(), // Display a loading indicator
+                                      return Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: Container(
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        ),
                                       );
                                     } else {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .highlightColor),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: FormField<String>(
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Category is required';
-                                            }
-                                            return null;
-                                          },
-                                          builder:
-                                              (FormFieldState<String> state) {
-                                            return DropdownButton<String>(
-                                              value: selectedVal
-                                                  .selectedIncidentType,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .secondaryHeaderColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              isExpanded: true,
-                                              icon: Icon(Icons.arrow_drop_down,
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor),
-                                              underline: Container(),
-                                              items: [
-                                                DropdownMenuItem<String>(
-                                                  value:
-                                                      null, // Placeholder value
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom:
+                                                10.0), // Add padding to avoid content cut
+                                        child: CustomDropdown<String>(
+                                          value:
+                                              selectedVal.selectedIncidentType,
+                                          hintText: 'Category (required)',
+                                          items: [
+                                            if (selectedVal.incidentTypes !=
+                                                null)
+                                              ...selectedVal.incidentTypes!
+                                                  .map((type) {
+                                                return DropdownMenuItem<String>(
+                                                  value: type.incidentTypeId,
                                                   child: Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 10.0,
                                                         vertical: 8.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Text(
-                                                          'Category',
+                                                    child: Text(
+                                                      type.incidentTypeDescription,
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .secondaryHeaderColor,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                          ],
+                                          onChanged: (v) {
+                                            selectedVal.setIncidentType(v);
+                                            incidentType = v!;
+                                            SelectedIncidentType = v;
+                                            Provider.of<SubIncidentProviderClass>(
+                                                    context,
+                                                    listen: false)
+                                                .selectedSubIncident = null;
+                                            Provider.of<SubIncidentProviderClass>(
+                                                    context,
+                                                    listen: false)
+                                                .getSubIncidentPostData(v);
+                                            isFirstIncidentDropdownSelected =
+                                                v != null;
+                                            setState(() {});
+                                          },
+                                          text: selectedVal.incidentTypes
+                                                  ?.firstWhere(
+                                                      (type) =>
+                                                          type.incidentTypeId ==
+                                                          selectedVal
+                                                              .selectedIncidentType,
+                                                      orElse: () => IncidentType(
+                                                          incidentTypeId: '',
+                                                          incidentTypeDescription:
+                                                              'Select an option'))
+                                                  .incidentTypeDescription ??
+                                              'Select an option',
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 5),
+
+                                // Sub-Incident Dropdown
+                                if (isFirstIncidentDropdownSelected)
+                                  Consumer<SubIncidentProviderClass>(
+                                    builder: (context, selectedValue, child) {
+                                      if (SelectedIncidentType != null) {
+                                        if (selectedValue.loading) {
+                                          return Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: Container(
+                                              height: 56,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom:
+                                                    10.0), // Add padding to avoid content cut
+                                            child: CustomDropdown<String>(
+                                              value: selectedValue
+                                                  .selectedSubIncident,
+                                              hintText:
+                                                  'Sub Category (required)',
+                                              items: [
+                                                if (selectedValue
+                                                        .subIncidentPost !=
+                                                    null)
+                                                  ...selectedValue
+                                                      .subIncidentPost!
+                                                      .map((type) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: type
+                                                          .incidentSubtypeId,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    10.0,
+                                                                vertical: 8.0),
+                                                        child: Text(
+                                                          type.incidentSubtypeDescription,
                                                           style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
@@ -333,189 +470,67 @@ class _UserFormState extends State<UserForm> {
                                                                     .normal,
                                                           ),
                                                         ),
-                                                        Text(
-                                                          ' (required)',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .hintColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontSize: 12),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                if (selectedVal.incidentTypes !=
-                                                    null)
-                                                  ...selectedVal.incidentTypes!
-                                                      .map((type) {
-                                                    return buildIncidentMenuItem(
-                                                        type);
+                                                      ),
+                                                    );
                                                   }).toList(),
                                               ],
                                               onChanged: (v) {
-                                                selectedVal.setIncidentType(v);
-                                                incidentType = v!;
-                                                SelectedIncidentType = v;
-                                                Provider.of<SubIncidentProviderClass>(
-                                                        context,
-                                                        listen: false)
-                                                    .selectedSubIncident = null;
-                                                Provider.of<SubIncidentProviderClass>(
-                                                        context,
-                                                        listen: false)
-                                                    .getSubIncidentPostData(v);
-                                                isFirstIncidentDropdownSelected =
-                                                    v != null;
-                                                setState(() {});
+                                                selectedValue
+                                                    .setSubIncidentType(v);
+                                                incidentSubType = v!;
                                               },
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                if (isFirstIncidentDropdownSelected)
-                                  Consumer<SubIncidentProviderClass>(
-                                      builder: (context, selectedValue, child) {
-                                    if (SelectedIncidentType != null) {
-                                      if (selectedValue.loading) {
-                                        return const Center(
-                                          child:
-                                              CircularProgressIndicator(), // Display a loading indicator
-                                        );
+                                              text: selectedValue
+                                                      .subIncidentPost
+                                                      ?.firstWhere(
+                                                        (type) =>
+                                                            type.incidentSubtypeId ==
+                                                            selectedValue
+                                                                .selectedSubIncident,
+                                                        orElse: () => IncidentSubType(
+                                                            incidentSubtypeId:
+                                                                '',
+                                                            incidentSubtypeDescription:
+                                                                'Select an option',
+                                                            incidentTypeId: ''),
+                                                      )
+                                                      ?.incidentSubtypeDescription ??
+                                                  'Select an option',
+                                            ),
+                                          );
+                                        }
                                       } else {
                                         return Container(
+                                          width: double.infinity,
                                           decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Theme.of(context)
-                                                    .highlightColor),
+                                            color: Colors.grey[100],
+                                            border:
+                                                Border.all(color: Colors.grey),
                                             borderRadius:
                                                 BorderRadius.circular(12),
                                           ),
-                                          child: FormField<String>(
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Sub Cateogry is required';
-                                              }
-                                              return null;
-                                            },
-                                            builder:
-                                                (FormFieldState<String> state) {
-                                              return DropdownButton<String>(
-                                                value: selectedValue
-                                                    .selectedSubIncident,
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                                isExpanded: true,
-                                                icon: Icon(
-                                                    Icons.arrow_drop_down,
-                                                    color: Theme.of(context)
-                                                        .secondaryHeaderColor),
-                                                underline: Container(),
-                                                items: [
-                                                  DropdownMenuItem<String>(
-                                                    value:
-                                                        null, // Placeholder value
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 10.0,
-                                                          vertical: 8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Text(
-                                                            'Sub Category',
-                                                            style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .secondaryHeaderColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            ' (required)',
-                                                            style: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .hintColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize: 12),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10.0, vertical: 12),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'Please select a category first',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
                                                   ),
-                                                  if (selectedValue
-                                                          .subIncidentPost !=
-                                                      null)
-                                                    ...selectedValue
-                                                        .subIncidentPost!
-                                                        .map((type) {
-                                                      return buildSubIncidentMenuItem(
-                                                          type);
-                                                    }).toList(),
-                                                ],
-                                                onChanged: (v) {
-                                                  selectedValue
-                                                      .setSubIncidentType(v);
-                                                  incidentSubType = v!;
-                                                },
-                                              );
-                                            },
+                                                ),
+                                                Icon(Icons.arrow_drop_down,
+                                                    color: Colors.grey),
+                                              ],
+                                            ),
                                           ),
                                         );
                                       }
-                                    } else {
-                                      return const Text(
-                                          'Please select a incident first',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                          ));
-
-                                      // return Container(
-                                      //     width: double.infinity,
-                                      //     decoration: BoxDecoration(
-                                      //       color: Colors.grey[100],
-                                      //       border:
-                                      //           Border.all(color: Colors.grey),
-                                      //       borderRadius:
-                                      //           BorderRadius.circular(5),
-                                      //     ),
-                                      //     child: Padding(
-                                      //       padding: const EdgeInsets.symmetric(
-                                      //           horizontal: 5.0, vertical: 12),
-                                      //       child: Row(
-                                      //         mainAxisAlignment:
-                                      //             MainAxisAlignment.spaceBetween,
-                                      //         children: const [
-                                      // Text(
-                                      //     'Please select a incident first',
-                                      //     style: TextStyle(
-                                      //       color: Colors.grey,
-                                      //     )),
-                                      //           Icon(Icons.arrow_drop_down,
-                                      //               color: Colors.grey)
-                                      //         ],
-                                      //       ),
-                                      //     ));
-                                    }
-                                  }),
+                                    },
+                                  ),
                               ],
                             ),
                           ),
@@ -551,220 +566,97 @@ class _UserFormState extends State<UserForm> {
                                   builder: (context, selectedVal, child) {
                                     if (selectedVal.loading) {
                                       return const Center(
-                                        child:
-                                            CircularProgressIndicator(), // Display a loading indicator
-                                      );
+                                          child: CircularProgressIndicator());
                                     } else {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .highlightColor),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: FormField<String>(
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Location is required';
-                                            }
-                                            return null;
-                                          },
-                                          builder:
-                                              (FormFieldState<String> state) {
-                                            return DropdownButton<String>(
-                                              value:
-                                                  selectedVal.selectedLocation,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .secondaryHeaderColor,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                              isExpanded: true,
-                                              icon: Icon(Icons.arrow_drop_down,
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor),
-                                              underline: Container(),
-                                              items: [
-                                                DropdownMenuItem<String>(
-                                                  value:
-                                                      null, // Placeholder value
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 8.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Text(
-                                                          'Location',
-                                                          style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .secondaryHeaderColor,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          ' (required)',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .hintColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontSize: 12),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                if (selectedVal.allLocations !=
-                                                    null)
-                                                  ...selectedVal.allLocations!
-                                                      .map((type) {
-                                                    return buildLocationMenuItem(
-                                                        type);
-                                                  }).toList(),
-                                              ],
-                                              onChanged: (v) {
-                                                selectedVal.setLocation(v);
-                                                //    incidentType = v!;
-                                                SelectedLocationType = v!;
-                                                Provider.of<SubLocationProviderClass>(
-                                                        context,
-                                                        listen: false)
-                                                    .selectedSubLocation = null;
-                                                Provider.of<SubLocationProviderClass>(
-                                                        context,
-                                                        listen: false)
-                                                    .getSubLocationPostData(v);
-                                                isFirstLocationDropdownSelected =
-                                                    v != null;
-                                                setState(() {});
-                                              },
-                                            );
-                                          },
-                                        ),
+                                      return CustomDropdown<String>(
+                                        value: selectedVal.selectedLocation,
+                                        hintText: 'Select Location',
+                                        items: [
+                                          ...?selectedVal.allLocations?.map(
+                                              (type) =>
+                                                  buildLocationMenuItem(type))
+                                        ],
+                                        onChanged: (v) {
+                                          selectedVal.setLocation(v);
+                                          SelectedLocationType = v!;
+                                          Provider.of<SubLocationProviderClass>(
+                                                  context,
+                                                  listen: false)
+                                              .selectedSubLocation = null;
+                                          Provider.of<SubLocationProviderClass>(
+                                                  context,
+                                                  listen: false)
+                                              .getSubLocationPostData(v);
+                                          isFirstLocationDropdownSelected =
+                                              v != null;
+                                          setState(() {});
+                                        },
+                                        text: selectedVal.allLocations
+                                                ?.firstWhere(
+                                                  (type) =>
+                                                      type.locationId ==
+                                                      selectedVal
+                                                          .selectedLocation,
+                                                  orElse: () => const Location(
+                                                      locationId: '',
+                                                      locationName:
+                                                          'Select an option'),
+                                                )
+                                                ?.locationName ??
+                                            'Select an option',
                                       );
                                     }
                                   },
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
+                                const SizedBox(height: 10),
                                 if (isFirstLocationDropdownSelected)
                                   Consumer<SubLocationProviderClass>(
-                                      builder: (context, selectedValue, child) {
-                                    if (SelectedLocationType != null) {
-                                      if (selectedValue.loading) {
-                                        return const Center(
-                                          child:
-                                              CircularProgressIndicator(), // Display a loading indicator
-                                        );
+                                    builder: (context, selectedValue, child) {
+                                      if (SelectedLocationType != null) {
+                                        if (selectedValue.loading) {
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        } else {
+                                          return CustomDropdown<String>(
+                                            value: selectedValue
+                                                .selectedSubLocation,
+                                            hintText: 'Select Sub Location',
+                                            items: [
+                                              ...?selectedValue.subLocations
+                                                  ?.map((type) =>
+                                                      buildSubLocationMenuItem(
+                                                          type))
+                                            ],
+                                            onChanged: (v) {
+                                              selectedValue
+                                                  .setSubLocationType(v);
+                                              SelectedSubLocationType = v!;
+                                            },
+                                            text: selectedValue.allSubLocations
+                                                    ?.firstWhere(
+                                                      (type) =>
+                                                          type.sublocationId ==
+                                                          selectedValue
+                                                              .selectedSubLocation,
+                                                      orElse: () => SubLocation(
+                                                          sublocationId: '',
+                                                          sublocationName:
+                                                              'Select an option',
+                                                          location_id: ''),
+                                                    )
+                                                    ?.sublocationName ??
+                                                'Select an option',
+                                          );
+                                        }
                                       } else {
-                                        return Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Theme.of(context)
-                                                    .hintColor),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: FormField<String>(
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Sub Location is required';
-                                              }
-                                              return null;
-                                            },
-                                            builder:
-                                                (FormFieldState<String> state) {
-                                              return DropdownButton<String>(
-                                                value: selectedValue
-                                                    .selectedSubLocation,
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                                isExpanded: true,
-                                                icon: Icon(
-                                                    Icons.arrow_drop_down,
-                                                    color: Theme.of(context)
-                                                        .secondaryHeaderColor),
-                                                underline: Container(),
-                                                items: [
-                                                  DropdownMenuItem<String>(
-                                                    value:
-                                                        null, // Placeholder value
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 10.0,
-                                                          vertical: 8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Text(
-                                                            'Sub Location',
-                                                            style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .secondaryHeaderColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            ' (required)',
-                                                            style: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .hintColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize: 12),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  if (selectedValue
-                                                          .subLocations !=
-                                                      null)
-                                                    ...selectedValue
-                                                        .subLocations!
-                                                        .map((type) {
-                                                      print(type);
-                                                      return buildSubLocationMenuItem(
-                                                          type);
-                                                    }).toList(),
-                                                ],
-                                                onChanged: (v) {
-                                                  selectedValue
-                                                      .setSubLocationType(v);
-                                                  SelectedSubLocationType = v!;
-                                                },
-                                              );
-                                            },
-                                          ),
+                                        return const Text(
+                                          'Please select a location first',
+                                          style: TextStyle(color: Colors.red),
                                         );
                                       }
-                                    } else {
-                                      return const Text(
-                                          'Please select a location first',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                          ));
-                                    }
-                                  }),
+                                    },
+                                  ),
                                 const Padding(
                                   padding: EdgeInsets.only(left: 12),
                                 ),
@@ -1069,6 +961,8 @@ class _UserFormState extends State<UserForm> {
                                                         context,
                                                         listen: false)
                                                     .selectedLocation = null;
+                                                SelectedIncidentType = null;
+                                                SelectedLocationType = null;
                                               });
                                               _processData();
                                               Navigator.pushReplacement(
@@ -1261,7 +1155,9 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        //Fluttertoast.showToast(msg: 'Image editing cancelled');
+        setState(() {
+          returnedImage = image;
+        });
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
@@ -1339,7 +1235,9 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        //   Fluttertoast.showToast(msg: 'Image editing cancelled');
+        setState(() {
+          returnedImage = image;
+        });
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
