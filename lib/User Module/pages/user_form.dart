@@ -1261,7 +1261,9 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        //Fluttertoast.showToast(msg: 'Image editing cancelled');
+        setState(() {
+          returnedImage = image;
+        });
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');
@@ -1339,7 +1341,9 @@ class _UserFormState extends State<UserForm> {
           Fluttertoast.showToast(msg: 'Image editing failed');
         }
       } else {
-        //   Fluttertoast.showToast(msg: 'Image editing cancelled');
+        setState(() {
+          returnedImage = image;
+        });
       }
     } else {
       Fluttertoast.showToast(msg: 'No Image Selected');

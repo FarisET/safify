@@ -79,6 +79,35 @@ class ReportServices {
     }
   }
 
+  Future<dynamic> getUserScore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    current_user_id = prefs.getString('user_id');
+    jwtToken = await storage.read(key: 'jwt');
+
+    final url =
+        Uri.parse('$IP_URL/userReport/dashboard/$current_user_id/score');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body); // Decode as List
+        return data[0]["score"].toString(); // Extract score from the first item
+      } else if (response.statusCode == 400) {
+        throw Exception('Bad Request: Incorrect field values');
+      } else {
+        throw Exception('Failed to fetch user score: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Error fetching user score: $error');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchAssignedReports() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

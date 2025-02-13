@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:safify/User%20Module/pages/login_page.dart';
 import 'package:safify/User%20Module/pages/user_form.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
+import 'package:safify/User%20Module/providers/user_score_provider.dart';
 import 'package:safify/db/database_helper.dart';
 import 'package:safify/models/user_report_form_details.dart';
 import 'package:safify/repositories/incident_types_repository.dart';
@@ -46,6 +47,7 @@ class _HomePage2State extends State<HomePage2> {
   @override
   void initState() {
     super.initState();
+    Provider.of<UserScoreProvider>(context, listen: false).fetchScore(context);
     getUsername();
   }
 
@@ -163,34 +165,85 @@ class _HomePage2State extends State<HomePage2> {
               Container(
                 padding: EdgeInsets.all(16.0 * scaleFactor),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12 * scaleFactor),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16 * scaleFactor),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.person,
-                        size: 36 * scaleFactor, color: Colors.grey[700]),
-                    SizedBox(width: 12 * scaleFactor),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    // User Info Section
+                    Row(
                       children: [
-                        Text(
-                          user_name ?? 'User',
-                          style: TextStyle(
-                            fontSize: 22 * scaleFactor,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 4 * scaleFactor),
-                        Text(
-                          intl.DateFormat('d MMMM y').format(DateTime.now()),
-                          style: TextStyle(
-                            fontSize: 14 * scaleFactor,
-                            color: Colors.grey[600],
-                          ),
+                        Icon(Icons.person,
+                            size: 40 * scaleFactor, color: Colors.grey[700]),
+                        SizedBox(width: 12 * scaleFactor),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user_name ?? 'User',
+                              style: TextStyle(
+                                fontSize: 22 * scaleFactor,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            SizedBox(height: 4 * scaleFactor),
+                            Row(
+                              children: [
+                                Icon(Icons.calendar_today,
+                                    size: 16 * scaleFactor,
+                                    color: Colors.grey[600]),
+                                SizedBox(width: 6 * scaleFactor),
+                                Text(
+                                  intl.DateFormat('d MMM y')
+                                      .format(DateTime.now()),
+                                  style: TextStyle(
+                                      fontSize: 14 * scaleFactor,
+                                      color: Colors.grey[600]),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
+                    ),
+
+                    // Score Section
+                    Consumer<UserScoreProvider>(
+                      builder: (context, userScoreProvider, child) {
+                        if (userScoreProvider.isLoading) {
+                          return SizedBox(
+                            width: 40 * scaleFactor,
+                            height: 40 * scaleFactor,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blueAccent),
+                            ),
+                          );
+                        } else if (userScoreProvider.error != null) {
+                          return _errorMessage(userScoreProvider);
+                        } else if (userScoreProvider.score == "Offline") {
+                          return _offlineMessage();
+                        } else if (userScoreProvider.score != null) {
+                          return _scoreCard(userScoreProvider.score!);
+                        } else {
+                          return Text(
+                            'Fetching...',
+                            style: TextStyle(
+                                fontSize: 16 * scaleFactor,
+                                color: Colors.grey[600]),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -366,6 +419,69 @@ class _HomePage2State extends State<HomePage2> {
         print("Report failed to send. Retrying later...: error:$uploadSuccess");
       }
     }
+  }
+
+  // Displays error message with refresh button
+  Widget _errorMessage(UserScoreProvider provider) {
+    return Row(
+      children: [
+        Text(
+          'Error: Unable to fetch score',
+          style: TextStyle(
+              fontSize: 16, color: Colors.red, fontWeight: FontWeight.w500),
+        ),
+        IconButton(
+          icon: Icon(Icons.refresh, size: 24, color: Colors.blueAccent),
+          onPressed: () => provider.fetchScore(context),
+        ),
+      ],
+    );
+  }
+
+// Displays "Offline" message with warning icon
+  Widget _offlineMessage() {
+    return Row(
+      children: [
+        Icon(Icons.wifi_off, size: 24, color: Colors.redAccent),
+        SizedBox(width: 6),
+        Text(
+          'Offline',
+          style: TextStyle(
+              fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+// Displays user score with trophy icon
+  Widget _scoreCard(String score) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+          vertical: 16 * Screen(context).scaleFactor,
+          horizontal: 16 * Screen(context).scaleFactor),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12 * Screen(context).scaleFactor),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.emoji_events,
+            size: 24 * Screen(context).scaleFactor, // Scales with screen size
+            color: Colors.blueAccent,
+          ),
+          SizedBox(width: 8 * Screen(context).scaleFactor), // Dynamic spacing
+          Text(
+            'Score: $score',
+            style: TextStyle(
+              fontSize: 20 * Screen(context).scaleFactor, // Dynamic font size
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showBottomSheet() {

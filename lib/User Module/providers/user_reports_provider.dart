@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safify/repositories/user_reports_repository.dart';
-import 'package:safify/services/toast_service.dart';
 import 'package:safify/utils/network_util.dart';
 import '../../models/user_report.dart';
-import '../../services/report_service.dart';
 
 class UserReportsProvider with ChangeNotifier {
   List<UserReport> _reports = [];
