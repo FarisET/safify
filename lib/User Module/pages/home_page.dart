@@ -220,9 +220,9 @@ class _HomePage2State extends State<HomePage2> {
                     Consumer<UserScoreProvider>(
                       builder: (context, userScoreProvider, child) {
                         if (userScoreProvider.isLoading) {
-                          return SizedBox(
-                            width: 40 * scaleFactor,
-                            height: 40 * scaleFactor,
+                          return const SizedBox(
+                            width: 40,
+                            height: 40,
                             child: CircularProgressIndicator(
                               strokeWidth: 3,
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -230,17 +230,28 @@ class _HomePage2State extends State<HomePage2> {
                             ),
                           );
                         } else if (userScoreProvider.error != null) {
-                          return _errorMessage(userScoreProvider);
+                          return const Text(
+                            'Score: N/A',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87),
+                          );
                         } else if (userScoreProvider.score == "Offline") {
-                          return _offlineMessage();
+                          return const Text(
+                            'Score: N/A',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87),
+                          );
                         } else if (userScoreProvider.score != null) {
-                          return _scoreCard(userScoreProvider.score!);
+                          return ScoreCard(score: userScoreProvider.score!);
                         } else {
                           return Text(
                             'Fetching...',
                             style: TextStyle(
-                                fontSize: 16 * scaleFactor,
-                                color: Colors.grey[600]),
+                                fontSize: 16, color: Colors.grey[600]),
                           );
                         }
                       },
@@ -253,7 +264,6 @@ class _HomePage2State extends State<HomePage2> {
               Divider(
                   thickness: 1 * scaleFactor,
                   color: Color.fromARGB(255, 204, 204, 204)),
-              SizedBox(height: 20 * scaleFactor),
 
               // My Reports section title with responsive font size
               Row(
@@ -271,19 +281,10 @@ class _HomePage2State extends State<HomePage2> {
                     onPressed: () {
                       _showBottomSheetUnsynced();
                     },
-                    // child: Text(
-                    //   "pending",
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     fontSize: 12 * scaleFactor,
-                    //     color: Colors.black,
-                    //   ),
-                    // )),
                     child: _buildTriggerButton(),
                   ),
                 ],
               ),
-              SizedBox(height: 8 * scaleFactor),
 
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -375,115 +376,6 @@ class _HomePage2State extends State<HomePage2> {
     );
   }
 
-  Future<void> uploadUserFormReports(BuildContext context) async {
-    print("uploading reports...");
-    final pingSuccess = await ping_google();
-    if (!pingSuccess) {
-      print("Connection error. Retrying later...");
-      return;
-    }
-    final dbHelper = await DatabaseHelper();
-    final Map<int, UserReportFormDetails> reports =
-        await dbHelper.getUserFormReports();
-    final reportService = ReportServices();
-
-    for (var entry in reports.entries) {
-      int id = entry.key;
-      UserReportFormDetails report = entry.value;
-      int uploadSuccess = -1;
-      try {
-        if (report.imagePath != null) {
-          uploadSuccess = await reportService.uploadReportWithImage(
-              report.imagePath,
-              report.sublocationId,
-              report.incidentSubtypeId,
-              report.description,
-              report.date,
-              report.criticalityId);
-        } else {
-          uploadSuccess = await reportService.postReport(
-              report.sublocationId,
-              report.incidentSubtypeId,
-              report.description,
-              report.date,
-              report.criticalityId);
-        }
-      } catch (e) {
-        rethrow;
-      }
-
-      if (uploadSuccess == 1) {
-        await dbHelper.deleteUserFormReport(id);
-        print("Report successfully sent and deleted from local database");
-      } else {
-        print("Report failed to send. Retrying later...: error:$uploadSuccess");
-      }
-    }
-  }
-
-  // Displays error message with refresh button
-  Widget _errorMessage(UserScoreProvider provider) {
-    return Row(
-      children: [
-        Text(
-          'Error: Unable to fetch score',
-          style: TextStyle(
-              fontSize: 16, color: Colors.red, fontWeight: FontWeight.w500),
-        ),
-        IconButton(
-          icon: Icon(Icons.refresh, size: 24, color: Colors.blueAccent),
-          onPressed: () => provider.fetchScore(context),
-        ),
-      ],
-    );
-  }
-
-// Displays "Offline" message with warning icon
-  Widget _offlineMessage() {
-    return Row(
-      children: [
-        Icon(Icons.wifi_off, size: 24, color: Colors.redAccent),
-        SizedBox(width: 6),
-        Text(
-          'Offline',
-          style: TextStyle(
-              fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-// Displays user score with trophy icon
-  Widget _scoreCard(String score) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: 16 * Screen(context).scaleFactor,
-          horizontal: 16 * Screen(context).scaleFactor),
-      decoration: BoxDecoration(
-        color: Colors.blueAccent.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12 * Screen(context).scaleFactor),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.emoji_events,
-            size: 24 * Screen(context).scaleFactor, // Scales with screen size
-            color: Colors.blueAccent,
-          ),
-          SizedBox(width: 8 * Screen(context).scaleFactor), // Dynamic spacing
-          Text(
-            'Score: $score',
-            style: TextStyle(
-              fontSize: 20 * Screen(context).scaleFactor, // Dynamic font size
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showBottomSheet() {
     showModalBottomSheet(
         isDismissible: true,
@@ -510,20 +402,6 @@ class _HomePage2State extends State<HomePage2> {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Pending text
-            // if (count > 0)
-            //   Padding(
-            //     padding: const EdgeInsets.only(right: 8.0),
-            //     child: Text(
-            //       'Pending',
-            //       style: TextStyle(
-            //         color: Colors.orange,
-            //         fontWeight: FontWeight.bold,
-            //         fontSize: 12 * MediaQuery.of(context).textScaleFactor,
-            //       ),
-            //     ),
-            //   ),
-
             // Badge with icon
             custom_badge.Badge(
               badgeStyle: BadgeStyle(
@@ -589,7 +467,7 @@ class _HomePage2State extends State<HomePage2> {
                   return ListView.builder(
                     itemCount: reports.length,
                     itemBuilder: (context, index) =>
-                        _buildReportCard(reports[index]),
+                        BuildReportCardHome(report: reports[index]),
                   );
                 },
               ),
@@ -600,7 +478,19 @@ class _HomePage2State extends State<HomePage2> {
     );
   }
 
-  Widget _buildReportCard(UserReportFormDetails report) {
+// Helper widget for consistent info rows
+}
+
+class BuildReportCardHome extends StatelessWidget {
+  const BuildReportCardHome({
+    super.key,
+    required this.report,
+  });
+
+  final UserReportFormDetails report;
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
@@ -621,13 +511,6 @@ class _HomePage2State extends State<HomePage2> {
                   ),
                 ),
               ),
-            // _buildInfoRow('Location', report.sublocationId),
-            // _buildInfoRow('Incident Type', report.incidentSubtypeId),
-            // _buildInfoRow('Criticality', report.criticalityId),
-            // _buildInfoRow(
-            //   'Date',
-            //   DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
-            // ),
             Text(
               DateFormat('MMM dd, yyyy - HH:mm a').format(report.date),
               style: TextStyle(),
@@ -645,9 +528,20 @@ class _HomePage2State extends State<HomePage2> {
       ),
     );
   }
+}
 
-// Helper widget for consistent info rows
-  Widget _buildInfoRow(String label, String value) {
+class BuildRowInfoUserHome extends StatelessWidget {
+  const BuildRowInfoUserHome({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -667,6 +561,44 @@ class _HomePage2State extends State<HomePage2> {
                 color: value.isEmpty ? Colors.grey : null,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ScoreCard extends StatelessWidget {
+  const ScoreCard({
+    super.key,
+    required this.score,
+  });
+
+  final String score;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.emoji_events,
+            size: 24,
+            color: Colors.blueAccent,
+          ),
+          SizedBox(width: 8),
+          Text(
+            'Score: $score',
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87),
           ),
         ],
       ),

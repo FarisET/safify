@@ -6,6 +6,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/User%20Module/BLL/report_handler.dart';
 import 'package:safify/User%20Module/pages/home_page.dart';
 import 'package:safify/User%20Module/providers/user_reports_provider.dart';
 import 'package:safify/db/database_helper.dart';
@@ -91,6 +92,8 @@ class _UserFormState extends State<UserForm> {
   String SelectedSubLocationType = '';
   bool isRiskLevelSelected = false;
   ImageUtils imageUtils = ImageUtils();
+  ReportHandler reportHandler = ReportHandler();
+
   DropdownMenuItem<String> buildIncidentMenuItem(IncidentType type) {
     return DropdownMenuItemUtil.buildDropdownMenuItem<IncidentType>(
         type, type.incidentTypeId, type.incidentTypeDescription
@@ -1036,8 +1039,9 @@ class _UserFormState extends State<UserForm> {
                                           (incidentSubType != '') &&
                                           (SelectedSubLocationType != '')) {
                                         print("pressed");
-                                        int flag = await handleReportSubmitted(
-                                            context, this, returnedImage);
+                                        int flag = await reportHandler
+                                            .handleReportSubmitted(
+                                                context, this, returnedImage);
                                         if (flag == 1) {
                                           // Show loading indicator
                                           if (mounted) {
@@ -1410,114 +1414,120 @@ class _UserFormState extends State<UserForm> {
         });
   }
 
-  Future<int> handleReportSubmitted(BuildContext context,
-      _UserFormState userFormState, XFile? selectedImage) async {
-    setState(() {
-      isSubmitting = true;
-    });
-    DatabaseHelper databaseHelper = DatabaseHelper();
-    var maps = await databaseHelper.getAllUserReports();
+  //SRP VIOLATION 1--> Form Submission Business Logic Form UI rendering logic
+  // Future<int> handleReportSubmitted(BuildContext context,
+  //     _UserFormState userFormState, XFile? selectedImage) async {
+  //   setState(() {
+  //     isSubmitting = true;
+  //   });
+  //   DatabaseHelper databaseHelper = DatabaseHelper();
+  //   var maps = await databaseHelper.getAllUserReports();
 
-    for (var map in maps) {
-      print(map);
-    }
+  //   for (var map in maps) {
+  //     print(map);
+  //   }
 
-    final pingSuccess = await ping_google();
+  //   final pingSuccess = await ping_google();
 
-    if (!pingSuccess) {
-      final tempImgPath = selectedImage != null
-          ? await saveImageTempLocally(File(returnedImage!.path))
-          : null;
+  //   if (!pingSuccess) {
+  //     final tempImgPath = selectedImage != null
+  //         ? await saveImageTempLocally(File(returnedImage!.path))
+  //         : null;
 
-      final userFormReport = UserReportFormDetails(
-        sublocationId: userFormState.SelectedSubLocationType,
-        incidentSubtypeId: userFormState.incidentSubType,
-        description: userFormState.description,
-        date: userFormState.date,
-        criticalityId: userFormState.risklevel,
-        imagePath: tempImgPath,
-      );
+  //     final userFormReport = UserReportFormDetails(
+  //       sublocationId: userFormState.SelectedSubLocationType,
+  //       incidentSubtypeId: userFormState.incidentSubType,
+  //       description: userFormState.description,
+  //       date: userFormState.date,
+  //       criticalityId: userFormState.risklevel,
+  //       imagePath: tempImgPath,
+  //     );
 
-      final dbHelper = DatabaseHelper();
-      await dbHelper.insertUserFormReport(userFormReport);
-      setState(() {
-        isSubmitting = false;
-      });
-      print("Failed to send, report saved locally");
-      return 4;
-    }
+  //     //SRP VIOLATION 2--> offline Form Submission Business Logic Mixed with online
 
-    if (selectedImage != null) {
-      // image attached
+  //     final dbHelper = DatabaseHelper();
+  //     await dbHelper.insertUserFormReport(userFormReport);
+  //     setState(() {
+  //       isSubmitting = false;
+  //     });
+  //     print("Failed to send, report saved locally");
+  //     return 4;
+  //   }
 
-      try {
-        ReportServices reportServices = ReportServices();
-        int flag = await reportServices.uploadReportWithImage(
-          userFormState.returnedImage?.path,
-          userFormState.SelectedSubLocationType,
-          userFormState.incidentSubType,
-          userFormState.description,
-          userFormState.date,
-          userFormState.risklevel,
-        );
-        setState(() {
-          isSubmitting = false;
-        });
+  //   if (selectedImage != null) {
+  //     // image attached
+  //     //SRP VIOLATION 3a--> Form w/o image Submission Business Logic Mixed with with "with" image logic
 
-        return flag;
-      } catch (e) {
-        final tempImgPath =
-            await saveImageTempLocally(File(returnedImage!.path));
+  //     try {
+  //       ReportServices reportServices = ReportServices();
+  //       int flag = await reportServices.uploadReportWithImage(
+  //         userFormState.returnedImage?.path,
+  //         userFormState.SelectedSubLocationType,
+  //         userFormState.incidentSubType,
+  //         userFormState.description,
+  //         userFormState.date,
+  //         userFormState.risklevel,
+  //       );
+  //       setState(() {
+  //         isSubmitting = false;
+  //       });
 
-        final userFormReport = UserReportFormDetails(
-          sublocationId: userFormState.SelectedSubLocationType,
-          incidentSubtypeId: userFormState.incidentSubType,
-          description: userFormState.description,
-          date: userFormState.date,
-          criticalityId: userFormState.risklevel,
-          imagePath: tempImgPath,
-        );
+  //       return flag;
+  //     } catch (e) {
+  //       final tempImgPath =
+  //           await saveImageTempLocally(File(returnedImage!.path));
 
-        final dbHelper = DatabaseHelper();
-        await dbHelper.insertUserFormReport(userFormReport);
-        setState(() {
-          isSubmitting = false;
-        });
-        print("Failed to send, report saved locally");
-        return 4;
-      }
-    } else {
-      // no image
-      try {
-        ReportServices reportServices = ReportServices();
-        int flag = await reportServices.postReport(
-          userFormState.SelectedSubLocationType,
-          userFormState.incidentSubType,
-          userFormState.description,
-          userFormState.date,
-          userFormState.risklevel,
-        );
-        setState(() {
-          isSubmitting = false;
-        });
-        return flag;
-      } catch (e) {
-        final userFormReport = UserReportFormDetails(
-          sublocationId: userFormState.SelectedSubLocationType,
-          incidentSubtypeId: userFormState.incidentSubType,
-          description: userFormState.description,
-          date: userFormState.date,
-          criticalityId: userFormState.risklevel,
-          imagePath: null,
-        );
-        final dbHelper = DatabaseHelper();
-        await dbHelper.insertUserFormReport(userFormReport);
-        setState(() {
-          isSubmitting = false;
-        });
-        print("Failed to send, report saved locally");
-        return 4;
-      }
-    }
-  }
+  //       final userFormReport = UserReportFormDetails(
+  //         sublocationId: userFormState.SelectedSubLocationType,
+  //         incidentSubtypeId: userFormState.incidentSubType,
+  //         description: userFormState.description,
+  //         date: userFormState.date,
+  //         criticalityId: userFormState.risklevel,
+  //         imagePath: tempImgPath,
+  //       );
+
+  //       final dbHelper = DatabaseHelper();
+  //       await dbHelper.insertUserFormReport(userFormReport);
+  //       setState(() {
+  //         isSubmitting = false;
+  //       });
+  //       print("Failed to send, report saved locally");
+  //       return 4;
+  //     }
+  //   } else {
+  //     // no image
+  //     //SRP VIOLATION 3b--> Form w/o image Submission Business Logic Mixed with with "with" image logic
+
+  //     try {
+  //       ReportServices reportServices = ReportServices();
+  //       int flag = await reportServices.postReport(
+  //         userFormState.SelectedSubLocationType,
+  //         userFormState.incidentSubType,
+  //         userFormState.description,
+  //         userFormState.date,
+  //         userFormState.risklevel,
+  //       );
+  //       setState(() {
+  //         isSubmitting = false;
+  //       });
+  //       return flag;
+  //     } catch (e) {
+  //       final userFormReport = UserReportFormDetails(
+  //         sublocationId: userFormState.SelectedSubLocationType,
+  //         incidentSubtypeId: userFormState.incidentSubType,
+  //         description: userFormState.description,
+  //         date: userFormState.date,
+  //         criticalityId: userFormState.risklevel,
+  //         imagePath: null,
+  //       );
+  //       final dbHelper = DatabaseHelper();
+  //       await dbHelper.insertUserFormReport(userFormReport);
+  //       setState(() {
+  //         isSubmitting = false;
+  //       });
+  //       print("Failed to send, report saved locally");
+  //       return 4;
+  //     }
+  //   }
+  // }
 }
