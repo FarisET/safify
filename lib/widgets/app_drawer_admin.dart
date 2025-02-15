@@ -52,7 +52,57 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               children: [
                 ListTile(
-                  horizontalTitleGap: 0,
+                  horizontalTitleGap: 16,
+                  leading: Icon(Icons.analytics_outlined,
+                      color: Theme.of(context).secondaryHeaderColor),
+                  title: Text(
+                    'Dashboard',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: mainHeaderSize,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                  onTap: () {
+                    // Navigate to Add User page
+                    Navigator.pushNamed(context, '/dashboard');
+                  },
+                ),
+                ListTile(
+                  horizontalTitleGap: 16,
+                  leading: Icon(Icons.download_outlined,
+                      color: Theme.of(context).secondaryHeaderColor),
+                  title: Text(
+                    'Download Report',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: mainHeaderSize,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                  onTap: () async {
+                    final pdfService = PDFDownloadService();
+                    await _showDateInputDialog(context, pdfService);
+                  },
+                ),
+                ListTile(
+                  horizontalTitleGap: 16,
+                  leading: Icon(Icons.crisis_alert_outlined,
+                      color: Theme.of(context).secondaryHeaderColor),
+                  title: Text(
+                    'Announcement',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: mainHeaderSize,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                  onTap: () {
+                    _showAnnouncementDialog(context);
+                  },
+                ),
+                ListTile(
+                  horizontalTitleGap: 16,
                   leading: Icon(Icons.person_add_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
@@ -64,12 +114,10 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    // Navigate to Add User page
                     Navigator.pushNamed(context, '/create_user_form');
                   },
                 ),
                 ExpansionTile(
-                  // horizontalTitleGap: 0,
                   leading: Icon(Icons.location_on_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
@@ -102,8 +150,6 @@ class AppDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => AddLocationPage()));
-                        // Navigate to Add Country page
-                        //  Navigator.pushNamed(context, '/addCountry');
                       },
                     ),
                     ListTile(
@@ -130,14 +176,8 @@ class AppDrawer extends StatelessWidget {
                       },
                     ),
                   ],
-                  // subtitle: const Text("Coming soon"),
-                  // onTap: () {
-                  //   // Navigate to Add Location page
-                  //   //    Navigator.pushNamed(context, '/addLocation');
-                  // },
                 ),
                 ExpansionTile(
-                  // horizontalTitleGap: 0,
                   leading: Icon(Icons.type_specimen_outlined,
                       color: Theme.of(context).secondaryHeaderColor),
                   title: Text(
@@ -148,7 +188,6 @@ class AppDrawer extends StatelessWidget {
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
-                  // subtitle: const Text("Coming soon"),
                   children: [
                     ListTile(
                       title: Row(
@@ -191,57 +230,9 @@ class AppDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => AddSubIncidentTypePage()));
-                        // Navigate to Add Incident Subtype page
-                        //  Navigator.pushNamed(context, '/addIncidentSubtype');
                       },
                     ),
                   ],
-                  // onTap: () {
-                  //   // ExpansionTile()
-                  //   // Navigate to Add Category page
-                  //   //  Navigator.pushNamed(context, '/addCategory');
-                  // },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0,
-                  leading: Icon(Icons.download_outlined,
-                      color: Theme.of(context).secondaryHeaderColor),
-                  title: Text(
-                    'Download Report',
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: mainHeaderSize,
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                  onTap: () async {
-                    // Navigate to Add Category page
-                    //  Navigator.pushNamed(context, '/addCategory');
-                    final pdfService = PDFDownloadService();
-                    // await pdfService.downloadPDF(
-                    //     'https://api.arya.ai/images/test.pdf', "dummy.pdf");
-                    // // await Future.delayed(Duration(seconds: 1));
-                    // print("Download PDF");
-                    // await pdfService.getPdf(null, null, null);
-                    // Navigator.of(context).pop();
-                    await _showDateInputDialog(context, pdfService);
-                  },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0,
-                  leading: Icon(Icons.crisis_alert_outlined,
-                      color: Theme.of(context).secondaryHeaderColor),
-                  title: Text(
-                    'Announcement',
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: mainHeaderSize,
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                  onTap: () {
-                    _showAnnouncementDialog(context);
-                  },
                 ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:safify/Admin%20Module/admin_pages/admin_dashboard.dart';
 import 'package:safify/Admin%20Module/admin_pages/create_user_form.dart';
 import 'package:safify/Admin%20Module/providers/action_team_efficiency_provider.dart';
 import 'package:safify/Admin%20Module/providers/all_action_team_provider.dart';
@@ -272,7 +273,8 @@ class MyApp extends StatelessWidget {
           '/form_page': (context) => const UserForm(),
           '/admin_home_page': (context) => const AdminHomePage(),
           '/action_team_home_page': (context) => const ActionTeamHomePage(),
-          '/create_user_form': (context) => const CreatUserForm()
+          '/create_user_form': (context) => const CreatUserForm(),
+          '/dashboard': (context) => const AdminDashboard()
         },
       ),
     );

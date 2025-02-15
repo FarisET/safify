@@ -30,18 +30,6 @@ class _AdminHomePageState extends State<AdminHomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
-    //       .getCountResolvedPostData();
-    //   Provider.of<CountIncidentsReportedProvider>(context, listen: false)
-    //       .getCountReportedPostData();
-    //   Provider.of<CountByIncidentSubTypesProviderClass>(context, leisten: false)
-    //       .getcountByIncidentSubTypesPostData();
-    //   Provider.of<CountByLocationProviderClass>(context, listen: false)
-    //       .getcountByIncidentLocationPostData();
-    //   Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-    //       .getactionTeamEfficiencyData();
-    // });
     getUsername();
   }
 
@@ -65,21 +53,6 @@ class _AdminHomePageState extends State<AdminHomePage>
 
   @override
   Widget build(BuildContext context) {
-    // final countResolvedProvider =
-    //     Provider.of<CountIncidentsResolvedProvider>(context)
-    //         .totalIncidentsResolved;
-    // final countReportedProvider =
-    //     Provider.of<CountIncidentsReportedProvider>(context)
-    //         .totalIncidentsReported;
-    // final countByIncidentSubTypeProvider =
-    //     Provider.of<CountByIncidentSubTypesProviderClass>(context)
-    //         .countByIncidentSubTypes;
-    // final countByLocationProvider =
-    //     Provider.of<CountByLocationProviderClass>(context, listen: false)
-    //         .countByLocation;
-    // final actionTeamEfficiencyProvider =
-    //     Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-    //         .actionTeamEfficiency;
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     double screenHeight = MediaQuery.of(context).size.height;
@@ -89,22 +62,7 @@ class _AdminHomePageState extends State<AdminHomePage>
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     ToastService.showRejectedReportSnackBar(context, true);
-        //   },
-        //   child: const Icon(Icons.analytics_outlined),
-        // ),
-        // floatingActionButton: FloatingActionButton(
-        //   child: const Icon(Icons.notifications),
-        //   onPressed: () async {
-        //     Future.delayed(const Duration(seconds: 0), () {
-        //       NotifTestService.testNotif();
-        //     });
-        //     // await DatabaseHelper().clearDBdata();
-        //     // print(await DatabaseHelper().getAdminUserReports());
-        //   },
-        // ),
+
         appBar: AppBar(
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
@@ -116,9 +74,7 @@ class _AdminHomePageState extends State<AdminHomePage>
                   Icons.menu,
                   color: Theme.of(context).primaryColor,
                 ),
-                // onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                onPressed: () =>
-                    Scaffold.of(context).openDrawer(), // Open drawer on tap
+                onPressed: () => Scaffold.of(context).openDrawer(),
               );
             }),
           ),
@@ -232,39 +188,39 @@ class _AdminHomePageState extends State<AdminHomePage>
                           ),
 
                           //dashboard
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AdminDashboard()),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.analytics_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      ' Dashboard',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (context) =>
+                          //               const AdminDashboard()),
+                          //     );
+                          //   },
+                          //   child: Container(
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.blue,
+                          //       borderRadius: BorderRadius.circular(12),
+                          //     ),
+                          //     child: const Padding(
+                          //       padding: EdgeInsets.all(12.0),
+                          //       child: Row(
+                          //         children: [
+                          //           Icon(
+                          //             Icons.analytics_outlined,
+                          //             color: Colors.white,
+                          //           ),
+                          //           Text(
+                          //             ' Dashboard',
+                          //             style: TextStyle(
+                          //                 color: Colors.white,
+                          //                 fontWeight: FontWeight.bold),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                       SizedBox(
