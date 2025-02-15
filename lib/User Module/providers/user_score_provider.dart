@@ -33,7 +33,7 @@ class UserScoreProvider with ChangeNotifier {
         debugPrint("Fetched user's reports from API.");
       } else {
         debugPrint("No internet connection");
-        _score = "Offline..."; // Set score to "Offline" when no internet
+        _score = "n/a"; // Set score to "Offline" when no internet
       }
 
       isLoading = false;

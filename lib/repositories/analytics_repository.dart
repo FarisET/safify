@@ -156,6 +156,6 @@ class AnalyticsRepository {
     await _analyticsDb.insertEfficiencyAnalyticsJson(jsonList);
 
     Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-        .getactionTeamEfficiencyData();
+        .getactionTeamEfficiency();
   }
 }

@@ -10,7 +10,9 @@ class ActionTeamEfficiency {
   factory ActionTeamEfficiency.fromJson(Map<String, dynamic> json) {
     return ActionTeamEfficiency(
       action_team_name: json['action_team_name'] ?? '',
-      efficiency_value: json['efficiency_value'] ?? '',
+      efficiency_value: json['efficiency_value'] != null
+          ? double.tryParse(json['efficiency_value'].toString()) ?? 0.0
+          : null,
     );
   }
 

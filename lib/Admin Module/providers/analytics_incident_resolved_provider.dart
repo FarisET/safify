@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:safify/repositories/analytics_repository.dart';
+import 'package:safify/utils/network_util.dart';
 import '../../constants.dart';
 
 class CountIncidentsResolvedProvider extends ChangeNotifier {
@@ -13,42 +14,62 @@ class CountIncidentsResolvedProvider extends ChangeNotifier {
 
   String? get totalIncidentsResolved => _totalIncidentsResolved;
 
-  getCountResolvedPostData() async {
-    loading = true;
-    // _totalIncidentsResolved = await fetchIncidentsResolved();
-    final val = await _analyticsRepository.fetchTotalIncidentsResolvedFromDb();
-    _totalIncidentsResolved = val != null ? val.toString() : "n/a";
-    print("Total Incidents Resolved: $_totalIncidentsResolved");
-    ;
+  Future<void> getCountResolved() async {
+    try {
+      loading = true;
+      notifyListeners();
 
-    loading = false;
-    notifyListeners();
+      final pingSuccess = await ping_google();
+
+      if (!pingSuccess) {
+        await getCountResolvedPostData();
+      } else {
+        await fetchIncidentsResolved();
+      }
+    } catch (e) {
+      print("Error fetching resolved incidents: $e");
+      _totalIncidentsResolved = "n/a";
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
   }
 
-  Future<String> fetchIncidentsResolved() async {
-    loading = true;
-    jwtToken = await storage.read(key: 'jwt');
+  Future<void> getCountResolvedPostData() async {
+    try {
+      final val =
+          await _analyticsRepository.fetchTotalIncidentsResolvedFromDb();
+      _totalIncidentsResolved = val?.toString() ?? "n/a";
+      print("Total Incidents Resolved from DB: $_totalIncidentsResolved");
+    } catch (e) {
+      print("Error fetching from DB: $e");
+      _totalIncidentsResolved = "n/a";
+    }
+  }
 
-    Uri url = Uri.parse('$IP_URL/analytics/fetchIncidentsResolved');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $jwtToken', // Include JWT token in headers
-      },
-    );
-    if (response.statusCode == 200) {
-      loading = false;
-      notifyListeners();
+  Future<void> fetchIncidentsResolved() async {
+    try {
+      jwtToken = await storage.read(key: 'jwt');
 
-      print("Incidents Resolved: ${response.body}");
+      if (jwtToken == null) {
+        throw Exception("JWT token not found.");
+      }
 
-      return response.body; // Assuming response.body is a String
-    } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
-      loading = false;
-      notifyListeners();
-      throw Exception('Failed to load data');
+      Uri url = Uri.parse('$IP_URL/analytics/fetchIncidentsResolved');
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $jwtToken'},
+      );
+
+      if (response.statusCode == 200) {
+        _totalIncidentsResolved = response.body;
+        print("Incidents Resolved: $_totalIncidentsResolved");
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error fetching from API: $e");
+      _totalIncidentsResolved = "n/a";
     }
   }
 }

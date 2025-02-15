@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:safify/constants.dart';
 import 'package:safify/models/count_incidents_by_subtype.dart';
 import 'package:safify/repositories/analytics_repository.dart';
+import 'package:safify/utils/network_util.dart';
 
 class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   List<CountByIncidentSubTypes>? countByIncidentSubTypes;
@@ -14,32 +15,43 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
   final storage = const FlutterSecureStorage();
   final AnalyticsRepository _analyticsRepository = AnalyticsRepository();
 
-  Future<List<CountByIncidentSubTypes>?>
-      getcountByIncidentSubTypesPostData() async {
-    loading = true;
-    notifyListeners();
-
+  Future<void> getcountByIncidentSubTypes() async {
     try {
-      // countByIncidentSubTypes = await fetchTotalIncidentsOnSubTypes();
-
-      countByIncidentSubTypes =
-          await _analyticsRepository.fetchIncidentSubtypeAnalyticsFromDb();
-
-      loading = false;
+      loading = true;
       notifyListeners();
 
+      final pingSuccess = await ping_google();
+
+      if (!pingSuccess) {
+        await getcountByIncidentSubTypesPostData();
+      } else {
+        await fetchTotalIncidentsOnSubTypes();
+      }
+    } catch (e) {
+      print("Error fetching resolved incidents: $e");
+      countByIncidentSubTypes = [];
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<CountByIncidentSubTypes>?>
+      getcountByIncidentSubTypesPostData() async {
+    try {
+      countByIncidentSubTypes =
+          await _analyticsRepository.fetchIncidentSubtypeAnalyticsFromDb();
+      loading = false;
+      notifyListeners();
       return countByIncidentSubTypes;
     } catch (e) {
       loading = false;
       notifyListeners();
-      // You might want to handle the error accordingly
       throw Exception('Failed to load countByIncidentSubTypes');
     }
   }
 
-  Future<List<CountByIncidentSubTypes>> fetchTotalIncidentsOnSubTypes() async {
-    loading = true;
-    notifyListeners();
+  Future<List<CountByIncidentSubTypes>?> fetchTotalIncidentsOnSubTypes() async {
     try {
       jwtToken = await storage.read(key: 'jwt');
       if (jwtToken == null) {
@@ -53,52 +65,20 @@ class CountByIncidentSubTypesProviderClass extends ChangeNotifier {
         },
       );
 
-      // Fluttertoast.showToast(
-      //   msg: '${response.statusCode}',
-      //   toastLength: Toast.LENGTH_SHORT,
-      // );
-
       if (response.statusCode == 200) {
-        // Parse the JSON response
         List<dynamic> jsonResponse = jsonDecode(response.body);
 
-        // List<CountByLocation> countByIncidentLocationList = jsonResponse
-        //     .map((item) =>
-        //         CountByLocation.fromJson(item as Map<String, dynamic>))
-        //     .toList();
-
-        // Ensure that jsonResponse[0] is a List<Map<String, dynamic>>
-        //if (jsonResponse.isNotEmpty && jsonResponse[0] is List<dynamic>) {
-        // List<Map<String, dynamic>> incidentsData =
-        //     (jsonResponse[0] as List<dynamic>).cast<
-        //         Map<String,
-        //             dynamic>>(); // Explicitly cast each item in the list
-
-        // Map the incident data to your CountByIncidentSubTypes model
-        List<CountByIncidentSubTypes> countByIncidentSubTypesList = jsonResponse
+        countByIncidentSubTypes = jsonResponse
             .map((item) => CountByIncidentSubTypes.fromJson(item))
             .toList();
 
-        loading = false;
-        notifyListeners();
-        // print("Incidents Subtypes: ${response.body}}");
-        return countByIncidentSubTypesList;
-
-        // } else {
-        //   loading = false;
-        //   notifyListeners();
-        //   print('Invalid format in JSON response');
-        //   throw Exception('Invalid format in JSON response');
+        return countByIncidentSubTypes;
       } else {
         throw Exception('Failed to load countByIncidentSubTypes');
       }
     } catch (e) {
-      loading = false;
-      notifyListeners();
-      rethrow;
-    } finally {
-      loading = false;
-      notifyListeners();
+      countByIncidentSubTypes = [];
+      return countByIncidentSubTypes;
     }
   }
 }

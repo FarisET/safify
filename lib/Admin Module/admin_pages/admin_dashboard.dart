@@ -29,16 +29,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
       // Use the mounted property to ensure the widget is still mounted
       if (mounted) {
         Provider.of<CountIncidentsResolvedProvider>(context, listen: false)
-            .getCountResolvedPostData();
+            .getCountResolved();
         Provider.of<CountIncidentsReportedProvider>(context, listen: false)
-            .getCountReportedPostData();
+            .getCountReported();
         Provider.of<CountByIncidentSubTypesProviderClass>(context,
                 listen: false)
-            .getcountByIncidentSubTypesPostData();
+            .getcountByIncidentSubTypes();
         Provider.of<CountByLocationProviderClass>(context, listen: false)
-            .getcountByIncidentLocationPostData();
+            .getcountByIncidentLocation();
         Provider.of<ActionTeamEfficiencyProviderClass>(context, listen: false)
-            .getactionTeamEfficiencyData();
+            .getactionTeamEfficiency();
       }
     });
   }
@@ -125,8 +125,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: ListView(
           padding: const EdgeInsets.all(12),
           children: [
-            // _buildHeader(context),
-            // const Divider(height: 30, thickness: 1.5),
             _buildStatisticsGrid(
                 context, countReportedProvider!, countResolvedProvider!),
             const SizedBox(height: 20),
@@ -137,21 +135,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  // Widget _buildHeader(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 16.0),
-  //     child: Text(
-  //       'Dashboard',
-  //       style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-  //             fontWeight: FontWeight.bold,
-  //             color: Theme.of(context).secondaryHeaderColor,
-  //           ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildStatisticsGrid(
       BuildContext context, String reported, String resolved) {
+    final int reportedCount = int.tryParse(reported) ?? 0;
+    final int resolvedCount = int.tryParse(resolved) ?? 0;
+    final int openCount = reportedCount - resolvedCount;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calculate crossAxisCount based on screen width
@@ -170,21 +159,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
           itemBuilder: (context, index) {
             final icons = [
               Icons.personal_injury,
-              Icons.check_box,
-              Icons.category,
+              Icons.health_and_safety_outlined,
+              Icons.pin_drop_outlined,
               Icons.group
             ];
             final titles = [
-              'incidents this Year',
-              'incidents resolved this Year',
+              'open incidents',
+              'closed incidents',
               'Location',
               'Action Teams'
             ];
             final counts = [
-              reported,
+              openCount == 0 ? 'n/a' : openCount.toString(),
               resolved,
-              totalLocations ?? 'N/A',
-              totalActionTeams ?? 'N/A'
+              totalLocations ?? 'n/a',
+              totalActionTeams ?? 'n/a'
             ];
             return _buildStatCard(
               context,
@@ -463,17 +452,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // if (data == null || data.isEmpty) {
-    //   return const Center(child: Text("No data available"));
-    // }
-
     final filteredData = data
         ?.where((item) =>
             (item.incident_count != null && item.location_name!.isNotEmpty) &&
             (item.incident_count != null && item.incident_count! > 0))
         .toList();
     setState(() {
-      totalLocations = filteredData!.length.toString();
+      totalLocations =
+          filteredData!.isEmpty ? 'n/a' : filteredData!.length.toString();
     });
 
     return DefaultTabController(
@@ -645,8 +631,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
         .toList();
 
     setState(() {
-      totalActionTeams =
-          filteredData!.isEmpty ? 'n/a' : filteredData!.length.toString();
+      totalActionTeams = (filteredData == null || filteredData.isEmpty)
+          ? 'n/a'
+          : filteredData.length.toString();
     });
 
     // Check if loading
@@ -672,16 +659,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               )
-            : SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
-                series: <BarSeries>[
-                  BarSeries<ActionTeamEfficiency, String>(
-                    dataSource: filteredData,
-                    xValueMapper: (item, _) => item.action_team_name ?? '',
-                    yValueMapper: (item, _) => item.efficiency_value ?? 0,
-                    dataLabelSettings: const DataLabelSettings(isVisible: true),
-                  ),
-                ],
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SfCartesianChart(
+                  primaryXAxis: CategoryAxis(),
+                  series: <BarSeries>[
+                    BarSeries<ActionTeamEfficiency, String>(
+                      dataSource: filteredData,
+                      xValueMapper: (item, _) => item.action_team_name ?? '',
+                      yValueMapper: (item, _) => item.efficiency_value ?? 0,
+                      dataLabelSettings:
+                          const DataLabelSettings(isVisible: true),
+                    ),
+                  ],
+                ),
               ),
       ),
     ]);

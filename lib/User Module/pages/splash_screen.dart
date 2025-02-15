@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'login_page.dart';
 import 'package:lottie/lottie.dart';
 
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Center(
-              child: Image.asset('assets/images/safify_logo.png'),
+              child: SvgPicture.asset('assets/images/safify_logo_wo_text.svg'),
             ),
             Lottie.asset(
               'assets/images/loading_lottie.json',

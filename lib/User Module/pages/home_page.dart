@@ -231,15 +231,7 @@ class _HomePage2State extends State<HomePage2> {
                           );
                         } else if (userScoreProvider.error != null) {
                           return const Text(
-                            'Score: N/A',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87),
-                          );
-                        } else if (userScoreProvider.score == "Offline") {
-                          return const Text(
-                            'Score: N/A',
+                            'Score: n/a',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:safify/models/count_incidents_by_location.dart';
 import 'package:safify/repositories/analytics_repository.dart';
+import 'package:safify/utils/network_util.dart';
 
 import '../../constants.dart';
 
@@ -15,30 +16,38 @@ class CountByLocationProviderClass extends ChangeNotifier {
   final storage = const FlutterSecureStorage();
   final AnalyticsRepository _analyticsRepository = AnalyticsRepository();
 
-  Future<List<CountByLocation>?> getcountByIncidentLocationPostData() async {
-    loading = true;
-    notifyListeners();
-
+  Future<void> getcountByIncidentLocation() async {
     try {
-      // countByLocation = await fetchTotalIncidentsLocation();
+      loading = true;
+      notifyListeners();
+
+      final pingSuccess = await ping_google();
+
+      if (!pingSuccess) {
+        await getcountByIncidentLocationPostData();
+      } else {
+        await fetchTotalIncidentsLocation();
+      }
+    } catch (e) {
+      print("Error fetching locations: $e");
+      countByLocation = [];
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<CountByLocation>?> getcountByIncidentLocationPostData() async {
+    try {
       countByLocation =
           await _analyticsRepository.fetchIncidentLocationAnalyticsFromDb();
-      loading = false;
-      notifyListeners();
-
       return countByLocation;
     } catch (e) {
-      loading = false;
-      notifyListeners();
-      print('Error fetching count by location: $e');
       throw Exception('Failed to load count by location subtypes');
     }
   }
 
   Future<List<CountByLocation>?> fetchTotalIncidentsLocation() async {
-    loading = true;
-    notifyListeners();
-
     try {
       jwtToken = await storage.read(key: 'jwt');
       if (jwtToken == null) {
@@ -56,25 +65,18 @@ class CountByLocationProviderClass extends ChangeNotifier {
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body);
 
-        List<CountByLocation> countByIncidentLocationList = jsonResponse
+        countByLocation = jsonResponse
             .map((item) =>
                 CountByLocation.fromJson(item as Map<String, dynamic>))
             .toList();
 
-        loading = false;
-        notifyListeners();
-        // print("Count by location: ${response.body}");
-        return countByIncidentLocationList;
+        return countByLocation;
       } else {
         throw Exception('Failed to load countByIncidentLocations');
       }
     } catch (e) {
-      loading = false;
-      notifyListeners();
-      rethrow;
-    } finally {
-      loading = false;
-      notifyListeners();
+      countByLocation = [];
+      return countByLocation;
     }
   }
 }
