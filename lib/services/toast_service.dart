@@ -203,7 +203,7 @@ class ToastService {
           color: Colors.black,
         ),
         title: Text(
-          "Local database updated successfully.",
+          "Content refreshed successfully.",
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 15,

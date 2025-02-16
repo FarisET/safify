@@ -18,21 +18,15 @@ class _AdminUserReportsListState extends State<AdminUserReportsList> {
   @override
   void initState() {
     super.initState();
-    if (Provider.of<AdminUserReportsProvider>(context, listen: false).reports ==
-        null) {
-      final result =
-          Provider.of<AdminUserReportsProvider>(context, listen: false)
-              .fetchAdminUserReports(context);
-      // result.then(
-      //   (value) {
-      //     if (value.contains("success")) {
-      //       ToastService.showUpdatedLocalDbSuccess(context);
-      //     } else {
-      //       ToastService.showFailedToFetchReportsFromServer(context);
-      //     }
-      //   },
-      // );
-    }
+    Future.microtask(() {
+      if (Provider.of<AdminUserReportsProvider>(context, listen: false)
+              .reports ==
+          null) {
+        final result =
+            Provider.of<AdminUserReportsProvider>(context, listen: false)
+                .fetchAdminUserReports(context);
+      }
+    });
   }
 
   void _handleSessionExpired(BuildContext context) async {

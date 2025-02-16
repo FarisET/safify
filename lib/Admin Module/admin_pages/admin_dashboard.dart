@@ -67,7 +67,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             color: Theme.of(context).secondaryHeaderColor,
           ),
           onPressed: () {
-            dispose();
+            // dispose();
             Navigator.of(context).pop();
           },
         ),
@@ -125,8 +125,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: ListView(
           padding: const EdgeInsets.all(12),
           children: [
-            _buildStatisticsGrid(
-                context, countReportedProvider!, countResolvedProvider!),
+            _buildStatisticsGrid(context, countReportedProvider ?? 'n/a',
+                countResolvedProvider ?? 'n/a'),
             const SizedBox(height: 20),
             _buildChartsSection(context),
           ],
@@ -306,8 +306,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildIncidentTypeListView(context, filteredData!),
-                  _buildIncidentTypeGraphView(context, filteredData),
+                  _buildIncidentTypeListView(context, filteredData ?? []),
+                  _buildIncidentTypeGraphView(context, filteredData ?? []),
                 ],
               ),
             ),

@@ -140,7 +140,7 @@ class _AdminHomePageState extends State<AdminHomePage>
           ],
         ),
         drawer: AppDrawer(
-          username: user_id!,
+          username: user_id ?? 'Person',
         ),
 
         //     backgroundColor: Colors.blue[600],
