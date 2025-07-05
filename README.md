@@ -1,6 +1,8 @@
-# db_ims
+# Safify - EHS Incident Management System
 
 An incident Management System mobile application to report and resolve issues on your premises quicker.
+
+Website: https://safify.vercel.app/ehs
 
 # Modules and Flow
 1) User: Reports an incident by filling out a digital form with basic details and an image
